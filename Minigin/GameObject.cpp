@@ -38,6 +38,8 @@ void dae::GameObject::SetActive(bool isActive)
 void dae::GameObject::Destroy()
 {
 	m_destroyed = true;
+	
+	m_transform.DestroyChildren();
 }
 
 #pragma region Game_Loop
@@ -102,7 +104,7 @@ void dae::GameObject::End()
 #pragma endregion
 
 dae::GameObject::GameObject(std::string_view name, glm::vec3 pos)
-	: m_transform{ pos }
+	: m_transform{ *this, pos }
 	, m_name{ name }
 	, m_active{ true }
 	, m_destroyed{}

@@ -12,7 +12,6 @@
 #include "Components/TextComponent.h"
 #include "Components/FPS_Display.h"
 #include "Components/Sprite.h"
-#include "Components/Orbiter.h"
 #include <glm/fwd.hpp>
 #include <filesystem>
 #include <utility>
@@ -55,36 +54,6 @@ static void load()
 		textComp.SetColor({ 255, 255, 0, 255 });
 		object->AddComponent<dae::FPS_Display>();
 		scene.Add(std::move(object));
-	}
-
-	object = std::make_unique<dae::GameObject>("OrbitParent", glm::vec3(150.f, 150.f, 0.f));
-	{
-		scene.Add(std::move(object));
-	}		
-	
-
-
-	object = std::make_unique<dae::GameObject>("Tank", glm::vec3(0.f, 0.f, 0.f));
-	{
-		auto& sprite = object->AddComponent<dae::Sprite>("T_SpriteSheet_Tron.png", dae::SpriteSheet(13, 5));
-		sprite.SetSprite(10, 0);
-
-		object->AddComponent<dae::Orbiter>(50.f, -1.f);
-		object->GetTransform().SetParent(&scene.GetObjectByName("OrbitParent")->GetTransform());
-
-		scene.Add(std::move(object));
-	}
-	
-	object = std::make_unique<dae::GameObject>("Barrel", glm::vec3(0.f, 0.f, 0.f));
-	{
-		auto& sprite = object->AddComponent<dae::Sprite>("T_SpriteSheet_Tron.png", dae::SpriteSheet(13, 5));
-		sprite.SetSprite(6, 1);
-
-		object->AddComponent<dae::Orbiter>(30.f, 5.f);
-		object->GetTransform().SetParent(&scene.GetObjectByName("Tank")->GetTransform());
-	 
-	scene.Add(std::move(object));
-
 	}
 }
 

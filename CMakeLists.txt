@@ -31,7 +31,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     Minigin/Components/Sprite.cpp
     Minigin/Components/Component.cpp 
     Minigin/Components/FPS_Display.cpp  
-    Minigin/Components/Orbiter.cpp)
+    )
 
 # enable c++20 features
 target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)

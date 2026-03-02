@@ -1,8 +1,14 @@
 #include "Transform.h"
+#include "GameObject.h"
 #include <glm/gtc/matrix_transform.hpp>  
 #include <cmath>                         
 #include <numbers>                       
 #include <algorithm>              
+
+dae::GameObject* dae::Transform::GetOwner() const noexcept
+{
+	return m_owner;
+}
 
 dae::Transform* dae::Transform::GetParent() const noexcept
 {
@@ -51,14 +57,11 @@ bool dae::Transform::IsChildOf(Transform* obj)
 
 const glm::vec3& dae::Transform::GetPosition()
 {
-	if (m_positionDirty)
-	{
-		UpdateWorldPos();
-	}
+	UpdateWorldPos();
 	return m_worldPosition;
 }
 
-glm::vec3 const& dae::Transform::GetLocalPosition()
+glm::vec3 const& dae::Transform::GetLocalPosition() const
 {
 	return m_localPosition;
 }
@@ -83,7 +86,6 @@ void dae::Transform::SetParent(Transform* parent, bool keepWorldPos)
 
 			glm::vec4 localPos4 = glm::inverse(parent->GetWorldMatrix()) * glm::vec4(m_worldPosition, 1.0f);
 			SetLocalPosition(glm::vec3(localPos4));
-			//SetLocalPosition(GetPosition() - parent->GetPosition());
 		}
 		SetPositionDirty();
 	}
@@ -122,6 +124,16 @@ void dae::Transform::SetPosition(glm::vec3 const& position)
 		glm::vec4 localPos = glm::inverse(GetParent()->GetWorldMatrix()) * glm::vec4(m_worldPosition, 1.0f);
 		SetLocalPosition(glm::vec3(localPos));
 	}
+
+	SetPositionDirty();
+}
+
+void dae::Transform::DestroyChildren()
+{
+	for (auto& child : m_children)
+	{
+		child->GetOwner()->Destroy();
+	}
 }
 
 void dae::Transform::Translate(float x, float y, float z)
@@ -151,14 +163,15 @@ void dae::Transform::SetScale(glm::vec3 const& scale)
 	m_localScale = scale;
 }
 
-dae::Transform::Transform(glm::vec3 const& pos)
-	: m_positionDirty{ true }
+dae::Transform::Transform(GameObject& owner, glm::vec3 const& pos)
+	:  m_owner{&owner}
+	, m_positionDirty{ true }
 	, m_worldPosition{}
 	, m_worldRotation{}
 	, m_worldScale{}
 	, m_localPosition{ pos }
 	, m_localRotation{}
-	, m_localScale{1.f, 1.f, 1.f}
+	, m_localScale{ 1.f, 1.f, 1.f }
 	, m_parent{}
 	, m_children{}
 {
@@ -175,14 +188,15 @@ glm::mat4 dae::Transform::GetLocalMatrix() const
 	return translation * rotation * scale;
 }
 
-glm::mat4 dae::Transform::GetWorldMatrix() const
+glm::mat4 dae::Transform::GetWorldMatrix()
 {
-	if (m_parent)
-	{
-		return m_parent->GetWorldMatrix() * GetLocalMatrix();
-	}
+	UpdateWorldPos();
 
-	return GetLocalMatrix();
+	glm::mat4 translation = glm::translate(glm::mat4(1.0f), m_worldPosition);
+	glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(m_worldRotation), glm::vec3(0, 0, 1));
+	glm::mat4 scale = glm::scale(glm::mat4(1.0f), m_worldScale);
+
+	return translation * rotation * scale;
 }
 
 void dae::Transform::UpdateWorldPos()
@@ -197,7 +211,7 @@ void dae::Transform::UpdateWorldPos()
 		}
 		else
 		{
-			glm::mat4 world = GetWorldMatrix();
+			glm::mat4 world = m_parent->GetWorldMatrix() * GetLocalMatrix();
 
 			m_worldPosition = glm::vec3(world[3]);
 

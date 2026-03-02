@@ -6,9 +6,11 @@
 
 namespace dae
 {
+	class GameObject;
 	class Transform final
 	{
 	public:
+		GameObject* GetOwner() const noexcept;
 
 		Transform* GetParent() const noexcept;
 		int GetChildCount() const noexcept;
@@ -16,12 +18,14 @@ namespace dae
 		bool HasChild(Transform* obj);
 		bool IsChildOf(Transform* obj);
 	
-		glm::vec3 const& GetLocalPosition();
+		glm::vec3 const& GetLocalPosition() const;
 		glm::vec3 const& GetPosition();
 
 		void SetParent(Transform* parent, bool keepWorldPos = false);
 		void SetLocalPosition( glm::vec3 const& pos);
 		void SetPosition( glm::vec3 const& pos);
+
+		void DestroyChildren();
 
 		void Translate(float x, float y, float z = 0);
 		void Translate(glm::vec3 const& diff);
@@ -29,9 +33,11 @@ namespace dae
 		void SetScale(float scale);
 		void SetScale(glm::vec3 const& diff);
 
-		Transform(glm::vec3 const& pos = {0.f, 0.f, 0.f});
+		Transform(GameObject& owner, glm::vec3 const& pos = {0.f, 0.f, 0.f});
 
 	private:
+		GameObject* m_owner;
+
 		// World data
 		bool m_positionDirty;
 		glm::vec3 m_worldPosition;
@@ -46,7 +52,7 @@ namespace dae
 		Transform* m_parent;
 		std::vector<Transform*> m_children;
 
-		glm::mat4 GetWorldMatrix() const;
+		glm::mat4 GetWorldMatrix();
 		glm::mat4 GetLocalMatrix() const;
 
 		void UpdateWorldPos();
