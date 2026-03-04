@@ -186,10 +186,10 @@ void dae::imgui_CacheTester::RenderCacheTestWindow()
 }
 
 dae::imgui_CacheTester::imgui_CacheTester()
-	: m_resultsGameObject{}
-	, m_resultsGameObjectAlt{}
-	, m_showGameObject{false}
+	: m_showGameObject{false}
 	, m_showGameObjectAlt{false}
+	, m_resultsGameObject{}
+	, m_resultsGameObjectAlt{}
 {
 	m_resultsGameObject.resize(m_stepSizes.size());
 	m_resultsGameObjectAlt.resize(m_stepSizes.size());
