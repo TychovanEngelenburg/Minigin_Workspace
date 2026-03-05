@@ -31,9 +31,9 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     Minigin/Components/Sprite.cpp
     Minigin/Components/Component.cpp 
     Minigin/Components/FPS_Display.cpp  
-    "Minigin/ImGUI/imgui_CacheTester.cpp"
+    
     Minigin/ImGUI/imgui_plot.cpp 
-    Minigin/ImGUI/imgui_window.cpp
+    
 )
 
 # enable c++20 features
