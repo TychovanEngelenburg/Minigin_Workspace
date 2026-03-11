@@ -1,7 +1,7 @@
 #ifndef FPS_DISPLAY_H
 #define FPS_DISPLAY_H
 
-#include "Components/Component.h"
+#include "EngineComponents/Component.h"
 
 namespace dae
 {

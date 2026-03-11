@@ -1,7 +1,7 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
-#include "Components/Component.h"
+#include "EngineComponents/Component.h"
 #include "Types/Transform.h"
 
 #include <string>

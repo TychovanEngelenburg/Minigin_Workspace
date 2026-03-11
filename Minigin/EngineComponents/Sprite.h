@@ -1,7 +1,7 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
-#include "Components/Component.h"
+#include "EngineComponents/Component.h"
 #include "Types/Texture2D.h"
 
 #include <memory>

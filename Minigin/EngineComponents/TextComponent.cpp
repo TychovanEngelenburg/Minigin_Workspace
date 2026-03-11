@@ -1,4 +1,4 @@
-﻿#include "Components/TextComponent.h"
+﻿#include "EngineComponents/TextComponent.h"
 #include "GameObject.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
@@ -10,7 +10,7 @@
 #include <SDL3/SDL_render.h>
 
 // .h includes
-#include "Components/Component.h"
+#include "EngineComponents/Component.h"
 #include "Types/Font.h"
 #include "Types/Texture2D.h"
 

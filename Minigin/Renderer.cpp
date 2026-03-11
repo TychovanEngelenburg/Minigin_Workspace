@@ -117,6 +117,4 @@ void dae::Renderer::Destroy()
 		SDL_DestroyRenderer(m_renderer);
 		m_renderer = nullptr;
 	}
-
-	delete m_imguiWindow;
 }

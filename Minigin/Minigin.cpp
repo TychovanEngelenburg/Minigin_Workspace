@@ -5,7 +5,7 @@
 
 #include "Minigin.h"
 
-#include "InputManager.h"
+#include "InputHandling/InputManager.h"
 #include "SceneManager.h"
 #include "ResourceManager.h"
 #include "DeltaClock.h"
@@ -135,6 +135,7 @@ dae::Minigin::Minigin(std::filesystem::path const& dataPath)
 
 	Renderer::GetInstance().Init(g_window);
 	ResourceManager::GetInstance().Init(dataPath);
+	InputManager::GetInstance().Init();
 }
 
 dae::Minigin::~Minigin()

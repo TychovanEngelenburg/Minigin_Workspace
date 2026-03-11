@@ -1,11 +1,11 @@
-#include "Components/Sprite.h"
+#include "EngineComponents/Sprite.h"
 
 #include "ResourceManager.h"
 #include "Renderer.h"
 #include "GameObject.h"
 
 // .h includes
-#include "Components/Component.h"
+#include "EngineComponents/Component.h"
 #include <memory>
 #include <filesystem>
 

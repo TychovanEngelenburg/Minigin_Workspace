@@ -1,7 +1,8 @@
-#include "Components/FPS_Display.h"
-#include "Components/TextComponent.h"
+#include "FPS_Display.h"
+
 #include "DeltaClock.h"
-#include "Components/Component.h"
+#include "EngineComponents/Component.h"
+#include "EngineComponents/TextComponent.h"
 #include "GameObject.h"
 
 #include <cassert>

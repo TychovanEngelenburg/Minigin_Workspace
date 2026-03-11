@@ -1,7 +1,7 @@
 #include "GameObject.h"
 
 // .h includes
-#include "Components/Component.h"
+#include "EngineComponents/Component.h"
 #include "Types/Transform.h"
 
 #include <string_view>

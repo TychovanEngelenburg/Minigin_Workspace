@@ -1,4 +1,4 @@
-#include "Components/Component.h"
+#include "EngineComponents/Component.h"
 #include "GameObject.h"
 
 dae::GameObject* dae::Component::GetOwner() const noexcept

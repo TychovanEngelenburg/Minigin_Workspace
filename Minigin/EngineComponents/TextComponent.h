@@ -1,7 +1,7 @@
 #ifndef TEXTUREOBJECT_H
 #define TEXTUREOBJECT_H
 
-#include "Components/Component.h"
+#include "EngineComponents/Component.h"
 #include "Types/Font.h"
 #include "Types/Texture2D.h"
 

@@ -16,8 +16,7 @@ endif()
 # list source files here
 add_executable(${TARGET_NAME} ${TARGET_PARAM}
     Minigin/GameObject.cpp    
-    Minigin/InputManager.cpp
-    Game/Main.cpp
+    Minigin/InputHandling/InputManager.cpp
     Minigin/Minigin.cpp
     Minigin/Renderer.cpp
     Minigin/ResourceManager.cpp
@@ -27,19 +26,31 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     Minigin/Types/Font.cpp
     Minigin/Types/Texture2D.cpp
     Minigin/Types/Transform.cpp
-    Minigin/Components/TextComponent.cpp
-    Minigin/Components/Sprite.cpp
-    Minigin/Components/Component.cpp 
-    Minigin/Components/FPS_Display.cpp  
-    
+    Minigin/EngineComponents/TextComponent.cpp
+    Minigin/EngineComponents/Sprite.cpp
+    Minigin/EngineComponents/Component.cpp 
     Minigin/ImGUI/imgui_plot.cpp 
-    
-)
+    Minigin/InputHandling/Gamepad.cpp
+    Minigin/InputHandling/InputBinding.cpp
+    Minigin/InputHandling/Keyboard.cpp 
+    Minigin/InputHandling/GameObjectCommand.cpp 
+    Game/FPS_Display.cpp
+    Game/Main.cpp
+    Game/MovePlayerCommand.cpp 
+    Game/PlayerMovementComp.cpp 
+    Game/PlayerMovementComp.cpp)
+
 
 # enable c++20 features
 target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)
 
 include(FetchContent)
+
+# Add xInput
+if(WIN32)
+    TARGET_LINK_LIBRARIES(${TARGET_NAME} PRIVATE xinput )
+endif()
+
 # add glm
 find_package(glm CONFIG QUIET)
 if(NOT glm_FOUND)
