@@ -38,7 +38,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     Game/Main.cpp
     Game/MovePlayerCommand.cpp 
     Game/PlayerMovementComp.cpp 
-    Game/PlayerMovementComp.cpp)
+    Game/PlayerMovementComp.cpp "Minigin/Observer.cpp")
 
 
 # enable c++20 features

@@ -4,7 +4,7 @@
 #if defined(_WIN32)
 #include "Windows.h"
 #include <Xinput.h>
-#elif(__EMSCRIPTEN__)
+#else
 #include <SDL3/SDL.h>
 #include <array>
 #endif
@@ -17,10 +17,12 @@ public:
 	bool GetButtonUp(dae::Keycodes::GamepadButton button) const;
 	bool GetButtonDown(dae::Keycodes::GamepadButton button) const;
 
-	void Update(int deviceIdx);
+	void Update();
 
-	GamepadImpl();
+	GamepadImpl(int index);
 private:
+	int m_deviceIndex;
+
 	XINPUT_STATE m_previousState;
 	XINPUT_STATE m_currentState;
 
@@ -46,12 +48,12 @@ bool dae::Gamepad::GamepadImpl::GetButtonDown(dae::Keycodes::GamepadButton butto
 	return m_buttonsPressedThisFrame & ButtonToXInput(button);
 }
 
-void dae::Gamepad::GamepadImpl::Update(int deviceIdx)
+void dae::Gamepad::GamepadImpl::Update()
 {
 	CopyMemory(&m_previousState, &m_currentState, sizeof(XINPUT_STATE));
 	ZeroMemory(&m_currentState, sizeof(XINPUT_STATE));
+	XInputGetState(m_deviceIndex, &m_currentState);
 
-	XInputGetState(deviceIdx, &m_currentState);
 
 	auto buttonChanges = m_currentState.Gamepad.wButtons ^ m_previousState.Gamepad.wButtons;
 
@@ -59,8 +61,9 @@ void dae::Gamepad::GamepadImpl::Update(int deviceIdx)
 	m_buttonsReleasedThisFrame = buttonChanges & (~m_currentState.Gamepad.wButtons);
 }
 
-dae::Gamepad::GamepadImpl::GamepadImpl()
-	: m_previousState{}
+dae::Gamepad::GamepadImpl::GamepadImpl(int index)
+	: m_deviceIndex{ index }
+	, m_previousState{}
 	, m_currentState{}
 	, m_buttonsPressedThisFrame{}
 	, m_buttonsReleasedThisFrame{}
@@ -94,7 +97,7 @@ unsigned int dae::Gamepad::GamepadImpl::ButtonToXInput(dae::Keycodes::GamepadBut
 	}
 }
 
-#elif defined(__EMSCRIPTEN__) // SDL Implementation
+#else // SDL Implementation
 class dae::Gamepad::GamepadImpl
 {
 public:
@@ -102,12 +105,18 @@ public:
 	bool GetButtonDown(dae::Keycodes::GamepadButton button) const;
 	bool GetButtonUp(dae::Keycodes::GamepadButton button) const;
 
-	void Update(int);
+	void Update();
 
-	GamepadImpl();
+	GamepadImpl(int index);
+	~GamepadImpl();
+	GamepadImpl(GamepadImpl const& other) = delete;
+	GamepadImpl(GamepadImpl&& other) = delete;
+	GamepadImpl& operator=(GamepadImpl const& other) = delete;
+	GamepadImpl& operator=(GamepadImpl&& other) = delete;
 
 private:
 	SDL_Gamepad* m_gamepad{};
+	int m_deviceIndex;
 
 	std::array<bool, static_cast<int>(Keycodes::GamepadButton::ButtonCount)> m_current;
 	std::array<bool, static_cast<int>(Keycodes::GamepadButton::ButtonCount)> m_previous;
@@ -130,26 +139,41 @@ bool dae::Gamepad::GamepadImpl::GetButtonUp(dae::Keycodes::GamepadButton button)
 	return !m_current[static_cast<int>(button)] && m_previous[static_cast<int>(button)];
 }
 
-dae::Gamepad::GamepadImpl::GamepadImpl()
-	: m_current{}
+dae::Gamepad::GamepadImpl::GamepadImpl(int index)
+	: m_gamepad{ nullptr }
+	, m_deviceIndex{ index }
+	, m_current{}
 	, m_previous{}
 {
 }
 
-void dae::Gamepad::GamepadImpl::Update(int)
+dae::Gamepad::GamepadImpl::~GamepadImpl()
+{
+	if (m_gamepad)
+	{
+		SDL_CloseGamepad(m_gamepad);
+	}
+}
+
+
+void dae::Gamepad::GamepadImpl::Update()
 {
 	SDL_PumpEvents();
-
 	m_previous = m_current;
 
 	if (!m_gamepad)
 	{
-		if (!SDL_IsGamepad(0))
+		if (!SDL_IsGamepad(m_deviceIndex))
 		{
 			return;
 		}
 
-		m_gamepad = SDL_OpenGamepad(0);
+		m_gamepad = SDL_OpenGamepad(m_deviceIndex);
+
+		if (!m_gamepad)
+		{
+			return;
+		}
 	}
 
 	for (size_t buttonIdx{}; buttonIdx < m_current.size(); ++buttonIdx)
@@ -159,6 +183,10 @@ void dae::Gamepad::GamepadImpl::Update(int)
 		if (sdlButton != SDL_GAMEPAD_BUTTON_INVALID)
 		{
 			m_current[buttonIdx] = SDL_GetGamepadButton(m_gamepad, sdlButton);
+		}
+		else
+		{
+			m_current[buttonIdx] = false;
 		}
 	}
 }
@@ -210,12 +238,11 @@ bool dae::Gamepad::GetButtonUp(int buttonId) const
 
 void dae::Gamepad::Update()
 {
-	m_pImpl->Update(m_deviceIndex);
+	m_pImpl->Update();
 }
 
 dae::Gamepad::Gamepad(int index)
-	: m_pImpl{ std::make_unique<GamepadImpl>() }
-	, m_deviceIndex{ index }
+	: m_pImpl{ std::make_unique<GamepadImpl>(index) }
 {
 }
 

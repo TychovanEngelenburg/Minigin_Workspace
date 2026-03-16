@@ -25,8 +25,6 @@ namespace dae
 	private:
 		class GamepadImpl;
 		std::unique_ptr<GamepadImpl> m_pImpl;
-
-		int m_deviceIndex;
 	};
 };
 #endif // !GAMEPAD_H
