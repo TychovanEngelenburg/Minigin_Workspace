@@ -1,30 +1,41 @@
 #include <SDL3/SDL_main.h>
+#include <SDL3/SDL_main_impl.h>
 
 #if _DEBUG && __has_include(<vld.h>)
 #include <vld.h>
 #endif
 
-#include "Minigin.h"
-#include "SceneManager.h"
-#include "Scene.h"
-
-#include "GameObject.h"
-#include "EngineComponents/TextComponent.h"
-#include "FPS_Display.h"
-#include "EngineComponents/Sprite.h"
 #include <glm/fwd.hpp>
 #include <filesystem>
 #include <utility>
 #include <memory>
-#include <SDL3/SDL_main_impl.h>
 
-#include "InputHandling/InputManager.h"
-#include "InputHandling/InputBinding.h"
-#include "MovePlayerCommand.h"
+#if USE_STEAMWORKS
+#pragma warning (push)
+#pragma warning (disable:4996)
+#include <steam_api.h>
+#pragma warning (pop)
+// Used for exception-handling
+#include <iostream>
+#endif
+
+// Game
+#include "Minigin.h"
+#include "SceneManager.h"
+#include "Scene.h"
+
+// GameObject
+#include "GameObject.h"
+#include "EngineComponents/TextComponent.h"
+#include "EngineComponents/Sprite.h"
+#include "FPS_Display.h"
 #include "PlayerMovementComp.h"
 
-
+// Input
+#include "InputHandling/InputBinding.h"
 #include "InputHandling/InputCodes.h"
+#include "InputHandling/InputManager.h"
+#include "MovePlayerCommand.h"
 
 /// <summary>
 /// This script and the surrounding "Game" folder is a temporary stand in for the eventual external game project. 
@@ -136,14 +147,43 @@ static void load()
 
 int main(int, char* [])
 {
+#if USE_STEAMWORKS
+	try
+	{
+		if (!SteamAPI_Init())
+		{
+			throw std::runtime_error(std::string("Fatal Error - Steam must be running to play this game (SteamAPI_Init() failed)."));
+		}
+	}  
+	// Because of SDL_main being "noexcept" there shouldn't be throwing in main.
+	catch ( std::exception const& except) 
+	{
+		std::cerr << "Fatal Error: " << except.what() << "\n";
+		return -1;
+	}
+#endif
+
+#if USE_STEAMWORKS
+	SteamAPI_RunCallbacks();
+#endif 
+
 #if __EMSCRIPTEN__
 	std::filesystem::path data_location = "";
 #else
 	std::filesystem::path data_location = "./Data/";
 	if (!std::filesystem::exists(data_location))
+	{
 		data_location = "../Data/";
+	}
 #endif
+
+
 	dae::Minigin engine(data_location);
 	engine.Run(load);
+
+
+#if USE_STEAMWORKS
+	SteamAPI_Shutdown();
+#endif
 	return 0;
 }
