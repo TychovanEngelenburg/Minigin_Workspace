@@ -29,7 +29,7 @@
 #include "EngineComponents/TextComponent.h"
 #include "EngineComponents/Sprite.h"
 #include "UI/FPS_UI.h"
-#include "UI/PlayerInfo_UI.h"
+#include "UI/PlayerHealth_UI.h"
 
 // Input
 #include "InputHandling/InputBinding.h"
@@ -62,18 +62,18 @@ static void load()
 		scene.Add(std::move(object));
 	}
 
-	object = std::make_unique<dae::GameObject>("Header_Text", glm::vec3(292.f, 20.f, 0.f));
-	{
-		auto& textComp = object->AddComponent<dae::TextComponent>("Programming 4 Assignment", "Lingua.otf", 36);
-		textComp.SetColor({ 255, 255, 0, 255 });
-		scene.Add(std::move(object));
-	}
+	//object = std::make_unique<dae::GameObject>("Header_Text", glm::vec3(292.f, 20.f, 0.f));
+	//{
+	//	auto& textComp = object->AddComponent<dae::TextComponent>("Programming 4 Assignment", "Lingua.otf", 36);
+	//	textComp.SetColor({ 255, 255, 0, 255 });
+	//	scene.Add(std::move(object));
+	//}
 #pragma endregion Environment
 
 
 
 	// Player characters initialisation. 
-	auto gamepadPlayer = std::make_unique<dae::GameObject>("Player1");
+	auto gamepadPlayer = std::make_unique<dae::GameObject>("Player1", glm::vec3(20, 100.f, 0.f));
 	{
 		auto& sprite = gamepadPlayer->AddComponent<dae::Sprite>("T_SpriteSheet_Tron.png", dae::SpriteSheet(13, 5));
 		sprite.SetSprite(10, 0);
@@ -112,7 +112,7 @@ static void load()
 		dae::InputManager::GetInstance().AddBinding(std::move(doDamage));
 	}
 
-	auto keyboardPlayer = std::make_unique<dae::GameObject>("Player2");
+	auto keyboardPlayer = std::make_unique<dae::GameObject>("Player2", glm::vec3(20, 120.f, 0.f));
 	{
 		auto& sprite = keyboardPlayer->AddComponent<dae::Sprite>("T_SpriteSheet_Tron.png", dae::SpriteSheet(13, 5));
 		sprite.SetSprite(8, 0);
@@ -146,7 +146,7 @@ static void load()
 
 
 		auto doDamage = std::make_unique<dae::InputBinding>(
-			0, static_cast<int>(dae::Keycodes::KeyboardKey::X), dae::InputBinding::DeviceType::Keyboard,
+			0, static_cast<int>(dae::Keycodes::KeyboardKey::C), dae::InputBinding::DeviceType::Keyboard,
 			std::make_unique<DamageTankCommand>(keyboardPlayer.get(), 1)
 		);
 		dae::InputManager::GetInstance().AddBinding(std::move(doDamage));
@@ -156,43 +156,79 @@ static void load()
 
 
 #pragma region UI
-	auto fpsCounter = std::make_unique<dae::GameObject>("FPS_Counter");
-	{
-		auto& textComp = fpsCounter->AddComponent<dae::TextComponent>("00", "Lingua.otf", 36);
-		textComp.SetColor({ 255, 255, 0, 255 });
 
-		fpsCounter->AddComponent<FPS_UI>();
+	//auto fpsCounter = std::make_unique<dae::GameObject>("FPS_Counter");
+	//{
+	//	auto& textComp = fpsCounter->AddComponent<dae::TextComponent>("00", "Lingua.otf", 36);
+	//	textComp.SetColor({ 255, 255, 0, 255 });
+
+	//	fpsCounter->AddComponent<FPS_UI>();
+	//}
+	//scene.Add(std::move(fpsCounter));
+
+
+
+	float yPos{ 20 };
+	int constexpr textSize{ 18 };
+	float constexpr marginSize{ 5.f };
+
+	auto PlayerOneControls = std::make_unique<dae::GameObject>("Player1_Controls", glm::vec3(marginSize, yPos, 0.f));
+	{
+		auto& textComp = PlayerOneControls->AddComponent<dae::TextComponent>("00", "Lingua.otf", textSize);
+		textComp.SetColor({ 255, 255, 255, 255 });
+		textComp.SetText("Use the D-Pad to move Player 1, X to inflict damage"); //, A and B to gain score");
 	}
 
-	auto playerOneHealth = std::make_unique<dae::GameObject>("Player1_Health", glm::vec3(0.f, 100.f, 0.f));
+	yPos += textSize + marginSize;
+	auto PlayerTwoControls = std::make_unique<dae::GameObject>("Player1_Controls", glm::vec3(marginSize, yPos, 0.f));
 	{
-		auto& textComp = playerOneHealth->AddComponent<dae::TextComponent>("00", "Lingua.otf", 18);
+		auto& textComp = PlayerTwoControls->AddComponent<dae::TextComponent>("00", "Lingua.otf", textSize);
+		textComp.SetColor({ 255, 255, 255, 255 });
+		textComp.SetText("Use WASD to move Player 2, C to inflict damage"); //, Z and X to gain score");
+	}
+
+	yPos += textSize + marginSize; // White line
+
+	yPos += textSize + marginSize;
+	auto playerOneHealth = std::make_unique<dae::GameObject>("Player1_Health", glm::vec3(marginSize, yPos, 0.f));
+	{
+		auto& textComp = playerOneHealth->AddComponent<dae::TextComponent>("00", "Lingua.otf", textSize);
 		textComp.SetColor({ 255, 255, 255, 255 });
 
-
-		auto& healthDisp = playerOneHealth->AddComponent<PlayerInfo_UI>();
+		auto& healthDisp = playerOneHealth->AddComponent<PlayerHealth_UI>();
 		gamepadPlayer->GetComponent<TankHealth>()->AddListener(&healthDisp);
 	}
 
-	auto playerTwoHealth = std::make_unique<dae::GameObject>("Player2_Health", glm::vec3(0.f, 120.f, 0.f));
+	yPos += textSize + marginSize;
+	// Score element here
+
+	yPos += textSize + marginSize;
+
+	auto playerTwoHealth = std::make_unique<dae::GameObject>("Player2_Health", glm::vec3(marginSize, 120.f, 0.f));
 	{
-		auto& textComp = playerTwoHealth->AddComponent<dae::TextComponent>("00", "Lingua.otf", 18);
+		auto& textComp = playerTwoHealth->AddComponent<dae::TextComponent>("00", "Lingua.otf", textSize);
 		textComp.SetColor({ 255, 255, 255, 255 });
 
-
-		auto& healthDisp = playerTwoHealth->AddComponent<PlayerInfo_UI>();
+		auto& healthDisp = playerTwoHealth->AddComponent<PlayerHealth_UI>();
 		keyboardPlayer->GetComponent<TankHealth>()->AddListener(&healthDisp);
 	}
+
+	yPos += textSize + marginSize;
+	// Score element here
+
 #pragma endregion UI
 
 	// TODO: Make gameobjects own their children,
 	// add a Z-index (decide which child is drawn before which).
+	// in general transform needs a complete rework. (which is why I have avoided parenting for now)
 
-	scene.Add(std::move(gamepadPlayer));
-	scene.Add(std::move(keyboardPlayer));
-	scene.Add(std::move(fpsCounter));
+	scene.Add(std::move(PlayerOneControls));
+	scene.Add(std::move(PlayerTwoControls));
 	scene.Add(std::move(playerOneHealth));
 	scene.Add(std::move(playerTwoHealth));
+	scene.Add(std::move(gamepadPlayer));
+	scene.Add(std::move(keyboardPlayer));
+
 }
 
 

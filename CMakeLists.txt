@@ -36,12 +36,12 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     Minigin/InputHandling/GameObjectCommand.cpp 
     
     
-    "Game/UI/FPS_UI.cpp"
+    Game/UI/FPS_UI.cpp
     Game/Main.cpp
      
     Game/Tank/TankHealth.cpp
-    "Game/UI/PlayerInfo_UI.cpp"
-    "Game/Commands/MoveTankCommand.cpp" 
+    Game/UI/PlayerHealth_UI.cpp
+    Game/Commands/MoveTankCommand.cpp
     Game/Commands/DamageTankCommand.cpp 
 )
 
