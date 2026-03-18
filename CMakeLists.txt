@@ -34,11 +34,16 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     Minigin/InputHandling/InputBinding.cpp
     Minigin/InputHandling/Keyboard.cpp 
     Minigin/InputHandling/GameObjectCommand.cpp 
-    Game/FPS_Display.cpp
+    
+    
+    "Game/UI/FPS_UI.cpp"
     Game/Main.cpp
-    Game/MovePlayerCommand.cpp 
-    Game/PlayerMovementComp.cpp 
-    Game/PlayerMovementComp.cpp "Minigin/Observer.cpp")
+     
+    Game/Tank/TankHealth.cpp
+    "Game/UI/PlayerInfo_UI.cpp"
+    "Game/Commands/MoveTankCommand.cpp" 
+    Game/Commands/DamageTankCommand.cpp 
+)
 
 
 # enable c++20 features
@@ -148,6 +153,7 @@ target_compile_features(imgui PUBLIC cxx_std_20)
 
 target_include_directories("${TARGET_NAME}" PUBLIC 
   ${CMAKE_SOURCE_DIR}/Minigin/
+  ${CMAKE_SOURCE_DIR}/Game/
   ${glm_SOURCE_DIR}
   ${sdl3_SOURCE_DIR}/include
   ${sdl3_image_SOURCE_DIR}/include

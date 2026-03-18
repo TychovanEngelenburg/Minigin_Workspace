@@ -11,6 +11,7 @@
 #include <SDL3/SDL_pixels.h>
 #include <cstdint>
 #include <filesystem>
+#include <glm/glm.hpp>
 
 namespace dae
 {
@@ -19,6 +20,7 @@ namespace dae
 	{
 	public:
 		std::string_view GetText() const noexcept;
+		glm::vec2 GetSize() const;
 
 		void SetText(std::string_view text);
 		void SetColor(SDL_Color const& color);

@@ -4,6 +4,9 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+
+
+// TODO: update TRS handling
 namespace dae
 {
 	class GameObject;

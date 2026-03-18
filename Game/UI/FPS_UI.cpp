@@ -1,4 +1,4 @@
-#include "FPS_Display.h"
+#include "UI/FPS_UI.h"
 
 #include "DeltaClock.h"
 #include "EngineComponents/Component.h"
@@ -13,17 +13,17 @@
 #include <sstream>
 
 #pragma region Game_Loop
-void dae::FPS_Display::Start()
+void FPS_UI::Start()
 {
-	m_textComp = GetOwner()->GetComponent<TextComponent>();
-	assert(m_textComp && "FPS_Display requires a TextComponent on it's GameObject!");
+	m_textComp = GetOwner()->GetComponent<dae::TextComponent>();
+	assert(m_textComp && "FPS_UI requires a TextComponent on it's GameObject!");
 }
 
-void dae::FPS_Display::Update()
+void FPS_UI::Update()
 {
 	static double constexpr m_accuTimePerSec{ 1 };
 
-	m_accuTime += DeltaClock::GetDeltaTime();
+	m_accuTime += dae::DeltaClock::GetDeltaTime();
 	++m_frameCount;
 	if (m_accuTime >= m_accuTimePerSec)
 	{
@@ -36,7 +36,7 @@ void dae::FPS_Display::Update()
 }
 #pragma endregion Game_Loop
 
-void dae::FPS_Display::UpdateDisplay()
+void FPS_UI::UpdateDisplay()
 {
 #if __EMSCRIPTEN__
 	std::ostringstream stream{};
@@ -48,8 +48,8 @@ void dae::FPS_Display::UpdateDisplay()
 	m_textComp->SetText(fpsText);
 }
 
-dae::FPS_Display::FPS_Display(GameObject& owner)
-	: Component(owner)
+FPS_UI::FPS_UI(dae::GameObject& owner)
+	: dae::Component(owner)
 	, m_textComp{}
 	, m_accuTime{}
 	, m_frameCount{}

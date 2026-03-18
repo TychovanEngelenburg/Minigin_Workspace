@@ -49,7 +49,7 @@ void dae::TextComponent::Update()
 		{
 			throw std::runtime_error(std::string("Create text texture from surface failed: ") + SDL_GetError());
 		}
-		
+
 		SDL_DestroySurface(surf);
 		m_textTexture = std::make_shared<Texture2D>(texture);
 		m_needsUpdate = false;
@@ -72,6 +72,17 @@ void dae::TextComponent::Render() const
 std::string_view dae::TextComponent::GetText() const noexcept
 {
 	return m_text;
+}
+glm::vec2 dae::TextComponent::GetSize() const
+{
+	if (m_textTexture)
+	{
+		return 	m_textTexture->GetSize();
+	}
+	else
+	{
+		return glm::vec2();
+	}
 }
 #pragma endregion Game_loop
 
