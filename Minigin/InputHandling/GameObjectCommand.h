@@ -1,12 +1,12 @@
 #ifndef GAMEOBJECTCOMMAND_H
 #define GAMEOBJECTCOMMAND_H
-#include "InputHandling/Command.h"
+#include "InputHandling/ICommand.h"
 
-namespace dae
+namespace mg
 {
 
 	class GameObject;
-	class GameObjectCommand : public Command
+	class GameObjectCommand : public ICommand
 	{
 	public:
 		GameObject* m_object;

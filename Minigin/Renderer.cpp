@@ -17,18 +17,18 @@
 
 #include "ImGUI/imgui_plot.h"
 
-SDL_Renderer* dae::Renderer::GetSDLRenderer() const noexcept
+SDL_Renderer* mg::Renderer::GetSDLRenderer() const noexcept
 {
-	return m_renderer;
+	return m_pRenderer;
 }
 
-const SDL_Color& dae::Renderer::GetBackgroundColor() const
+const SDL_Color& mg::Renderer::GetBackgroundColor() const
 {
 	return m_clearColor;
 }
 
 
-void dae::Renderer::RenderTexture(Texture2D const& texture, float const x, float const y) const
+void mg::Renderer::RenderTexture(Texture2D const& texture, float const x, float const y) const
 {
 	SDL_FRect dst{};
 	dst.x = x;
@@ -37,7 +37,7 @@ void dae::Renderer::RenderTexture(Texture2D const& texture, float const x, float
 	SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 }
 
-void dae::Renderer::RenderTexture(Texture2D const& texture, float const x, float const y, float const width, float const height) const
+void mg::Renderer::RenderTexture(Texture2D const& texture, float const x, float const y, float const width, float const height) const
 {
 	SDL_FRect dst{};
 	dst.x = x;
@@ -47,24 +47,24 @@ void dae::Renderer::RenderTexture(Texture2D const& texture, float const x, float
 	SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 }
 
-void dae::Renderer::SetBackgroundColor(SDL_Color const& color)
+void mg::Renderer::SetBackgroundColor(SDL_Color const& color)
 {
 	m_clearColor = color;
 }
 
-void dae::Renderer::Init(SDL_Window* window)
+void mg::Renderer::Init(SDL_Window* window)
 {
-	m_window = window;
+	m_pWindow = window;
 
 	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
 
 #if defined(__EMSCRIPTEN__)
-	m_renderer = SDL_CreateRenderer(window, nullptr);
+	m_pRenderer = SDL_CreateRenderer(window, nullptr);
 #else
-	m_renderer = SDL_CreateRenderer(window, nullptr);
+	m_pRenderer = SDL_CreateRenderer(window, nullptr);
 #endif
 
-	if (m_renderer == nullptr)
+	if (m_pRenderer == nullptr)
 	{
 		std::cout << "Failed to create the renderer: " << SDL_GetError() << "\n";
 		throw std::runtime_error(std::string("SDL_CreateRenderer Error: ") + SDL_GetError());
@@ -82,12 +82,12 @@ void dae::Renderer::Init(SDL_Window* window)
 	io.IniFilename = NULL;
 #endif
 
-	ImGui_ImplSDL3_InitForSDLRenderer(window, m_renderer);
-	ImGui_ImplSDLRenderer3_Init(m_renderer);
+	ImGui_ImplSDL3_InitForSDLRenderer(window, m_pRenderer);
+	ImGui_ImplSDLRenderer3_Init(m_pRenderer);
 
 }
 
-void dae::Renderer::Render() const
+void mg::Renderer::Render() const
 {
 	ImGui_ImplSDLRenderer3_NewFrame();
 	ImGui_ImplSDL3_NewFrame();
@@ -95,26 +95,26 @@ void dae::Renderer::Render() const
 
 
 	auto const& color = GetBackgroundColor();
-	SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
-	SDL_RenderClear(m_renderer);
+	SDL_SetRenderDrawColor(m_pRenderer, color.r, color.g, color.b, color.a);
+	SDL_RenderClear(m_pRenderer);
 
 	SceneManager::GetInstance().Render();
 	ImGui::Render();
 
-	ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), m_renderer);
+	ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), m_pRenderer);
 
-	SDL_RenderPresent(m_renderer);
+	SDL_RenderPresent(m_pRenderer);
 }
 
-void dae::Renderer::Destroy()
+void mg::Renderer::Destroy()
 {
 	ImGui_ImplSDLRenderer3_Shutdown();
 	ImGui_ImplSDL3_Shutdown();
 	ImGui::DestroyContext();
 
-	if (m_renderer != nullptr)
+	if (m_pRenderer != nullptr)
 	{
-		SDL_DestroyRenderer(m_renderer);
-		m_renderer = nullptr;
+		SDL_DestroyRenderer(m_pRenderer);
+		m_pRenderer = nullptr;
 	}
 }

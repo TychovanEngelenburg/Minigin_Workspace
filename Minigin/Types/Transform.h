@@ -7,7 +7,7 @@
 
 
 // TODO: update TRS handling
-namespace dae
+namespace mg
 {
 	class GameObject;
 	class Transform final
@@ -36,10 +36,10 @@ namespace dae
 		void SetScale(float scale);
 		void SetScale(glm::vec3 const& diff);
 
-		Transform(GameObject& owner, glm::vec3 const& pos = {0.f, 0.f, 0.f});
+		explicit Transform(GameObject& owner, glm::vec3 const& pos = {0.f, 0.f, 0.f});
 
 	private:
-		GameObject* m_owner;
+		GameObject* m_pOwner;
 
 		// World data
 		bool m_positionDirty;
@@ -52,7 +52,7 @@ namespace dae
 		float m_localRotation;
 		glm::vec3 m_localScale;
 
-		Transform* m_parent;
+		Transform* m_pParent;
 		std::vector<Transform*> m_children;
 
 		glm::mat4 GetWorldMatrix();

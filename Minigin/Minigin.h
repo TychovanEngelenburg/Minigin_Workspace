@@ -7,7 +7,7 @@
 #include <functional>
 #include <memory>
 
-namespace dae
+namespace mg
 {
 	class Minigin final
 	{
@@ -22,7 +22,7 @@ namespace dae
 		Minigin& operator=(Minigin const& other) = delete;
 		Minigin& operator=(Minigin&& other) = delete;
 	private:
-		std::unique_ptr<DeltaClock> m_deltaClock;
+		std::unique_ptr<DeltaClock> m_pDeltaClock;
 		double m_lag;
 		bool m_quit;
 	};

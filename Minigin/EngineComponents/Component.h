@@ -1,7 +1,7 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
-namespace dae
+namespace mg
 {
 	class GameObject;
 	class Component
@@ -19,7 +19,6 @@ namespace dae
 		virtual void LateUpdate();
 		virtual void End();
 
-
 		virtual ~Component() = default;
 		Component(Component const& other) = delete;
 		Component(Component&& other) = delete;
@@ -30,7 +29,7 @@ namespace dae
 		Component(GameObject& owner);
 
 	private:
-		GameObject* m_owner;
+		GameObject* m_pOwner;
 		bool m_active;
 	};
 }

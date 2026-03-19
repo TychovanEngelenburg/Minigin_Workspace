@@ -1,11 +1,11 @@
 #ifndef GAMEPAD_H
 #define GAMEPAD_H
-#include "InputHandling/InputDevice.h"
+#include "InputHandling/IInputDevice.h"
 #include <memory>
 
-namespace dae
+namespace mg
 {
-	class Gamepad final : public InputDevice
+	class Gamepad final : public IInputDevice
 	{
 	public:
 		bool GetButton(int button) const override;

@@ -10,32 +10,32 @@
 #include <string>
 #include <vector>
 
-dae::Transform& dae::GameObject::GetTransform()
+mg::Transform& mg::GameObject::GetTransform()
 {
 	return m_transform;
 }
 
-std::string const& dae::GameObject::GetName() const noexcept
+std::string const& mg::GameObject::GetName() const noexcept
 {
 	return m_name;
 }
 
-bool dae::GameObject::IsDestroyed() const noexcept
+bool mg::GameObject::IsDestroyed() const noexcept
 {
 	return m_destroyed;
 }
 
-bool dae::GameObject::IsActive() const noexcept
+bool mg::GameObject::IsActive() const noexcept
 {
 	return m_active;
 }
 
-void dae::GameObject::SetActive(bool isActive)
+void mg::GameObject::SetActive(bool isActive)
 {
 	m_active = isActive;
 }
 
-void dae::GameObject::Destroy()
+void mg::GameObject::Destroy()
 {
 	m_destroyed = true;
 	
@@ -43,16 +43,16 @@ void dae::GameObject::Destroy()
 }
 
 #pragma region Game_Loop
-void dae::GameObject::Start()
+void mg::GameObject::Start()
 {
-	for (auto& component : m_components)
+	for (auto& component : m_pComponents)
 	{
 		component->Start();
 	}
 }
-void dae::GameObject::Update()
+void mg::GameObject::Update()
 {
-	for (auto& component : m_components)
+	for (auto& component : m_pComponents)
 	{
 		if (component->IsActive())
 		{
@@ -61,9 +61,9 @@ void dae::GameObject::Update()
 	}
 }
 
-void dae::GameObject::FixedUpdate()
+void mg::GameObject::FixedUpdate()
 {
-	for (auto& component : m_components)
+	for (auto& component : m_pComponents)
 	{
 		if (component->IsActive())
 		{
@@ -72,9 +72,9 @@ void dae::GameObject::FixedUpdate()
 	}
 }
 
-void dae::GameObject::Render() const
+void mg::GameObject::Render() const
 {
-	for (auto& component : m_components)
+	for (auto& component : m_pComponents)
 	{
 		if (component->IsActive())
 		{
@@ -83,9 +83,9 @@ void dae::GameObject::Render() const
 	}
 }
 
-void dae::GameObject::LateUpdate()
+void mg::GameObject::LateUpdate()
 {
-	for (auto& component : m_components)
+	for (auto& component : m_pComponents)
 	{
 		if (component->IsActive())
 		{
@@ -94,28 +94,28 @@ void dae::GameObject::LateUpdate()
 	}
 }
 
-void dae::GameObject::End()
+void mg::GameObject::End()
 {
-	for (auto& component : m_components)
+	for (auto& component : m_pComponents)
 	{
 		component->End();
 	}
 }
 #pragma endregion
 
-dae::GameObject::GameObject(std::string_view name, glm::vec3 pos)
+mg::GameObject::GameObject(std::string_view name, glm::vec3 pos)
 	: m_transform{ *this, pos }
 	, m_name{ name }
 	, m_active{ true }
 	, m_destroyed{}
-	, m_components{}
+	, m_pComponents{}
 
 {
 	m_transform.SetPosition(pos);
 }
 
-dae::GameObject::~GameObject()
+mg::GameObject::~GameObject()
 {
-	m_components.clear();
+	m_pComponents.clear();
 }
 

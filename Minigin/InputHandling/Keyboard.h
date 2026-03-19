@@ -1,12 +1,12 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
-#include "InputHandling/InputDevice.h"
+#include "InputHandling/IInputDevice.h"
 
 #include <memory>
 
-namespace dae
+namespace mg
 {
-	class Keyboard final : public InputDevice
+	class Keyboard final : public IInputDevice
 	{
 	public:
 		bool GetButton(int button) const;

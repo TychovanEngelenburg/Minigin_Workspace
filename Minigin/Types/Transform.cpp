@@ -5,22 +5,22 @@
 #include <numbers>                       
 #include <algorithm>              
 
-dae::GameObject* dae::Transform::GetOwner() const noexcept
+mg::GameObject* mg::Transform::GetOwner() const noexcept
 {
-	return m_owner;
+	return m_pOwner;
 }
 
-dae::Transform* dae::Transform::GetParent() const noexcept
+mg::Transform* mg::Transform::GetParent() const noexcept
 {
-	return m_parent;
+	return m_pParent;
 }
 
-int dae::Transform::GetChildCount() const noexcept
+int mg::Transform::GetChildCount() const noexcept
 {
 	return  static_cast<int>(m_children.size());
 }
 
-dae::Transform* dae::Transform::GetChildAt(size_t idx) const noexcept
+mg::Transform* mg::Transform::GetChildAt(size_t idx) const noexcept
 {
 	if (idx >= m_children.size())
 	{
@@ -29,7 +29,7 @@ dae::Transform* dae::Transform::GetChildAt(size_t idx) const noexcept
 	return m_children[idx];
 }
 
-bool dae::Transform::HasChild(Transform* child)
+bool mg::Transform::HasChild(Transform* child)
 {
 
 	if (std::find(m_children.begin(), m_children.end(), child) != m_children.end())
@@ -40,37 +40,37 @@ bool dae::Transform::HasChild(Transform* child)
 	return false;
 }
 
-bool dae::Transform::IsChildOf(Transform* obj)
+bool mg::Transform::IsChildOf(Transform* obj)
 {
-	if (m_parent != nullptr)
+	if (m_pParent != nullptr)
 	{
-		if (m_parent == obj)
+		if (m_pParent == obj)
 		{
 			return true;
 		}
 
-		return m_parent->IsChildOf(obj);
+		return m_pParent->IsChildOf(obj);
 	}
 
 	return false;
 }
 
-const glm::vec3& dae::Transform::GetPosition()
+const glm::vec3& mg::Transform::GetPosition()
 {
 	UpdateWorldPos();
 	return m_worldPosition;
 }
 
-glm::vec3 const& dae::Transform::GetLocalPosition() const
+glm::vec3 const& mg::Transform::GetLocalPosition() const
 {
 	return m_localPosition;
 }
 
 
 
-void dae::Transform::SetParent(Transform* parent, bool keepWorldPos)
+void mg::Transform::SetParent(Transform* parent, bool keepWorldPos)
 {
-	if (HasChild(parent) || parent == this || m_parent == parent)
+	if (HasChild(parent) || parent == this || m_pParent == parent)
 	{
 		return;
 	}
@@ -90,26 +90,26 @@ void dae::Transform::SetParent(Transform* parent, bool keepWorldPos)
 		SetPositionDirty();
 	}
 
-	if (m_parent)
+	if (m_pParent)
 	{
-		m_parent->RemoveChild(this);
+		m_pParent->RemoveChild(this);
 	}
 
-	m_parent = parent;
+	m_pParent = parent;
 
-	if (m_parent)
+	if (m_pParent)
 	{
-		m_parent->AddChild(this);
+		m_pParent->AddChild(this);
 	}
 }
 
-void dae::Transform::SetLocalPosition(glm::vec3 const& pos)
+void mg::Transform::SetLocalPosition(glm::vec3 const& pos)
 {
 	m_localPosition = pos;
 	SetPositionDirty();
 }
 
-void dae::Transform::SetPosition(glm::vec3 const& position)
+void mg::Transform::SetPosition(glm::vec3 const& position)
 {
 	m_positionDirty = false;
 	m_worldPosition = position;
@@ -128,7 +128,7 @@ void dae::Transform::SetPosition(glm::vec3 const& position)
 	SetPositionDirty();
 }
 
-void dae::Transform::DestroyChildren()
+void mg::Transform::DestroyChildren()
 {
 	for (auto& child : m_children)
 	{
@@ -136,35 +136,35 @@ void dae::Transform::DestroyChildren()
 	}
 }
 
-void dae::Transform::Translate(float x, float y, float z)
+void mg::Transform::Translate(float x, float y, float z)
 {
 	Translate({ x, y, z });
 }
 
-void dae::Transform::Translate(glm::vec3 const& difference)
+void mg::Transform::Translate(glm::vec3 const& difference)
 {
 	m_localPosition += difference;
 	SetPositionDirty();
 }
 
-void dae::Transform::Rotate(float degrees)
+void mg::Transform::Rotate(float degrees)
 {
 	m_localRotation += degrees;
 }
 
-void dae::Transform::SetScale(float scale)
+void mg::Transform::SetScale(float scale)
 {
 	SetScale({ scale, scale, scale });
 	SetPositionDirty();
 }
 
-void dae::Transform::SetScale(glm::vec3 const& scale)
+void mg::Transform::SetScale(glm::vec3 const& scale)
 {
 	m_localScale = scale;
 }
 
-dae::Transform::Transform(GameObject& owner, glm::vec3 const& pos)
-	:  m_owner{&owner}
+mg::Transform::Transform(GameObject& owner, glm::vec3 const& pos)
+	:  m_pOwner{&owner}
 	, m_positionDirty{ true }
 	, m_worldPosition{}
 	, m_worldRotation{}
@@ -172,14 +172,14 @@ dae::Transform::Transform(GameObject& owner, glm::vec3 const& pos)
 	, m_localPosition{ pos }
 	, m_localRotation{}
 	, m_localScale{ 1.f, 1.f, 1.f }
-	, m_parent{}
+	, m_pParent{}
 	, m_children{}
 {
 }
 
 
 
-glm::mat4 dae::Transform::GetLocalMatrix() const
+glm::mat4 mg::Transform::GetLocalMatrix() const
 {
 	glm::mat4 translation = glm::translate(glm::mat4(1.0f), m_localPosition);
 	glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(m_localRotation), glm::vec3(0, 0, 1));
@@ -188,7 +188,7 @@ glm::mat4 dae::Transform::GetLocalMatrix() const
 	return translation * rotation * scale;
 }
 
-glm::mat4 dae::Transform::GetWorldMatrix()
+glm::mat4 mg::Transform::GetWorldMatrix()
 {
 	UpdateWorldPos();
 
@@ -199,7 +199,7 @@ glm::mat4 dae::Transform::GetWorldMatrix()
 	return translation * rotation * scale;
 }
 
-void dae::Transform::UpdateWorldPos()
+void mg::Transform::UpdateWorldPos()
 {
 	if (m_positionDirty)
 	{
@@ -211,7 +211,7 @@ void dae::Transform::UpdateWorldPos()
 		}
 		else
 		{
-			glm::mat4 world = m_parent->GetWorldMatrix() * GetLocalMatrix();
+			glm::mat4 world = m_pParent->GetWorldMatrix() * GetLocalMatrix();
 
 			m_worldPosition = glm::vec3(world[3]);
 
@@ -226,7 +226,7 @@ void dae::Transform::UpdateWorldPos()
 	m_positionDirty = false;
 }
 
-void dae::Transform::SetPositionDirty()
+void mg::Transform::SetPositionDirty()
 {
 	m_positionDirty = true;
 	for (auto child : m_children)
@@ -235,7 +235,7 @@ void dae::Transform::SetPositionDirty()
 	}
 }
 
-void dae::Transform::AddChild(Transform* child)
+void mg::Transform::AddChild(Transform* child)
 {
 	if (child == nullptr)
 	{
@@ -245,7 +245,7 @@ void dae::Transform::AddChild(Transform* child)
 	m_children.emplace_back(child);
 }
 
-void dae::Transform::RemoveChild(Transform* child)
+void mg::Transform::RemoveChild(Transform* child)
 {
 	std::erase(m_children, child);
 }

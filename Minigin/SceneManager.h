@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-namespace dae
+namespace mg
 {
 	class SceneManager final : public Singleton<SceneManager>
 	{
@@ -25,7 +25,7 @@ namespace dae
 		friend class Singleton<SceneManager>;
 
 		SceneManager() = default;
-		std::vector<std::unique_ptr<Scene>> m_scenes{};
+		std::vector<std::unique_ptr<Scene>> m_pScenes;
 	};
 }
 #endif // !SCENEMANAGER_H

@@ -7,58 +7,58 @@
 #include <vector>
 
 #pragma region Game_Loop
-void dae::SceneManager::Start()
+void mg::SceneManager::Start()
 {
-	for (auto& scene : m_scenes)
+	for (auto& scene : m_pScenes)
 	{
 		scene->Start();
 	}
 }
 
-void dae::SceneManager::FixedUpdate()
+void mg::SceneManager::FixedUpdate()
 {
-	for (auto& scene : m_scenes)
+	for (auto& scene : m_pScenes)
 	{
 		scene->FixedUpdate();
 	}
 }
 
-void dae::SceneManager::Update()
+void mg::SceneManager::Update()
 {
-	for(auto& scene : m_scenes)
+	for(auto& scene : m_pScenes)
 	{
 		scene->Update();
 	}
 }
 
-void dae::SceneManager::Render() const
+void mg::SceneManager::Render() const
 {
-	for (auto const& scene : m_scenes)
+	for (auto const& scene : m_pScenes)
 	{
 		scene->Render();
 	}
 }
 
-void dae::SceneManager::LateUpdate()
+void mg::SceneManager::LateUpdate()
 {
-	for (auto const& scene : m_scenes)
+	for (auto const& scene : m_pScenes)
 	{
 		scene->LateUpdate();
 	}
 }
 
-void dae::SceneManager::End()
+void mg::SceneManager::End()
 {
-	for (auto const& scene : m_scenes)
+	for (auto const& scene : m_pScenes)
 	{
 		scene->End();
 	}
 }
 #pragma endregion Game_Loop
 
-dae::Scene& dae::SceneManager::CreateScene()
+mg::Scene& mg::SceneManager::CreateScene()
 {
 	// TODO: Look into why std::make_unique<Scene>() doesn't work here.
-	m_scenes.emplace_back(new Scene());
-	return *m_scenes.back();
+	m_pScenes.emplace_back(new Scene());
+	return *m_pScenes.back();
 }

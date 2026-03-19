@@ -5,10 +5,9 @@
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_video.h>
 #include "Singleton.h"
-#include <memory>
 
 // TODO: look into making a different renderer?
-namespace dae
+namespace mg
 {
 	class Texture2D;
 	/**
@@ -29,8 +28,8 @@ namespace dae
 		void Destroy();
 
 	private:
-		SDL_Renderer* m_renderer{};
-		SDL_Window* m_window{};
+		SDL_Renderer* m_pRenderer{};
+		SDL_Window* m_pWindow{};
 		SDL_Color m_clearColor{};
 	};
 }

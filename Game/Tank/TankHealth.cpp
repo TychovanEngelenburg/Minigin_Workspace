@@ -1,6 +1,6 @@
 #include "TankHealth.h"
 #include "GameObject.h"
-#include "EventListener.h"
+#include "IEventListener.h"
 //#include <exception>
 
 bool TankHealth::IsDead() const noexcept
@@ -59,13 +59,13 @@ void TankHealth::AddLife(int count)
 	m_currentLives += count;
 }
 
-void TankHealth::AddListener(dae::EventListener<PlayerLivesChangedEvent>* listener)
+void TankHealth::AddListener(mg::IEventListener<PlayerLivesChangedEvent>* listener)
 {
 	m_onDeath.AddListener(listener);
 	m_onDeath.Notify({ m_currentLives }); // Initial update
 }
 
-TankHealth::TankHealth(dae::GameObject& owner, int lives, int health)
+TankHealth::TankHealth(mg::GameObject& owner, int lives, int health)
 	: Component(owner)
 	, m_health{ health }
 	, m_currentHealth{ health }

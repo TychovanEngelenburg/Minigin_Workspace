@@ -10,7 +10,7 @@
 #include "InputHandling/Gamepad.h"
 #include "InputHandling/Keyboard.h"
 
-namespace dae
+namespace mg
 {
 	class InputManager final : public Singleton<InputManager>
 	{

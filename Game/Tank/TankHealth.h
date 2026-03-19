@@ -4,12 +4,12 @@
 #include "EventSource.h"
 #include "GameEvents.h"
 
-namespace dae
+namespace mg
 {
 	class GameObject;
 };
 
-class TankHealth final : public dae::Component
+class TankHealth final : public mg::Component
 {
 public:
 	bool IsDead() const noexcept;
@@ -22,9 +22,9 @@ public:
 	void ResetHealth();
 	void ResetLives();
 	void AddLife(int count = 1);
-	void AddListener(dae::EventListener<PlayerLivesChangedEvent>* listener);
+	void AddListener(mg::IEventListener<PlayerLivesChangedEvent>* listener);
 
-	TankHealth(dae::GameObject& owner, int lives = 4, int health = 1);
+	explicit TankHealth(mg::GameObject& owner, int lives = 4, int health = 1);
 
 private:
 	int const m_health;
@@ -33,6 +33,6 @@ private:
 	int const m_lives;
 	int m_currentLives;
 
-	dae::EventSource<PlayerLivesChangedEvent> m_onDeath;
+	mg::EventSource<PlayerLivesChangedEvent> m_onDeath;
 };
 #endif // !TANKHEALTH_H

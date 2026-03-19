@@ -48,7 +48,7 @@ static void LogSDLVersion(std::string const& message, int major, int minor, int 
 
 void LoopCallback(void* arg)
 {
-	static_cast<dae::Minigin*>(arg)->RunOneFrame();
+	static_cast<mg::Minigin*>(arg)->RunOneFrame();
 }
 #endif
 
@@ -68,7 +68,7 @@ void PrintSDLVersion()
 	LogSDLVersion("Linked with SDL_ttf ", SDL_VERSIONNUM_MAJOR(version), SDL_VERSIONNUM_MINOR(version), SDL_VERSIONNUM_MICRO(version));
 }
 
-void dae::Minigin::Run(std::function<void()> const& load)
+void mg::Minigin::Run(std::function<void()> const& load)
 {
 	load();
 	SceneManager::GetInstance().Start();
@@ -86,10 +86,10 @@ void dae::Minigin::Run(std::function<void()> const& load)
 	SceneManager::GetInstance().End();
 }
 
-void dae::Minigin::RunOneFrame()
+void mg::Minigin::RunOneFrame()
 {
 
-	m_deltaClock->Update();
+	m_pDeltaClock->Update();
 
 	m_quit = !InputManager::GetInstance().ProcessInput();
 	// TODO: Pass input to scene()
@@ -109,8 +109,8 @@ void dae::Minigin::RunOneFrame()
 	ResourceManager::GetInstance().UnloadUnusedResources();
 }
 
-dae::Minigin::Minigin(std::filesystem::path const& dataPath)
-	: m_deltaClock{ std::make_unique<DeltaClock>() }
+mg::Minigin::Minigin(std::filesystem::path const& dataPath)
+	: m_pDeltaClock{ std::make_unique<DeltaClock>() }
 	, m_lag{}
 	, m_quit{ false }
 {
@@ -146,7 +146,7 @@ dae::Minigin::Minigin(std::filesystem::path const& dataPath)
 	InputManager::GetInstance().Init();
 }
 
-dae::Minigin::~Minigin()
+mg::Minigin::~Minigin()
 {
 	Renderer::GetInstance().Destroy();
 	SDL_DestroyWindow(g_window);

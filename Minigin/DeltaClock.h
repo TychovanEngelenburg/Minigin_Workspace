@@ -3,7 +3,7 @@
 
 #include <chrono>
 
-namespace dae
+namespace mg
 {
 	class DeltaClock final
 	{

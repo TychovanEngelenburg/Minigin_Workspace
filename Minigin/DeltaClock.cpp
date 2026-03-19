@@ -3,21 +3,21 @@
 // .h includes
 #include <chrono>
 
-double dae::DeltaClock::m_deltaTime = 0.0;
+double mg::DeltaClock::m_deltaTime = 0.0;
 
-double dae::DeltaClock::GetDeltaTime() noexcept
+double mg::DeltaClock::GetDeltaTime() noexcept
 {
 	return m_deltaTime;
 }
 
-void dae::DeltaClock::Update()
+void mg::DeltaClock::Update()
 {
 	auto currentTime = std::chrono::high_resolution_clock::now();
 	m_deltaTime = std::chrono::duration<double>( currentTime - m_lastTime).count();
 	m_lastTime = currentTime;
 }
 
-dae::DeltaClock::DeltaClock()
+mg::DeltaClock::DeltaClock()
 	: m_lastTime{ std::chrono::high_resolution_clock::now() }
 {
 }

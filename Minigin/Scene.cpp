@@ -9,36 +9,36 @@
 #include <vector>
 
 
-dae::GameObject* dae::Scene::GetObjectByName(std::string_view objName)
+mg::GameObject* mg::Scene::GetObjectByName(std::string_view objName)
 {
-	return std::find_if(m_objects.begin(), m_objects.end(), [&objName](auto const& ptr)
+	return std::find_if(m_pObjects.begin(), m_pObjects.end(), [&objName](auto const& ptr)
 		{
 			return ptr->GetName() == objName;
 		})->get();
 }
 
-void dae::Scene::Add(std::unique_ptr<GameObject> object)
+void mg::Scene::Add(std::unique_ptr<GameObject> object)
 {
 	assert(object != nullptr && "Cannot add a null GameObject to the scene.");
-	m_objects.emplace_back(std::move(object));
+	m_pObjects.emplace_back(std::move(object));
 }
 
-void dae::Scene::Remove(GameObject const& object)
+void mg::Scene::Remove(GameObject const& object)
 {
-	m_objects.erase(
+	m_pObjects.erase(
 		std::remove_if(
-			m_objects.begin(),
-			m_objects.end(),
+			m_pObjects.begin(),
+			m_pObjects.end(),
 			[&object](auto const& ptr) { return ptr.get() == &object; }
 		),
-		m_objects.end()
+		m_pObjects.end()
 	);
 }
 
 #pragma region Game_Loop
-void dae::Scene::Start()
+void mg::Scene::Start()
 {
-	for (auto& object : m_objects)
+	for (auto& object : m_pObjects)
 	{
 		if (object->IsActive())
 		{
@@ -47,9 +47,9 @@ void dae::Scene::Start()
 	}
 }
 
-void dae::Scene::FixedUpdate()
+void mg::Scene::FixedUpdate()
 {
-	for (auto& object : m_objects)
+	for (auto& object : m_pObjects)
 	{
 		if (object->IsActive())
 		{
@@ -58,9 +58,9 @@ void dae::Scene::FixedUpdate()
 	}
 }
 
-void dae::Scene::Update()
+void mg::Scene::Update()
 {
-	for (auto& object : m_objects)
+	for (auto& object : m_pObjects)
 	{
 		if (object->IsActive())
 		{
@@ -69,9 +69,9 @@ void dae::Scene::Update()
 	}
 }
 
-void dae::Scene::Render() const
+void mg::Scene::Render() const
 {
-	for (auto const& object : m_objects)
+	for (auto const& object : m_pObjects)
 	{
 		if (object->IsActive())
 		{
@@ -80,10 +80,10 @@ void dae::Scene::Render() const
 	}
 }
 
-void dae::Scene::LateUpdate()
+void mg::Scene::LateUpdate()
 {
 
-	for (auto const& object : m_objects)
+	for (auto const& object : m_pObjects)
 	{
 		if (object->IsActive())
 		{
@@ -91,21 +91,16 @@ void dae::Scene::LateUpdate()
 		}
 
 
-		std::erase_if(m_objects, [](std::unique_ptr<GameObject> const& object)
+		std::erase_if(m_pObjects, [](std::unique_ptr<GameObject> const& object)
 			{
 				return object->IsDestroyed();
 			});
 	}
-
-	for (auto const object : m_deletionList)
-	{
-		this->Remove(*object);
-	}
 }
 
-void dae::Scene::End()
+void mg::Scene::End()
 {
-	for (auto const& object : m_objects)
+	for (auto const& object : m_pObjects)
 	{
 		if (object->IsActive())
 		{
@@ -116,7 +111,7 @@ void dae::Scene::End()
 }
 #pragma endregion Game_Loop
 
-dae::Scene::~Scene()
+mg::Scene::~Scene()
 {
-	m_objects.clear();
+	m_pObjects.clear();
 }

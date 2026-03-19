@@ -8,21 +8,21 @@
 // .h includes
 #include <filesystem>
 
-TTF_Font* dae::Font::GetFont() const noexcept {
-	return m_font;
+TTF_Font* mg::Font::GetFont() const noexcept {
+	return m_pFont;
 }
 
-dae::Font::Font(std::filesystem::path const& fullPath, float size) : m_font(nullptr)
+mg::Font::Font(std::filesystem::path const& fullPath, float size) : m_pFont(nullptr)
 {
 	auto pathString{ fullPath.string()};
-	m_font = TTF_OpenFont(pathString.c_str(), size);
-	if (m_font == nullptr) 
+	m_pFont = TTF_OpenFont(pathString.c_str(), size);
+	if (m_pFont == nullptr) 
 	{
 		throw std::runtime_error(std::string("Failed to load font: ") + SDL_GetError());
 	}
 }
 
-dae::Font::~Font()
+mg::Font::~Font()
 {
-	TTF_CloseFont(m_font);
+	TTF_CloseFont(m_pFont);
 }

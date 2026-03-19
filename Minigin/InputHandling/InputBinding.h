@@ -1,9 +1,9 @@
 #ifndef INPUTBINDING_H
 #define INPUTBINDING_H
 #include <memory>
-#include "InputHandling/Command.h"
+#include "InputHandling/ICommand.h"
 
-namespace dae
+namespace mg
 {
 	class InputBinding final
 	{
@@ -26,11 +26,11 @@ namespace dae
         int GetDeviceIdx() const noexcept;
         int GetInputCode() const noexcept;
 
-        Command* GetCommand() const noexcept;
+        ICommand* GetCommand() const noexcept;
         DeviceType GetType() const noexcept;
         TriggerType GetTrigger() const noexcept;
         
-        InputBinding(int deviceIdx, int inputIdx, DeviceType deviceType, std::unique_ptr<Command> command,  TriggerType trigger = TriggerType::Pressed);
+        InputBinding(int deviceIdx, int inputIdx, DeviceType deviceType, std::unique_ptr<ICommand> command,  TriggerType trigger = TriggerType::Pressed);
 
         ~InputBinding() = default;
         InputBinding(InputBinding const& other) = delete;
@@ -43,7 +43,7 @@ namespace dae
         int m_inputCode;
 
         DeviceType m_deviceType;
-        std::unique_ptr<Command> m_command;
+        std::unique_ptr<ICommand> m_pCommand;
         TriggerType m_triggersOn;
 	};
 

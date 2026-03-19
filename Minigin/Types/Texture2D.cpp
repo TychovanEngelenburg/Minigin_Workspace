@@ -9,20 +9,20 @@
 #include <glm/ext/vector_float2.hpp>
 #include <glm/fwd.hpp>
 
-glm::vec2 dae::Texture2D::GetSize() const
+glm::vec2 mg::Texture2D::GetSize() const
 {
 	float w{}, h{};
-	SDL_GetTextureSize(m_texture, &w, &h);
+	SDL_GetTextureSize(m_pTexture, &w, &h);
 	return { w, h };
 }
 
-SDL_Texture* dae::Texture2D::GetSDLTexture() const noexcept
+SDL_Texture* mg::Texture2D::GetSDLTexture() const noexcept
 {
-	return m_texture;
+	return m_pTexture;
 }
 
-dae::Texture2D::Texture2D(std::filesystem::path const& filePath)
-	: m_texture{}
+mg::Texture2D::Texture2D(std::filesystem::path const& filePath)
+	: m_pTexture{}
 {
 	auto pathStr{ filePath.string() };
 	SDL_Surface* surface = SDL_LoadPNG(pathStr.c_str());
@@ -34,14 +34,14 @@ dae::Texture2D::Texture2D(std::filesystem::path const& filePath)
 		);
 	}
 
-	m_texture = SDL_CreateTextureFromSurface(
+	m_pTexture = SDL_CreateTextureFromSurface(
 		Renderer::GetInstance().GetSDLRenderer(),
 		surface
 	);
 
 	SDL_DestroySurface(surface);
 
-	if (!m_texture)
+	if (!m_pTexture)
 	{
 		throw std::runtime_error(
 			std::string("Failed to create texture from surface: ") + SDL_GetError()
@@ -49,14 +49,14 @@ dae::Texture2D::Texture2D(std::filesystem::path const& filePath)
 	}
 }
 
-dae::Texture2D::Texture2D(SDL_Texture* texture) 
-	: m_texture{ texture }
+mg::Texture2D::Texture2D(SDL_Texture* texture) 
+	: m_pTexture{ texture }
 {
-	assert(m_texture != nullptr);
+	assert(m_pTexture != nullptr);
 }
 
 
-dae::Texture2D::~Texture2D()
+mg::Texture2D::~Texture2D()
 {
-	SDL_DestroyTexture(m_texture);
+	SDL_DestroyTexture(m_pTexture);
 }

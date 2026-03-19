@@ -5,12 +5,12 @@
 
 void DamageTankCommand::Execute()
 {
-	m_tankHealth->Damage(m_damageAmount);
+	m_pTankHealth->Damage(m_damageAmount);
 }
 
-DamageTankCommand::DamageTankCommand(dae::GameObject* object, int damageAmnt)
+DamageTankCommand::DamageTankCommand(mg::GameObject* object, int damageAmnt)
 	: GameObjectCommand(object)
-	, m_tankHealth{ object->GetComponent<TankHealth>() }
+	, m_pTankHealth{ object->GetComponent<TankHealth>() }
 	, m_damageAmount{ damageAmnt }
 {
 }

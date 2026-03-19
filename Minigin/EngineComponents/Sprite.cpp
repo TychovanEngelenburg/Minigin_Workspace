@@ -9,12 +9,12 @@
 #include <memory>
 #include <filesystem>
 
-void dae::Sprite::SetTexture(std::filesystem::path const& filePath)
+void mg::Sprite::SetTexture(std::filesystem::path const& filePath)
 {
-	m_texture = ResourceManager::GetInstance().LoadTexture(filePath);
+	m_pTexture = ResourceManager::GetInstance().LoadTexture(filePath);
 }
 
-void dae::Sprite::SetSprite(int x, int y)
+void mg::Sprite::SetSprite(int x, int y)
 {
 
 	if (x >= m_spriteSheet.cols)
@@ -27,16 +27,15 @@ void dae::Sprite::SetSprite(int x, int y)
 		y = m_spriteSheet.rows - 1;
 	}
 
-	m_sourceRect.x = m_texture->GetSize().x / m_spriteSheet.cols * x;
-	m_sourceRect.y = m_texture->GetSize().y / m_spriteSheet.rows * y;
+	m_sourceRect.x = m_pTexture->GetSize().x / m_spriteSheet.cols * x;
+	m_sourceRect.y = m_pTexture->GetSize().y / m_spriteSheet.rows * y;
 
-	m_sourceRect.w = m_texture->GetSize().x / m_spriteSheet.cols;
-	m_sourceRect.h = m_texture->GetSize().y / m_spriteSheet.rows;
+	m_sourceRect.w = m_pTexture->GetSize().x / m_spriteSheet.cols;
+	m_sourceRect.h = m_pTexture->GetSize().y / m_spriteSheet.rows;
 }
 
-
 #pragma region Game_Loop
-void dae::Sprite::Render() const
+void mg::Sprite::Render() const
 {
 	SDL_FRect dst{};
 	dst.x = GetOwner()->GetTransform().GetPosition().x;
@@ -44,23 +43,14 @@ void dae::Sprite::Render() const
 	
 	dst.w = m_sourceRect.w;
 	dst.h = m_sourceRect.h;
-	//SDL_GetTextureSize(m_texture->GetSDLTexture(), &dst.w, &dst.h);
+	//SDL_GetTextureSize(m_pTexture->GetSDLTexture(), &dst.w, &dst.h);
 
-	SDL_RenderTexture(Renderer::GetInstance().GetSDLRenderer(), m_texture->GetSDLTexture(), &m_sourceRect, &dst);
+	SDL_RenderTexture(Renderer::GetInstance().GetSDLRenderer(), m_pTexture->GetSDLTexture(), &m_sourceRect, &dst);
 }
 
-dae::Sprite::Sprite(GameObject& owner, std::filesystem::path const& filePath)
+mg::Sprite::Sprite(GameObject& owner, std::filesystem::path const& filePath, SpriteSheet const& spriteSheetData)
 	: Component(owner)
-	, m_texture{ ResourceManager::GetInstance().LoadTexture(filePath) }
-	, m_spriteSheet{}
-	, m_sourceRect{}
-{
-	SetSprite(0, 0);
-}
-
-dae::Sprite::Sprite(GameObject& owner, std::filesystem::path const& filePath, SpriteSheet const& spriteSheetData)
-	: Component(owner)
-	, m_texture{ ResourceManager::GetInstance().LoadTexture(filePath) }
+	, m_pTexture{ ResourceManager::GetInstance().LoadTexture(filePath) }
 	, m_spriteSheet{ spriteSheetData }
 	, m_sourceRect{}
 {

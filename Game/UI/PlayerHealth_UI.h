@@ -1,21 +1,21 @@
 #ifndef PLAYERHEALTH_UI_H
 #define PLAYERHEALTH_UI_H
 #include "EngineComponents/Component.h"
-#include "EventListener.h"
+#include "IEventListener.h"
 #include "GameEvents.h"
-namespace dae
+namespace mg
 {
 	class TextComponent;
 	class GameObject;
 };
 
-class PlayerHealth_UI : public dae::Component, public dae::EventListener<PlayerLivesChangedEvent>
+class PlayerHealth_UI final : public mg::Component, public mg::IEventListener<PlayerLivesChangedEvent>
 {
 public:
 
 	void OnNotify(PlayerLivesChangedEvent const& eventData) override;
 
-	PlayerHealth_UI(dae::GameObject& owner);
+	explicit PlayerHealth_UI(mg::GameObject& owner);
 
 	~PlayerHealth_UI() override = default;
 	PlayerHealth_UI(PlayerHealth_UI const& other) = delete;
@@ -24,7 +24,7 @@ public:
 	PlayerHealth_UI& operator=(PlayerHealth_UI&& other) = delete;
 
 private:
-	dae::TextComponent* m_textComp;
+	mg::TextComponent* m_pTextComp;
 };
 #endif // !PLAYERHEALTH_UI_H
 				 

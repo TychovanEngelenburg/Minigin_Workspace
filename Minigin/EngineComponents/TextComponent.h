@@ -13,7 +13,7 @@
 #include <filesystem>
 #include <glm/glm.hpp>
 
-namespace dae
+namespace mg
 {
 	class GameObject;
 	class TextComponent final : public Component
@@ -37,13 +37,13 @@ namespace dae
 		TextComponent& operator=(TextComponent&& other) = delete;
 
 	private:
-		bool m_needsUpdate{};
-		std::string m_text{};
+		bool m_needsUpdate;
+		std::string m_text;
 		
-		SDL_Color m_color{ 255, 255, 255, 255 };
+		SDL_Color m_color;
 
-		std::shared_ptr<Font> m_font{};
-		std::shared_ptr<Texture2D> m_textTexture{};
+		std::shared_ptr<Font> m_pFont;
+		std::shared_ptr<Texture2D> m_pTextTexture;
 	};
 }
 #endif // !TEXTUREOBJECT_H

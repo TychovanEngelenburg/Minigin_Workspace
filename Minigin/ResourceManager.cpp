@@ -15,41 +15,41 @@
 #include <utility>
 
 
-std::shared_ptr<dae::Texture2D> dae::ResourceManager::LoadTexture(std::filesystem::path const& file)
+std::shared_ptr<mg::Texture2D> mg::ResourceManager::LoadTexture(std::filesystem::path const& file)
 {
 	auto const fullPath = m_dataPath / file;
 	auto const filename = std::filesystem::path(fullPath).filename().string();
 
-	if (m_loadedTextures.find(filename) == m_loadedTextures.end())
+	if (m_pLoadedTextures.find(filename) == m_pLoadedTextures.end())
 	{
 		auto texture{ std::make_shared<Texture2D>(fullPath) };
-		m_loadedTextures.insert(std::pair(filename, std::move(texture)));
+		m_pLoadedTextures.insert(std::pair(filename, std::move(texture)));
 	}
-	return m_loadedTextures.at(filename);
+	return m_pLoadedTextures.at(filename);
 }
 
-std::shared_ptr<dae::Font> dae::ResourceManager::LoadFont(std::filesystem::path const& file, uint8_t size)
+std::shared_ptr<mg::Font> mg::ResourceManager::LoadFont(std::filesystem::path const& file, uint8_t size)
 {
 	auto const fullPath = m_dataPath / file;
 	auto const filename = std::filesystem::path(fullPath).filename().string();
 
 	auto const key = std::pair<std::string, uint8_t>(filename, size);
 
-	if (m_loadedFonts.find(key) == m_loadedFonts.end())
+	if (m_pLoadedFonts.find(key) == m_pLoadedFonts.end())
 	{
 		auto font{ std::make_shared<Font>(fullPath, size) };
-		m_loadedFonts.insert(std::pair(key, std::move(font)));
+		m_pLoadedFonts.insert(std::pair(key, std::move(font)));
 	}
-	return m_loadedFonts.at(key);
+	return m_pLoadedFonts.at(key);
 }
 
-void dae::ResourceManager::UnloadUnusedResources()
+void mg::ResourceManager::UnloadUnusedResources()
 {
-	for (auto it = m_loadedTextures.begin(); it != m_loadedTextures.end();)
+	for (auto it = m_pLoadedTextures.begin(); it != m_pLoadedTextures.end();)
 	{
 		if (it->second.use_count() <= 1)
 		{
-			it = m_loadedTextures.erase(it);
+			it = m_pLoadedTextures.erase(it);
 		}
 		else
 		{
@@ -57,11 +57,11 @@ void dae::ResourceManager::UnloadUnusedResources()
 		}
 	}
 
-	for (auto it = m_loadedFonts.begin(); it != m_loadedFonts.end();)
+	for (auto it = m_pLoadedFonts.begin(); it != m_pLoadedFonts.end();)
 	{
 		if (it->second.use_count() <= 1)
 		{
-			it = m_loadedFonts.erase(it);
+			it = m_pLoadedFonts.erase(it);
 		}
 		else
 		{
@@ -70,7 +70,7 @@ void dae::ResourceManager::UnloadUnusedResources()
 	}
 }
 
-void dae::ResourceManager::Init(std::filesystem::path const& dataPath)
+void mg::ResourceManager::Init(std::filesystem::path const& dataPath)
 {
 	m_dataPath = dataPath;
 
@@ -80,10 +80,10 @@ void dae::ResourceManager::Init(std::filesystem::path const& dataPath)
 	}
 }
 
-dae::ResourceManager::~ResourceManager()
+mg::ResourceManager::~ResourceManager()
 {
-	m_loadedFonts.clear();
-	m_loadedTextures.clear();
+	m_pLoadedFonts.clear();
+	m_pLoadedTextures.clear();
 
 	TTF_Quit();
 }

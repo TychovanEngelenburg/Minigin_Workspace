@@ -16,7 +16,7 @@
 #include <list>
 #include <unordered_map>
 
-namespace dae
+namespace mg
 {
 	class Texture2D;
 	class GameObject final
@@ -67,7 +67,7 @@ namespace dae
 		std::string m_name;
 		bool m_active;
 		bool m_destroyed;
-		std::vector< std::unique_ptr<Component>> m_components;
+		std::vector< std::unique_ptr<Component>> m_pComponents;
 	};
 
 
@@ -83,7 +83,7 @@ namespace dae
 
 		auto component{ std::make_unique<T>(*this, std::forward<Args>(args)...) };
 		auto& returnRef{ *component };
-		m_components.emplace_back(std::move(component));
+		m_pComponents.emplace_back(std::move(component));
 		return returnRef;
 	}
 
@@ -91,7 +91,7 @@ namespace dae
 	//template<typename T>
 	//inline bool GameObject::HasComponent() const
 	//{
-	//	for (auto& component : m_components)
+	//	for (auto& component : m_pComponents)
 	//	{
 	//		if (component.GetType() == std::type_index(typeid(T)))
 	//		{
@@ -109,7 +109,7 @@ namespace dae
 		// Opted for dynamic cast over component.h having a GetType() option,
 		// since working with std::type_index is (as far as I can tell) slower than dynamic_cast.
 
-		for (auto& component : m_components)
+		for (auto& component : m_pComponents)
 		{
 			if (auto compPtr{ dynamic_cast<T*>(component.get()) })
 			{
@@ -123,7 +123,7 @@ namespace dae
 	template<typename T>
 	inline void GameObject::RemoveComponent()
 	{
-		std::erase_if(m_components, [](std::unique_ptr<Component> const& component)
+		std::erase_if(m_pComponents, [](std::unique_ptr<Component> const& component)
 			{
 				return dynamic_cast<T*>(component.get());
 			});

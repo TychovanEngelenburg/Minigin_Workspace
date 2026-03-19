@@ -6,7 +6,7 @@
 #include "GameObject.h"
 #include <string_view>
 
-namespace dae
+namespace mg
 {
 	class Scene final
 	{
@@ -38,8 +38,7 @@ namespace dae
 		friend class SceneManager;
 		explicit Scene() = default;
 
-		std::vector<std::unique_ptr<GameObject>> m_objects;
-		std::vector<GameObject*> m_deletionList;
+		std::vector<std::unique_ptr<GameObject>> m_pObjects;
 	};
 }
 #endif // !SCENE_H

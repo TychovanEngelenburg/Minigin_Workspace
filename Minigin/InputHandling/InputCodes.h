@@ -1,7 +1,7 @@
 #ifndef INPUTCODES_H
 #define INPUTCODES_H
 
-namespace dae
+namespace mg
 {
 	namespace Keycodes
 	{

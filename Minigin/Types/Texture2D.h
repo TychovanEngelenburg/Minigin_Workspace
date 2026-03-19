@@ -7,7 +7,7 @@
 #include <glm/fwd.hpp>
 
 struct SDL_Texture;
-namespace dae
+namespace mg
 {
 	/**
 	 * Simple RAII wrapper for an SDL_Texture
@@ -28,7 +28,7 @@ namespace dae
 		Texture2D& operator= (Texture2D&&) = delete;
 
 	private:
-		SDL_Texture* m_texture;
+		SDL_Texture* m_pTexture;
 	};
 }
 #endif // !TEXTURE2D_H

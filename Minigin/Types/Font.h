@@ -5,7 +5,7 @@
 
 struct TTF_Font;
 
-namespace dae
+namespace mg
 {
 	/**
 	 * Simple RAII wrapper for a TTF_Font
@@ -16,6 +16,7 @@ namespace dae
 		TTF_Font* GetFont() const noexcept;
 
 		explicit Font(std::filesystem::path const& fullPath, float size);
+
 		~Font();
 		Font(Font const&) = delete;
 		Font(Font&&) = delete;
@@ -23,7 +24,7 @@ namespace dae
 		Font& operator= (Font const&&) = delete;
 
 	private:
-		TTF_Font* m_font;
+		TTF_Font* m_pFont;
 	};
 }
 #endif // !FONT_H

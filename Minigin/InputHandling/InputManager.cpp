@@ -5,11 +5,11 @@
 
 
 #include "InputBinding.h"
-#include "Command.h"
+#include "InputHandling/ICommand.h"
 #include "Gamepad.h"
-#include "InputHandling/InputDevice.h"
+#include "InputHandling/IInputDevice.h"
 
-bool dae::InputManager::ProcessInput()
+bool mg::InputManager::ProcessInput()
 {
 	SDL_Event e;
 	while (SDL_PollEvent(&e)) {
@@ -26,7 +26,7 @@ bool dae::InputManager::ProcessInput()
 
 	for (auto& binding : m_pBindings)
 	{
-		InputDevice* device{};
+		IInputDevice* device{};
 		switch (binding->GetType())
 		{
 			case InputBinding::DeviceType::Gamepad:
@@ -85,12 +85,12 @@ bool dae::InputManager::ProcessInput()
 	return true;
 }
 
-void dae::InputManager::AddBinding(std::unique_ptr<InputBinding> binding)
+void mg::InputManager::AddBinding(std::unique_ptr<InputBinding> binding)
 {
 	m_pBindings.push_back(std::move(binding));
 }
 
-void dae::InputManager::RemoveBinding(InputBinding* binding)
+void mg::InputManager::RemoveBinding(InputBinding* binding)
 {
 	m_pBindings.erase(
 		std::remove_if(
@@ -102,7 +102,7 @@ void dae::InputManager::RemoveBinding(InputBinding* binding)
 	);
 }
 
-void dae::InputManager::Init()
+void mg::InputManager::Init()
 {
 	m_pKeyboard = std::make_unique<Keyboard>();
 	m_pGamepads[0] = std::make_unique<Gamepad>(0);

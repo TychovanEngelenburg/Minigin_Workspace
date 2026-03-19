@@ -13,7 +13,7 @@
 #include <cstdint>
 #include <utility>
 
-namespace dae
+namespace mg
 {
 	class ResourceManager final : public Singleton<ResourceManager>
 	{
@@ -28,8 +28,8 @@ namespace dae
 		friend class Singleton<ResourceManager>;
 		std::filesystem::path m_dataPath;
 
-		std::map<std::string, std::shared_ptr<Texture2D>> m_loadedTextures;
-		std::map<std::pair<std::string, uint8_t>, std::shared_ptr<Font>> m_loadedFonts;
+		std::map<std::string, std::shared_ptr<Texture2D>> m_pLoadedTextures;
+		std::map<std::pair<std::string, uint8_t>, std::shared_ptr<Font>> m_pLoadedFonts;
 
 		ResourceManager() = default;
 		~ResourceManager();

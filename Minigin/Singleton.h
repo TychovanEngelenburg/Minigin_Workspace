@@ -1,7 +1,7 @@
 #ifndef SINGLETON_H
 #define SINGLETON_H
 
-namespace dae
+namespace mg
 {
 	template <typename T>
 	class Singleton

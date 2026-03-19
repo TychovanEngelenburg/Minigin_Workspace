@@ -12,7 +12,7 @@
 // TODO: Replace with sprite sheet system as well as utilizing a rendercomponent.
 
 
-namespace dae
+namespace mg
 {
 	struct SpriteSheet
 	{
@@ -29,8 +29,8 @@ namespace dae
 
 		void Render() const override;
 
-		Sprite(GameObject& owner, std::filesystem::path const& filePath);
-		Sprite(GameObject& owner, std::filesystem::path const& filePath, SpriteSheet const& spriteSheetData );
+		Sprite(GameObject& owner, std::filesystem::path const& filePath, SpriteSheet const& spriteSheetData = {});
+
 		~Sprite() override = default;
 		Sprite(Sprite const& other) = delete;
 		Sprite(Sprite&& other) = delete;
@@ -38,9 +38,7 @@ namespace dae
 		Sprite& operator=(Sprite&& other) = delete;
 
 	private:
-	
-
-		std::shared_ptr<Texture2D> m_texture;
+		std::shared_ptr<Texture2D> m_pTexture;
 		SpriteSheet  m_spriteSheet;
 		SDL_FRect m_sourceRect;
 

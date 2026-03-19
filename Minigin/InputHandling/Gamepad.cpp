@@ -10,12 +10,12 @@
 #endif
 
 #if defined(_WIN32) // XInput Implementation
-class dae::Gamepad::GamepadImpl
+class mg::Gamepad::GamepadImpl
 {
 public:
-	bool GetButton(dae::Keycodes::GamepadButton button) const;
-	bool GetButtonUp(dae::Keycodes::GamepadButton button) const;
-	bool GetButtonDown(dae::Keycodes::GamepadButton button) const;
+	bool GetButton(mg::Keycodes::GamepadButton button) const;
+	bool GetButtonUp(mg::Keycodes::GamepadButton button) const;
+	bool GetButtonDown(mg::Keycodes::GamepadButton button) const;
 
 	void Update();
 
@@ -29,26 +29,26 @@ private:
 	WORD m_buttonsPressedThisFrame;
 	WORD m_buttonsReleasedThisFrame;
 
-	unsigned int ButtonToXInput(dae::Keycodes::GamepadButton button) const;
+	unsigned int ButtonToXInput(mg::Keycodes::GamepadButton button) const;
 };
 
-bool dae::Gamepad::GamepadImpl::GetButton(dae::Keycodes::GamepadButton button) const
+bool mg::Gamepad::GamepadImpl::GetButton(mg::Keycodes::GamepadButton button) const
 {
 	return m_currentState.Gamepad.wButtons & ButtonToXInput(button);
 }
 
-bool dae::Gamepad::GamepadImpl::GetButtonUp(dae::Keycodes::GamepadButton button) const
+bool mg::Gamepad::GamepadImpl::GetButtonUp(mg::Keycodes::GamepadButton button) const
 {
 	return m_buttonsReleasedThisFrame & ButtonToXInput(button);
 
 }
 
-bool dae::Gamepad::GamepadImpl::GetButtonDown(dae::Keycodes::GamepadButton button) const
+bool mg::Gamepad::GamepadImpl::GetButtonDown(mg::Keycodes::GamepadButton button) const
 {
 	return m_buttonsPressedThisFrame & ButtonToXInput(button);
 }
 
-void dae::Gamepad::GamepadImpl::Update()
+void mg::Gamepad::GamepadImpl::Update()
 {
 	CopyMemory(&m_previousState, &m_currentState, sizeof(XINPUT_STATE));
 	ZeroMemory(&m_currentState, sizeof(XINPUT_STATE));
@@ -61,7 +61,7 @@ void dae::Gamepad::GamepadImpl::Update()
 	m_buttonsReleasedThisFrame = buttonChanges & (~m_currentState.Gamepad.wButtons);
 }
 
-dae::Gamepad::GamepadImpl::GamepadImpl(int index)
+mg::Gamepad::GamepadImpl::GamepadImpl(int index)
 	: m_deviceIndex{ index }
 	, m_previousState{}
 	, m_currentState{}
@@ -70,40 +70,40 @@ dae::Gamepad::GamepadImpl::GamepadImpl(int index)
 {
 }
 
-unsigned int dae::Gamepad::GamepadImpl::ButtonToXInput(dae::Keycodes::GamepadButton button) const
+unsigned int mg::Gamepad::GamepadImpl::ButtonToXInput(mg::Keycodes::GamepadButton button) const
 {
 	switch (button)
 	{
-		case dae::Keycodes::GamepadButton::DPadUp: return XINPUT_GAMEPAD_DPAD_UP;
-		case dae::Keycodes::GamepadButton::DPadDown: return XINPUT_GAMEPAD_DPAD_DOWN;
-		case dae::Keycodes::GamepadButton::DPadLeft: return XINPUT_GAMEPAD_DPAD_LEFT;
-		case dae::Keycodes::GamepadButton::DPadRight: return XINPUT_GAMEPAD_DPAD_RIGHT;
+		case mg::Keycodes::GamepadButton::DPadUp: return XINPUT_GAMEPAD_DPAD_UP;
+		case mg::Keycodes::GamepadButton::DPadDown: return XINPUT_GAMEPAD_DPAD_DOWN;
+		case mg::Keycodes::GamepadButton::DPadLeft: return XINPUT_GAMEPAD_DPAD_LEFT;
+		case mg::Keycodes::GamepadButton::DPadRight: return XINPUT_GAMEPAD_DPAD_RIGHT;
 
-		case dae::Keycodes::GamepadButton::Start: return XINPUT_GAMEPAD_START;
-		case dae::Keycodes::GamepadButton::Back: return XINPUT_GAMEPAD_BACK;
+		case mg::Keycodes::GamepadButton::Start: return XINPUT_GAMEPAD_START;
+		case mg::Keycodes::GamepadButton::Back: return XINPUT_GAMEPAD_BACK;
 
-		case dae::Keycodes::GamepadButton::LeftStick: return XINPUT_GAMEPAD_LEFT_THUMB;
-		case dae::Keycodes::GamepadButton::RightStick: return XINPUT_GAMEPAD_RIGHT_THUMB;
+		case mg::Keycodes::GamepadButton::LeftStick: return XINPUT_GAMEPAD_LEFT_THUMB;
+		case mg::Keycodes::GamepadButton::RightStick: return XINPUT_GAMEPAD_RIGHT_THUMB;
 
-		case dae::Keycodes::GamepadButton::LeftShoulder: return XINPUT_GAMEPAD_LEFT_SHOULDER;
-		case dae::Keycodes::GamepadButton::RightShoulder: return XINPUT_GAMEPAD_RIGHT_SHOULDER;
+		case mg::Keycodes::GamepadButton::LeftShoulder: return XINPUT_GAMEPAD_LEFT_SHOULDER;
+		case mg::Keycodes::GamepadButton::RightShoulder: return XINPUT_GAMEPAD_RIGHT_SHOULDER;
 
-		case dae::Keycodes::GamepadButton::A: return XINPUT_GAMEPAD_A;
-		case dae::Keycodes::GamepadButton::B: return XINPUT_GAMEPAD_B;
-		case dae::Keycodes::GamepadButton::X: return XINPUT_GAMEPAD_X;
-		case dae::Keycodes::GamepadButton::Y: return XINPUT_GAMEPAD_Y;
+		case mg::Keycodes::GamepadButton::A: return XINPUT_GAMEPAD_A;
+		case mg::Keycodes::GamepadButton::B: return XINPUT_GAMEPAD_B;
+		case mg::Keycodes::GamepadButton::X: return XINPUT_GAMEPAD_X;
+		case mg::Keycodes::GamepadButton::Y: return XINPUT_GAMEPAD_Y;
 
 		default: return 0;
 	}
 }
 
 #else // SDL Implementation
-class dae::Gamepad::GamepadImpl
+class mg::Gamepad::GamepadImpl
 {
 public:
-	bool GetButton(dae::Keycodes::GamepadButton button) const;
-	bool GetButtonDown(dae::Keycodes::GamepadButton button) const;
-	bool GetButtonUp(dae::Keycodes::GamepadButton button) const;
+	bool GetButton(mg::Keycodes::GamepadButton button) const;
+	bool GetButtonDown(mg::Keycodes::GamepadButton button) const;
+	bool GetButtonUp(mg::Keycodes::GamepadButton button) const;
 
 	void Update();
 
@@ -124,22 +124,22 @@ private:
 	SDL_GamepadButton ButtonToSDL(Keycodes::GamepadButton button) const;
 };
 
-bool dae::Gamepad::GamepadImpl::GetButton(dae::Keycodes::GamepadButton button) const
+bool mg::Gamepad::GamepadImpl::GetButton(mg::Keycodes::GamepadButton button) const
 {
 	return m_current[static_cast<int>(button)];
 }
 
-bool dae::Gamepad::GamepadImpl::GetButtonDown(dae::Keycodes::GamepadButton button) const
+bool mg::Gamepad::GamepadImpl::GetButtonDown(mg::Keycodes::GamepadButton button) const
 {
 	return m_current[static_cast<int>(button)] && !m_previous[static_cast<int>(button)];
 }
 
-bool dae::Gamepad::GamepadImpl::GetButtonUp(dae::Keycodes::GamepadButton button) const
+bool mg::Gamepad::GamepadImpl::GetButtonUp(mg::Keycodes::GamepadButton button) const
 {
 	return !m_current[static_cast<int>(button)] && m_previous[static_cast<int>(button)];
 }
 
-dae::Gamepad::GamepadImpl::GamepadImpl(int index)
+mg::Gamepad::GamepadImpl::GamepadImpl(int index)
 	: m_gamepad{ nullptr }
 	, m_deviceIndex{ index }
 	, m_current{}
@@ -147,7 +147,7 @@ dae::Gamepad::GamepadImpl::GamepadImpl(int index)
 {
 }
 
-dae::Gamepad::GamepadImpl::~GamepadImpl()
+mg::Gamepad::GamepadImpl::~GamepadImpl()
 {
 	if (m_gamepad)
 	{
@@ -156,7 +156,7 @@ dae::Gamepad::GamepadImpl::~GamepadImpl()
 }
 
 
-void dae::Gamepad::GamepadImpl::Update()
+void mg::Gamepad::GamepadImpl::Update()
 {
 	SDL_PumpEvents();
 	m_previous = m_current;
@@ -191,7 +191,7 @@ void dae::Gamepad::GamepadImpl::Update()
 	}
 }
 
-SDL_GamepadButton dae::Gamepad::GamepadImpl::ButtonToSDL(Keycodes::GamepadButton button) const
+SDL_GamepadButton mg::Gamepad::GamepadImpl::ButtonToSDL(Keycodes::GamepadButton button) const
 {
 	switch (button)
 	{
@@ -221,29 +221,29 @@ SDL_GamepadButton dae::Gamepad::GamepadImpl::ButtonToSDL(Keycodes::GamepadButton
 
 
 // Base class implementation
-bool dae::Gamepad::GetButton(int buttonId) const
+bool mg::Gamepad::GetButton(int buttonId) const
 {
-	return m_pImpl->GetButton(static_cast<dae::Keycodes::GamepadButton>(buttonId));
+	return m_pImpl->GetButton(static_cast<mg::Keycodes::GamepadButton>(buttonId));
 }
 
-bool dae::Gamepad::GetButtonDown(int buttonId) const
+bool mg::Gamepad::GetButtonDown(int buttonId) const
 {
-	return m_pImpl->GetButtonDown(static_cast<dae::Keycodes::GamepadButton>(buttonId));
+	return m_pImpl->GetButtonDown(static_cast<mg::Keycodes::GamepadButton>(buttonId));
 }
 
-bool dae::Gamepad::GetButtonUp(int buttonId) const
+bool mg::Gamepad::GetButtonUp(int buttonId) const
 {
-	return m_pImpl->GetButtonUp(static_cast<dae::Keycodes::GamepadButton>(buttonId));
+	return m_pImpl->GetButtonUp(static_cast<mg::Keycodes::GamepadButton>(buttonId));
 }
 
-void dae::Gamepad::Update()
+void mg::Gamepad::Update()
 {
 	m_pImpl->Update();
 }
 
-dae::Gamepad::Gamepad(int index)
+mg::Gamepad::Gamepad(int index)
 	: m_pImpl{ std::make_unique<GamepadImpl>(index) }
 {
 }
 
-dae::Gamepad::~Gamepad() = default;
+mg::Gamepad::~Gamepad() = default;

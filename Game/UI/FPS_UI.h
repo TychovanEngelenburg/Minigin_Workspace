@@ -3,19 +3,19 @@
 
 #include "EngineComponents/Component.h"
 
-namespace dae
+namespace mg
 {
 	class TextComponent;
 	class GameObject;
 }
 
-class FPS_UI final : public dae::Component
+class FPS_UI final : public mg::Component
 {
 public:
 	void Start() override;
 	void Update() override;
 
-	FPS_UI(dae::GameObject& owner);
+	explicit FPS_UI(mg::GameObject& owner);
 
 	~FPS_UI() override = default;
 	FPS_UI(FPS_UI const& other) = delete;
@@ -24,7 +24,7 @@ public:
 	FPS_UI& operator=(FPS_UI&& other) = delete;
 
 private:
-	dae::TextComponent* m_textComp;
+	mg::TextComponent* m_pTextComp;
 	double m_accuTime;
 	double m_frameCount;
 	double m_averageFPS;

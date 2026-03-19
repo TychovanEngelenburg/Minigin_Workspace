@@ -7,17 +7,17 @@
 
 void PlayerHealth_UI::OnNotify(PlayerLivesChangedEvent const& eventData)
 {
-	if (!m_textComp)
+	if (!m_pTextComp)
 	{
-		m_textComp = GetOwner()->GetComponent<dae::TextComponent>();
-		assert(m_textComp);
+		m_pTextComp = GetOwner()->GetComponent<mg::TextComponent>();
+		assert(m_pTextComp);
 	}
 
-	m_textComp->SetText("# lives:" + std::to_string(eventData.livesLeft));
+	m_pTextComp->SetText("# lives:" + std::to_string(eventData.livesLeft));
 }
 
-PlayerHealth_UI::PlayerHealth_UI(dae::GameObject& owner)
+PlayerHealth_UI::PlayerHealth_UI(mg::GameObject& owner)
 	: Component(owner)
-	, m_textComp{}
+	, m_pTextComp{}
 {
 }
