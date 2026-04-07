@@ -3,66 +3,61 @@
 
 #include <glm/glm.hpp>
 #include <vector>
+#include <glm/fwd.hpp>
 
-
-
-// TODO: update TRS handling
 namespace mg
 {
 	class GameObject;
 	class Transform final
 	{
 	public:
-		GameObject* GetOwner() const noexcept;
+		glm::vec3 GetWorldPosition() const noexcept;
+		glm::vec3 GetWorldRotation() const noexcept;
+		glm::vec3 GetWorldScale() const noexcept;
 
-		Transform* GetParent() const noexcept;
-		int GetChildCount() const noexcept;
-		Transform* GetChildAt(size_t idx) const noexcept;
-		bool HasChild(Transform* obj);
-		bool IsChildOf(Transform* obj);
-	
-		glm::vec3 const& GetLocalPosition() const;
-		glm::vec3 const& GetPosition();
+		glm::vec3 const& GetLocalPosition() const noexcept;
+		glm::vec3 const& GetLocalRotation() const noexcept;
+		glm::vec3 const& GetLocalScale() const noexcept;
 
-		void SetParent(Transform* parent, bool keepWorldPos = false);
-		void SetLocalPosition( glm::vec3 const& pos);
-		void SetPosition( glm::vec3 const& pos);
+		glm::mat4 const& GetLocalMatrix() const;
+		glm::mat4 const& GetWorldMatrix() const;
 
-		void DestroyChildren();
+		void SetLocalPosition(glm::vec3 const& pos);
+		void SetLocalRotation(glm::vec3 const& rot);
+		void SetLocalScale(glm::vec3 const& scale);
 
-		void Translate(float x, float y, float z = 0);
-		void Translate(glm::vec3 const& diff);
-		void Rotate(float degrees);
-		void SetScale(float scale);
-		void SetScale(glm::vec3 const& diff);
+		void Translate(glm::vec3 const& difference);
+		void Rotate(glm::vec3 const& difference);
+		void SetScale(glm::vec3 const& newScale);
 
-		explicit Transform(GameObject& owner, glm::vec3 const& pos = {0.f, 0.f, 0.f});
+		void MarkDirty();
+		void MarkWorldDirty();
+		void SetParent(Transform* pParent, bool keepWorldPos = false);
+
+		Transform(GameObject* pOwner);
+
+		~Transform() = default;
+		Transform(Transform const& other) = delete;
+		Transform(Transform&& other) = delete;
+		Transform& operator=(Transform const& other) = delete;
+		Transform& operator=(Transform&& other) = delete;
 
 	private:
 		GameObject* m_pOwner;
+		Transform* m_pParent;
 
-		// World data
-		bool m_positionDirty;
-		glm::vec3 m_worldPosition;
-		float m_worldRotation;
-		glm::vec3 m_worldScale;
-
-		// Local data
 		glm::vec3 m_localPosition;
-		float m_localRotation;
+		glm::vec3 m_localRotation;
 		glm::vec3 m_localScale;
 
-		Transform* m_pParent;
-		std::vector<Transform*> m_children;
+		mutable glm::mat4 m_localMatrix;
+		mutable glm::mat4 m_worldMatrix;
 
-		glm::mat4 GetWorldMatrix();
-		glm::mat4 GetLocalMatrix() const;
+		mutable bool m_localDirty;
+		mutable bool m_worldDirty;
 
-		void UpdateWorldPos();
-
-		void SetPositionDirty();
-		void AddChild(Transform* child);
-		void RemoveChild(Transform* child);
+		void RecalculateLocal() const;
+		void RecalculateWorld() const;
 	};
 }
 #endif // !TRANSFORM_H

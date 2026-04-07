@@ -22,7 +22,7 @@ public:
 	MoveTankCommand& operator=(MoveTankCommand&& other) = delete;
 
 private:
-	glm::vec2 m_movementDirection;
+	glm::vec3 m_movementDirection;
 	float m_movementSpeed;
 };
 #endif // !MOVEPLAYERCOMMAND_H

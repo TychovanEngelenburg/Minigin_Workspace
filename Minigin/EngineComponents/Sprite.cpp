@@ -38,8 +38,8 @@ void mg::Sprite::SetSprite(int x, int y)
 void mg::Sprite::Render() const
 {
 	SDL_FRect dst{};
-	dst.x = GetOwner()->GetTransform().GetPosition().x;
-	dst.y = GetOwner()->GetTransform().GetPosition().y;
+	dst.x = GetOwner()->GetTransform().GetWorldPosition().x;
+	dst.y = GetOwner()->GetTransform().GetWorldPosition().y;
 	
 	dst.w = m_sourceRect.w;
 	dst.h = m_sourceRect.h;

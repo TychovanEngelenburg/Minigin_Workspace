@@ -1,252 +1,189 @@
 #include "Transform.h"
+#include <glm/gtc/matrix_transform.hpp>
 #include "GameObject.h"
-#include <glm/gtc/matrix_transform.hpp>  
-#include <cmath>                         
-#include <numbers>                       
-#include <algorithm>              
 
-mg::GameObject* mg::Transform::GetOwner() const noexcept
+glm::vec3 mg::Transform::GetWorldPosition() const noexcept
 {
-	return m_pOwner;
+	return glm::vec3(GetWorldMatrix()[3]);
 }
 
-mg::Transform* mg::Transform::GetParent() const noexcept
+glm::vec3 mg::Transform::GetWorldRotation() const noexcept
 {
-	return m_pParent;
+	return m_localRotation;
 }
 
-int mg::Transform::GetChildCount() const noexcept
+glm::vec3 mg::Transform::GetWorldScale() const noexcept
 {
-	return  static_cast<int>(m_children.size());
+	auto& worldMat = GetWorldMatrix();
+
+	return {
+		glm::length(glm::vec3(worldMat[0])),
+		glm::length(glm::vec3(worldMat[1])),
+		glm::length(glm::vec3(worldMat[2]))
+	};
 }
 
-mg::Transform* mg::Transform::GetChildAt(size_t idx) const noexcept
-{
-	if (idx >= m_children.size())
-	{
-		return nullptr;
-	}
-	return m_children[idx];
-}
 
-bool mg::Transform::HasChild(Transform* child)
-{
 
-	if (std::find(m_children.begin(), m_children.end(), child) != m_children.end())
-	{
-		return true;
-	}
-
-	return false;
-}
-
-bool mg::Transform::IsChildOf(Transform* obj)
-{
-	if (m_pParent != nullptr)
-	{
-		if (m_pParent == obj)
-		{
-			return true;
-		}
-
-		return m_pParent->IsChildOf(obj);
-	}
-
-	return false;
-}
-
-const glm::vec3& mg::Transform::GetPosition()
-{
-	UpdateWorldPos();
-	return m_worldPosition;
-}
-
-glm::vec3 const& mg::Transform::GetLocalPosition() const
+glm::vec3 const& mg::Transform::GetLocalPosition() const noexcept
 {
 	return m_localPosition;
 }
 
-
-
-void mg::Transform::SetParent(Transform* parent, bool keepWorldPos)
+glm::vec3 const& mg::Transform::GetLocalRotation() const noexcept
 {
-	if (HasChild(parent) || parent == this || m_pParent == parent)
-	{
-		return;
-	}
+	return m_localRotation;
+}
 
-	if (parent == nullptr)
-	{
-		SetLocalPosition(GetPosition());
-	}
-	else
-	{
-		if (keepWorldPos)
-		{
+glm::vec3 const& mg::Transform::GetLocalScale() const noexcept
+{
+	return m_localScale;
+}
 
-			glm::vec4 localPos4 = glm::inverse(parent->GetWorldMatrix()) * glm::vec4(m_worldPosition, 1.0f);
-			SetLocalPosition(glm::vec3(localPos4));
-		}
-		SetPositionDirty();
-	}
 
-	if (m_pParent)
-	{
-		m_pParent->RemoveChild(this);
-	}
 
-	m_pParent = parent;
+glm::mat4 const& mg::Transform::GetLocalMatrix() const
+{
+	RecalculateLocal();
+	return m_localMatrix;
+}
 
-	if (m_pParent)
-	{
-		m_pParent->AddChild(this);
-	}
+glm::mat4 const& mg::Transform::GetWorldMatrix() const
+{
+	RecalculateWorld();
+
+	return m_worldMatrix;
 }
 
 void mg::Transform::SetLocalPosition(glm::vec3 const& pos)
 {
 	m_localPosition = pos;
-	SetPositionDirty();
+	MarkDirty();
 }
 
-void mg::Transform::SetPosition(glm::vec3 const& position)
+void mg::Transform::SetLocalRotation(glm::vec3 const& rot)
 {
-	m_positionDirty = false;
-	m_worldPosition = position;
-
-	if (GetParent() == nullptr)
-	{
-		m_localPosition = position;
-	}
-	else
-	{
-
-		glm::vec4 localPos = glm::inverse(GetParent()->GetWorldMatrix()) * glm::vec4(m_worldPosition, 1.0f);
-		SetLocalPosition(glm::vec3(localPos));
-	}
-
-	SetPositionDirty();
+	m_localRotation = rot;
+	MarkDirty();
 }
 
-void mg::Transform::DestroyChildren()
-{
-	for (auto& child : m_children)
-	{
-		child->GetOwner()->Destroy();
-	}
-}
-
-void mg::Transform::Translate(float x, float y, float z)
-{
-	Translate({ x, y, z });
-}
-
-void mg::Transform::Translate(glm::vec3 const& difference)
-{
-	m_localPosition += difference;
-	SetPositionDirty();
-}
-
-void mg::Transform::Rotate(float degrees)
-{
-	m_localRotation += degrees;
-}
-
-void mg::Transform::SetScale(float scale)
-{
-	SetScale({ scale, scale, scale });
-	SetPositionDirty();
-}
-
-void mg::Transform::SetScale(glm::vec3 const& scale)
+void mg::Transform::SetLocalScale(glm::vec3 const& scale)
 {
 	m_localScale = scale;
-}
-
-mg::Transform::Transform(GameObject& owner, glm::vec3 const& pos)
-	:  m_pOwner{&owner}
-	, m_positionDirty{ true }
-	, m_worldPosition{}
-	, m_worldRotation{}
-	, m_worldScale{}
-	, m_localPosition{ pos }
-	, m_localRotation{}
-	, m_localScale{ 1.f, 1.f, 1.f }
-	, m_pParent{}
-	, m_children{}
-{
+	MarkDirty();
 }
 
 
-
-glm::mat4 mg::Transform::GetLocalMatrix() const
+void mg::Transform::Translate(glm::vec3 const& delta)
 {
-	glm::mat4 translation = glm::translate(glm::mat4(1.0f), m_localPosition);
-	glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(m_localRotation), glm::vec3(0, 0, 1));
-	glm::mat4 scale = glm::scale(glm::mat4(1.0f), m_localScale);
-
-	return translation * rotation * scale;
+	m_localPosition += delta;
+	MarkDirty();
 }
 
-glm::mat4 mg::Transform::GetWorldMatrix()
+void mg::Transform::Rotate(glm::vec3 const& delta)
 {
-	UpdateWorldPos();
-
-	glm::mat4 translation = glm::translate(glm::mat4(1.0f), m_worldPosition);
-	glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(m_worldRotation), glm::vec3(0, 0, 1));
-	glm::mat4 scale = glm::scale(glm::mat4(1.0f), m_worldScale);
-
-	return translation * rotation * scale;
+	m_localRotation += delta;
+	MarkDirty();
 }
 
-void mg::Transform::UpdateWorldPos()
+void mg::Transform::SetScale(glm::vec3 const& newScale)
 {
-	if (m_positionDirty)
+	m_localScale = newScale;
+}
+
+
+void mg::Transform::MarkDirty()
+{
+	m_localDirty = true;
+	MarkWorldDirty();
+}
+
+void mg::Transform::MarkWorldDirty()
+{
+	m_worldDirty = true;
+
+	for (size_t i{}; i < m_pOwner->GetChildCount(); ++i)
 	{
-		if (GetParent() == nullptr)
-		{
-			m_worldPosition = m_localPosition;
-			m_worldRotation = m_localRotation;
-			m_worldScale = m_localScale;
-		}
-		else
-		{
-			glm::mat4 world = m_pParent->GetWorldMatrix() * GetLocalMatrix();
-
-			m_worldPosition = glm::vec3(world[3]);
-
-			m_worldScale.x = glm::length(glm::vec3(world[0]));
-			m_worldScale.y = glm::length(glm::vec3(world[1]));
-			m_worldScale.z = glm::length(glm::vec3(world[2]));
-
-			glm::vec3 right = glm::vec3(world[0]) / m_worldScale.x;
-			m_worldRotation = glm::degrees(std::atan2(right.y, right.x));
-		}
-	}
-	m_positionDirty = false;
-}
-
-void mg::Transform::SetPositionDirty()
-{
-	m_positionDirty = true;
-	for (auto child : m_children)
-	{
-		child->SetPositionDirty();
+		m_pOwner->GetChildAt(i)->GetTransform().MarkWorldDirty();
 	}
 }
 
-void mg::Transform::AddChild(Transform* child)
+
+//TODO: Add keepworldpos
+void mg::Transform::SetParent(Transform* pParent, bool keepWorldPos)
 {
-	if (child == nullptr)
+	if (m_pParent == pParent)
 	{
 		return;
 	}
 
-	m_children.emplace_back(child);
+	glm::vec3 oldWorldPos;
+	if (keepWorldPos)
+	{
+		oldWorldPos = GetWorldPosition();
+	}
+
+	m_pParent = pParent;
+
+	if (keepWorldPos)
+	{
+		glm::mat4 parentInv = glm::inverse(m_pParent->GetWorldMatrix());
+		glm::vec4 localPos4 = parentInv * glm::vec4(oldWorldPos, 1.0f);
+		m_localPosition = glm::vec3(localPos4);
+	}
+	MarkWorldDirty();
 }
 
-void mg::Transform::RemoveChild(Transform* child)
+mg::Transform::Transform(GameObject* pOwner)
+	: m_pOwner{ pOwner }
+	, m_pParent{}
+	, m_localPosition{}
+	, m_localRotation{}
+	, m_localScale{1.f, 1.f, 1.f}
+	, m_localMatrix{}
+	, m_worldMatrix{}
+	, m_localDirty{ true }
+	, m_worldDirty{ true }
 {
-	std::erase(m_children, child);
 }
 
+void mg::Transform::RecalculateLocal() const
+{
+	if (!m_localDirty)
+	{
+		return;
+	}
+
+	m_localMatrix = glm::mat4(1.f);
+
+	m_localMatrix = glm::translate(m_localMatrix, m_localPosition);
+
+	m_localMatrix = glm::rotate(m_localMatrix, glm::radians(m_localRotation.x), glm::vec3(1, 0, 0));
+	m_localMatrix = glm::rotate(m_localMatrix, glm::radians(m_localRotation.y), glm::vec3(0, 1, 0));
+	m_localMatrix = glm::rotate(m_localMatrix, glm::radians(m_localRotation.z), glm::vec3(0, 0, 1));
+
+	m_localMatrix = glm::scale(m_localMatrix, m_localScale);
+
+	m_localDirty = false;
+}
+
+void mg::Transform::RecalculateWorld() const
+{
+	if (!m_worldDirty)
+	{
+		return;
+	}
+
+	RecalculateLocal();
+
+	if (m_pParent)
+	{
+		m_worldMatrix = m_pParent->GetWorldMatrix() * m_localMatrix;
+	}
+	else
+	{
+		m_worldMatrix = m_localMatrix;
+	}
+
+	m_worldDirty = false;
+}

@@ -61,8 +61,8 @@ void mg::TextComponent::Render() const
 	if (m_pTextTexture)
 	{
 		SDL_FRect dst{};
-		dst.x = GetOwner()->GetTransform().GetPosition().x;
-		dst.y = GetOwner()->GetTransform().GetPosition().y;
+		dst.x = GetOwner()->GetTransform().GetWorldPosition().x;
+		dst.y = GetOwner()->GetTransform().GetWorldPosition().y;
 
 		SDL_GetTextureSize(m_pTextTexture->GetSDLTexture(), &dst.w, &dst.h);
 

@@ -22,29 +22,34 @@ namespace mg
 	class GameObject final
 	{
 	public:
+		// Getters
 		Transform& GetTransform();
 		std::string const& GetName() const noexcept;
-		bool IsDestroyed() const noexcept;
 		bool IsActive() const noexcept;
+		bool IsDestroyed() const noexcept;
 
+		GameObject* GetParent() const noexcept;
+		size_t GetChildCount() const noexcept;
+		GameObject* GetChildAt(size_t idx) const noexcept;
+		bool HasChild(GameObject* pChild);
+		bool IsChildOf(GameObject* pChild);
+
+		// Scene info
 		void SetActive(bool isActive);
-		//void SetPosition(float x, float y);
-
 		void Destroy();
 
+		void SetParent(GameObject* pParent, bool keepWorldPos = false);
+
+		// Components
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args);
-
-		// Removed because functionally no improvement over GetComponent in it's current state.
-		//template<typename T>
-		//bool HasComponent() const;
-
 		template<typename T>
 		T* GetComponent() const;
 
 		template<typename T>
 		void RemoveComponent();
 
+		// Game Loop
 		void Start();
 		void Update();
 		void FixedUpdate();
@@ -68,6 +73,12 @@ namespace mg
 		bool m_active;
 		bool m_destroyed;
 		std::vector< std::unique_ptr<Component>> m_pComponents;
+
+		GameObject* m_pParent;
+		std::vector<GameObject*> m_pChildren;
+
+		void AddChild(GameObject* pChild);
+		void RemoveChild(GameObject* pChild);
 	};
 
 

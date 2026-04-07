@@ -157,14 +157,16 @@ static void load()
 
 #pragma region UI
 
-	//auto fpsCounter = std::make_unique<mg::GameObject>("FPS_Counter");
-	//{
-	//	auto& textComp = fpsCounter->AddComponent<mg::TextComponent>("00", "Lingua.otf", 36);
-	//	textComp.SetColor({ 255, 255, 0, 255 });
+	auto fpsCounter = std::make_unique<mg::GameObject>("FPS_Counter", glm::vec3(100.f, 0.f, 0.f));
+	{
+		auto& textComp = fpsCounter->AddComponent<mg::TextComponent>("00", "Lingua.otf", 36);
+		textComp.SetColor({ 255, 255, 0, 255 });
 
-	//	fpsCounter->AddComponent<FPS_UI>();
-	//}
-	//scene.Add(std::move(fpsCounter));
+		fpsCounter->AddComponent<FPS_UI>();
+	}
+	keyboardPlayer->GetTransform().Rotate({ 0.f, 0.f, 90.f });
+	fpsCounter->SetParent(keyboardPlayer.get());
+	scene.Add(std::move(fpsCounter));
 
 
 
