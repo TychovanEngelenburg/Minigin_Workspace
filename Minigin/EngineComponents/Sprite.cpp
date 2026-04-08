@@ -37,16 +37,9 @@ void mg::Sprite::SetSprite(int x, int y)
 #pragma region Game_Loop
 void mg::Sprite::Render() const
 {
-	SDL_FRect dst{};
-	dst.x = GetOwner()->GetTransform().GetWorldPosition().x;
-	dst.y = GetOwner()->GetTransform().GetWorldPosition().y;
-	
-	dst.w = m_sourceRect.w;
-	dst.h = m_sourceRect.h;
-	//SDL_GetTextureSize(m_pTexture->GetSDLTexture(), &dst.w, &dst.h);
-
-	SDL_RenderTexture(Renderer::GetInstance().GetSDLRenderer(), m_pTexture->GetSDLTexture(), &m_sourceRect, &dst);
+	Renderer::GetInstance().RenderTexture(*m_pTexture, GetOwner()->GetTransform(), m_sourceRect);
 }
+#pragma endregion Game_Loop
 
 mg::Sprite::Sprite(GameObject& owner, std::filesystem::path const& filePath, SpriteSheet const& spriteSheetData)
 	: Component(owner)
@@ -56,4 +49,3 @@ mg::Sprite::Sprite(GameObject& owner, std::filesystem::path const& filePath, Spr
 {
 	SetSprite(0, 0);
 }
-#pragma endregion Game_Loop

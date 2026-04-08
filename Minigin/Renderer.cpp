@@ -22,30 +22,93 @@ SDL_Renderer* mg::Renderer::GetSDLRenderer() const noexcept
 	return m_pRenderer;
 }
 
+void mg::Renderer::RenderTexture(Texture2D const& texture, Transform const& transform, SDL_FRect const& src, bool flipX, bool flipY) const
+{
+	//assert((src.h > 0) ^ (src.w > 0));
+	//assert(src.x > 0 && src.y > 0);
+
+	bool hasSrc{ true };
+	if (src.w == 0 && src.h == 0)
+	{
+		hasSrc = false;
+	}
+
+	SDL_FRect dst{};
+	auto pos{ transform.GetWorldPosition() };
+	dst.x = pos.x;
+	dst.y = pos.y;
+
+	auto scale{ transform.GetWorldScale() };
+
+	if (hasSrc)
+	{
+		dst.w = src.w;
+		dst.h = src.h;
+	}
+	else
+	{
+		SDL_GetTextureSize(texture.GetSDLTexture(), &dst.w, &dst.h);
+	}
+
+	dst.w *= scale.x;
+	dst.h *= scale.y;
+
+	// Negative to comply with GLM's Y-up (Clockwise) rotation.
+	auto rot = -transform.GetWorldRotationZ();
+
+	//SDL_FPoint rotPivot{ dst.w * 0.5f, dst.h * 0.5f };
+	SDL_FPoint rotPivot{ 0.f, 0.f };
+
+	SDL_FlipMode flipMode{};
+	if (flipX && !flipY)
+	{
+		flipMode = SDL_FLIP_HORIZONTAL;
+	}
+	else if (!flipX && flipY)
+	{
+		flipMode = SDL_FLIP_VERTICAL;
+	}
+	if (flipX && flipY)
+	{
+		flipMode = SDL_FLIP_HORIZONTAL_AND_VERTICAL;
+	}
+
+	SDL_RenderTextureRotated(
+		Renderer::GetInstance().GetSDLRenderer(),
+		texture.GetSDLTexture(),
+		hasSrc ? &src : nullptr,
+		&dst,
+		rot,
+		&rotPivot,
+		flipMode
+	);
+}
+
+
 const SDL_Color& mg::Renderer::GetBackgroundColor() const
 {
 	return m_clearColor;
 }
 
 
-void mg::Renderer::RenderTexture(Texture2D const& texture, float const x, float const y) const
-{
-	SDL_FRect dst{};
-	dst.x = x;
-	dst.y = y;
-	SDL_GetTextureSize(texture.GetSDLTexture(), &dst.w, &dst.h);
-	SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
-}
-
-void mg::Renderer::RenderTexture(Texture2D const& texture, float const x, float const y, float const width, float const height) const
-{
-	SDL_FRect dst{};
-	dst.x = x;
-	dst.y = y;
-	dst.w = width;
-	dst.h = height;
-	SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
-}
+//void mg::Renderer::RenderTexture(Texture2D const& texture, float const x, float const y) const
+//{
+//	SDL_FRect dst{};
+//	dst.x = x;
+//	dst.y = y;
+//	SDL_GetTextureSize(texture.GetSDLTexture(), &dst.w, &dst.h);
+//	SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
+//}
+//
+//void mg::Renderer::RenderTexture(Texture2D const& texture, float const x, float const y, float const width, float const height) const
+//{
+//	SDL_FRect dst{};
+//	dst.x = x;
+//	dst.y = y;
+//	dst.w = width;
+//	dst.h = height;
+//	SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
+//}
 
 void mg::Renderer::SetBackgroundColor(SDL_Color const& color)
 {

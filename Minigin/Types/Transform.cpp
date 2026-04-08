@@ -2,19 +2,25 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "GameObject.h"
 
+glm::vec3 mg::Transform::GetPivotOffset() const noexcept
+{
+	return m_pivotOffset;
+}
+
 glm::vec3 mg::Transform::GetWorldPosition() const noexcept
 {
 	return glm::vec3(GetWorldMatrix()[3]);
 }
 
-glm::vec3 mg::Transform::GetWorldRotation() const noexcept
+float mg::Transform::GetWorldRotationZ() const noexcept
 {
-	return m_localRotation;
+	auto const& worldMat = GetWorldMatrix();
+	return glm::degrees(std::atan2(worldMat[1][0], worldMat[0][0]));
 }
 
 glm::vec3 mg::Transform::GetWorldScale() const noexcept
 {
-	auto& worldMat = GetWorldMatrix();
+	auto const& worldMat = GetWorldMatrix();
 
 	return {
 		glm::length(glm::vec3(worldMat[0])),
@@ -53,6 +59,11 @@ glm::mat4 const& mg::Transform::GetWorldMatrix() const
 	RecalculateWorld();
 
 	return m_worldMatrix;
+}
+
+void mg::Transform::SetPivotOffset(glm::vec3 const& offset)
+{
+	m_pivotOffset = offset;
 }
 
 void mg::Transform::SetLocalPosition(glm::vec3 const& pos)
@@ -137,9 +148,10 @@ void mg::Transform::SetParent(Transform* pParent, bool keepWorldPos)
 mg::Transform::Transform(GameObject* pOwner)
 	: m_pOwner{ pOwner }
 	, m_pParent{}
+	, m_pivotOffset{ 0.f, 0.f, 0.f }
 	, m_localPosition{}
 	, m_localRotation{}
-	, m_localScale{1.f, 1.f, 1.f}
+	, m_localScale{ 1.f, 1.f, 1.f }
 	, m_localMatrix{}
 	, m_worldMatrix{}
 	, m_localDirty{ true }

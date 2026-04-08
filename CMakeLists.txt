@@ -43,7 +43,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     Game/UI/PlayerHealth_UI.cpp
     Game/Commands/MoveTankCommand.cpp
     Game/Commands/DamageTankCommand.cpp 
-)
+ )
 
 
 # enable c++20 features

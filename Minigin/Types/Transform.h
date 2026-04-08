@@ -11,8 +11,10 @@ namespace mg
 	class Transform final
 	{
 	public:
+		glm::vec3 GetPivotOffset() const noexcept;
+
 		glm::vec3 GetWorldPosition() const noexcept;
-		glm::vec3 GetWorldRotation() const noexcept;
+		float GetWorldRotationZ() const noexcept;
 		glm::vec3 GetWorldScale() const noexcept;
 
 		glm::vec3 const& GetLocalPosition() const noexcept;
@@ -21,6 +23,8 @@ namespace mg
 
 		glm::mat4 const& GetLocalMatrix() const;
 		glm::mat4 const& GetWorldMatrix() const;
+
+		void SetPivotOffset(glm::vec3 const& offset);
 
 		void SetLocalPosition(glm::vec3 const& pos);
 		void SetLocalRotation(glm::vec3 const& rot);
@@ -45,6 +49,9 @@ namespace mg
 	private:
 		GameObject* m_pOwner;
 		Transform* m_pParent;
+
+		// TODO: implement offsetting the pivot point
+		glm::vec3 m_pivotOffset;
 
 		glm::vec3 m_localPosition;
 		glm::vec3 m_localRotation;

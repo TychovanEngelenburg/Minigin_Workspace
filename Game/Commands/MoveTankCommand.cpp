@@ -6,7 +6,6 @@
 void MoveTankCommand::Execute()
 { 
 	m_object->GetTransform().Translate( m_movementDirection * m_movementSpeed * static_cast<float>(mg::DeltaClock::GetDeltaTime()) );
-
 }
 
 MoveTankCommand::MoveTankCommand(mg::GameObject* object, glm::vec2 const& moveDir, float moveSpeed)
