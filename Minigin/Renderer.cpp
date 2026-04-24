@@ -22,7 +22,7 @@ SDL_Renderer* mg::Renderer::GetSDLRenderer() const noexcept
 	return m_pRenderer;
 }
 
-void mg::Renderer::RenderTexture(Texture2D const& texture, Transform const& transform, SDL_FRect const& src, bool flipX, bool flipY) const
+void mg::Renderer::RenderTexture(Texture2D const& texture, Transform2D const& transform, SDL_FRect const& src, bool flipX, bool flipY) const
 {
 	//assert((src.h > 0) ^ (src.w > 0));
 	//assert(src.x > 0 && src.y > 0);

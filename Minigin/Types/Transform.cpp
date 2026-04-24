@@ -2,156 +2,211 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "GameObject.h"
 
-glm::vec3 mg::Transform::GetPivotOffset() const noexcept
-{
-	return m_pivotOffset;
-}
-
-glm::vec3 mg::Transform::GetWorldPosition() const noexcept
+glm::vec3 mg::Transform2D::GetWorldPosition() const noexcept
 {
 	return glm::vec3(GetWorldMatrix()[3]);
 }
 
-float mg::Transform::GetWorldRotationZ() const noexcept
+float mg::Transform2D::GetWorldRotationZ() const noexcept
 {
 	auto const& worldMat = GetWorldMatrix();
 	return glm::degrees(std::atan2(worldMat[1][0], worldMat[0][0]));
 }
 
-glm::vec3 mg::Transform::GetWorldScale() const noexcept
+glm::vec2 mg::Transform2D::GetWorldScale() const noexcept
 {
 	auto const& worldMat = GetWorldMatrix();
 
 	return {
 		glm::length(glm::vec3(worldMat[0])),
 		glm::length(glm::vec3(worldMat[1])),
-		glm::length(glm::vec3(worldMat[2]))
 	};
 }
 
 
 
-glm::vec3 const& mg::Transform::GetLocalPosition() const noexcept
+glm::vec3 const& mg::Transform2D::GetLocalPosition() const noexcept
 {
 	return m_localPosition;
 }
 
-glm::vec3 const& mg::Transform::GetLocalRotation() const noexcept
+float mg::Transform2D::GetLocalRotation() const noexcept
 {
 	return m_localRotation;
 }
 
-glm::vec3 const& mg::Transform::GetLocalScale() const noexcept
+glm::vec2 const& mg::Transform2D::GetLocalScale() const noexcept
 {
 	return m_localScale;
 }
 
 
 
-glm::mat4 const& mg::Transform::GetLocalMatrix() const
+glm::mat4 const& mg::Transform2D::GetLocalMatrix() const
 {
 	RecalculateLocal();
 	return m_localMatrix;
 }
 
-glm::mat4 const& mg::Transform::GetWorldMatrix() const
+glm::mat4 const& mg::Transform2D::GetWorldMatrix() const
 {
 	RecalculateWorld();
 
 	return m_worldMatrix;
 }
 
-void mg::Transform::SetPivotOffset(glm::vec3 const& offset)
+
+mg::Transform2D* mg::Transform2D::GetParent() const noexcept
 {
-	m_pivotOffset = offset;
+	return m_pParent;
 }
 
-void mg::Transform::SetLocalPosition(glm::vec3 const& pos)
+size_t mg::Transform2D::GetChildCount() const noexcept
+{
+	return m_pChildren.size();
+}
+
+mg::Transform2D* mg::Transform2D::GetChildAt(size_t idx) const noexcept
+{
+	if (idx >= m_pChildren.size())
+	{
+		return nullptr;
+	}
+	return m_pChildren[idx];
+}
+
+bool mg::Transform2D::HasChild(Transform2D* pChild)
+{
+	if (std::find(m_pChildren.begin(), m_pChildren.end(), pChild) != m_pChildren.end())
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool mg::Transform2D::IsChildOf(Transform2D* pChild)
+{
+	if (m_pParent != nullptr)
+	{
+		if (m_pParent == pChild)
+		{
+			return true;
+		}
+
+		return m_pParent->IsChildOf(pChild);
+	}
+
+	return false;
+}
+
+void mg::Transform2D::SetLocalPosition(glm::vec3 const& pos)
 {
 	m_localPosition = pos;
 	MarkDirty();
 }
 
-void mg::Transform::SetLocalRotation(glm::vec3 const& rot)
+void mg::Transform2D::SetLocalRotation(float newDegr)
 {
-	m_localRotation = rot;
+	m_localRotation = glm::radians(newDegr);
 	MarkDirty();
 }
 
-void mg::Transform::SetLocalScale(glm::vec3 const& scale)
+void mg::Transform2D::SetLocalScale(glm::vec2 const& scale)
 {
 	m_localScale = scale;
 	MarkDirty();
 }
 
 
-void mg::Transform::Translate(glm::vec3 const& delta)
+void mg::Transform2D::Translate(glm::vec3 const& delta)
 {
 	m_localPosition += delta;
 	MarkDirty();
 }
 
-void mg::Transform::Rotate(glm::vec3 const& delta)
+void mg::Transform2D::Rotate(float degr)
 {
-	m_localRotation += delta;
+	m_localRotation += glm::radians(degr);
 	MarkDirty();
 }
 
-void mg::Transform::SetScale(glm::vec3 const& newScale)
-{
-	m_localScale = newScale;
-}
 
-
-void mg::Transform::MarkDirty()
+void mg::Transform2D::MarkDirty()
 {
 	m_localDirty = true;
 	MarkWorldDirty();
 }
 
-void mg::Transform::MarkWorldDirty()
+void mg::Transform2D::MarkWorldDirty()
 {
 	m_worldDirty = true;
-
-	for (size_t i{}; i < m_pOwner->GetChildCount(); ++i)
+	for (auto& child : m_pChildren)
 	{
-		m_pOwner->GetChildAt(i)->GetTransform().MarkWorldDirty();
+		child->MarkWorldDirty();
 	}
 }
 
 
-//TODO: Add keepworldpos
-void mg::Transform::SetParent(Transform* pParent, bool keepWorldPos)
+void mg::Transform2D::SetParent(Transform2D* pParent, bool keepRelativeWorld)
 {
-	if (m_pParent == pParent)
+
+	if (HasChild(pParent) || pParent == this || m_pParent == pParent)
 	{
 		return;
 	}
 
-	glm::vec3 oldWorldPos;
-	if (keepWorldPos)
+	if (pParent == nullptr)
 	{
-		oldWorldPos = GetWorldPosition();
+		SetLocalPosition(GetWorldPosition());
+		SetLocalRotation(GetWorldRotationZ());
+		SetLocalScale(GetWorldScale());
+	}
+	else
+	{
+		if (keepRelativeWorld)
+		{
+			glm::mat4 newLocal = glm::inverse(pParent->GetWorldMatrix()) * GetWorldMatrix();
+
+			m_localPosition = glm::vec3(newLocal[3]);
+
+			glm::vec2 scale;
+			scale.x = glm::length(glm::vec3(newLocal[0]));
+			scale.y = glm::length(glm::vec3(newLocal[1]));
+			m_localScale = scale;
+
+			glm::mat3 rotMat;
+			rotMat[0] = glm::vec3(newLocal[0]) / scale.x;
+			rotMat[1] = glm::vec3(newLocal[1]) / scale.y;
+			rotMat[2] = glm::vec3(0, 0, 1);
+			m_localRotation = std::atan2(-rotMat[1][0], rotMat[0][0]);
+			
+			MarkDirty();
+		}
+		else
+		{
+			MarkDirty();
+		}
+	}
+	if (m_pParent)
+	{
+		m_pParent->RemoveChild(this); 
 	}
 
 	m_pParent = pParent;
 
-	if (keepWorldPos)
+	if (m_pParent)
 	{
-		glm::mat4 parentInv = glm::inverse(m_pParent->GetWorldMatrix());
-		glm::vec4 localPos4 = parentInv * glm::vec4(oldWorldPos, 1.0f);
-		m_localPosition = glm::vec3(localPos4);
+		m_pParent->AddChild(this);
 	}
-	MarkWorldDirty();
 }
 
-mg::Transform::Transform(GameObject* pOwner)
-	: m_pOwner{ pOwner }
+mg::Transform2D::Transform2D(GameObject* pOwner)
+	: m_pGameObject{ pOwner }
 	, m_pParent{}
-	, m_pivotOffset{ 0.f, 0.f, 0.f }
 	, m_localPosition{}
 	, m_localRotation{}
-	, m_localScale{ 1.f, 1.f, 1.f }
+	, m_localScale{ 1.f, 1.f }
 	, m_localMatrix{}
 	, m_worldMatrix{}
 	, m_localDirty{ true }
@@ -159,7 +214,7 @@ mg::Transform::Transform(GameObject* pOwner)
 {
 }
 
-void mg::Transform::RecalculateLocal() const
+void mg::Transform2D::RecalculateLocal() const
 {
 	if (!m_localDirty)
 	{
@@ -170,16 +225,15 @@ void mg::Transform::RecalculateLocal() const
 
 	m_localMatrix = glm::translate(m_localMatrix, m_localPosition);
 
-	m_localMatrix = glm::rotate(m_localMatrix, glm::radians(m_localRotation.x), glm::vec3(1, 0, 0));
-	m_localMatrix = glm::rotate(m_localMatrix, glm::radians(m_localRotation.y), glm::vec3(0, 1, 0));
-	m_localMatrix = glm::rotate(m_localMatrix, glm::radians(m_localRotation.z), glm::vec3(0, 0, 1));
 
-	m_localMatrix = glm::scale(m_localMatrix, m_localScale);
+	m_localMatrix = glm::rotate(m_localMatrix, m_localRotation, glm::vec3(0, 0, 1));
+
+	m_localMatrix = glm::scale(m_localMatrix, glm::vec3(m_localScale.x, m_localScale.y, 1.f));
 
 	m_localDirty = false;
 }
 
-void mg::Transform::RecalculateWorld() const
+void mg::Transform2D::RecalculateWorld() const
 {
 	if (!m_worldDirty)
 	{
@@ -198,4 +252,19 @@ void mg::Transform::RecalculateWorld() const
 	}
 
 	m_worldDirty = false;
+}
+
+void mg::Transform2D::AddChild(Transform2D* pChild)
+{
+	if (!pChild)
+	{
+		return;
+	}
+
+	m_pChildren.emplace_back(pChild);
+}
+
+void mg::Transform2D::RemoveChild(Transform2D* pChild)
+{
+	std::erase(m_pChildren, pChild);
 }

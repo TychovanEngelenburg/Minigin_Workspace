@@ -9,7 +9,7 @@
 // TODO: look into making a different renderer?
 namespace mg
 {
-	class Transform;
+	class Transform2D;
 	class Texture2D;
 	/**
 	 * Simple RAII wrapper for the SDL renderer
@@ -20,7 +20,7 @@ namespace mg
 		const SDL_Color& GetBackgroundColor() const;
 		SDL_Renderer* GetSDLRenderer() const noexcept;
 
-		void RenderTexture(Texture2D const& texture, Transform const& transform, SDL_FRect const& src = {}, bool flipX = false, bool flipY = false) const;
+		void RenderTexture(Texture2D const& texture, Transform2D const& transform, SDL_FRect const& src = {}, bool flipX = false, bool flipY = false) const;
 		//void RenderTexture(Texture2D const& texture, float x, float y) const;
 		//void RenderTexture(Texture2D const& texture, float x, float y, float width, float height) const;
 		void SetBackgroundColor(SDL_Color const& color);

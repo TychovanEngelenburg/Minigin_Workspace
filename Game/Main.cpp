@@ -164,9 +164,11 @@ static void load()
 
 		fpsCounter->AddComponent<FPS_UI>();
 	}
-	keyboardPlayer->GetTransform().SetScale({ 2.f, 2.f, 0.f });
-	keyboardPlayer->GetTransform().Rotate({0.f, 0.f, 45.f });
-	fpsCounter->SetParent(keyboardPlayer.get());
+
+	keyboardPlayer->GetTransform().SetLocalScale({ 2.f, 2.f });
+	keyboardPlayer->GetTransform().Rotate(45.f);
+	fpsCounter->GetTransform().SetParent(&keyboardPlayer->GetTransform(), true);
+	fpsCounter->GetTransform().SetParent(nullptr, true);
 	scene.Add(std::move(fpsCounter));
 
 

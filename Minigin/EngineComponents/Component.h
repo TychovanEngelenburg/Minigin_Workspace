@@ -29,7 +29,7 @@ namespace mg
 		Component(GameObject& owner);
 
 	private:
-		GameObject* m_pOwner;
+		GameObject* m_pGameObject;
 		bool m_active;
 	};
 }

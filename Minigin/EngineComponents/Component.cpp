@@ -3,7 +3,7 @@
 
 mg::GameObject* mg::Component::GetOwner() const noexcept
 {
-	return m_pOwner;
+	return m_pGameObject;
 }
 
 bool mg::Component::IsActive() const noexcept
@@ -31,7 +31,7 @@ void mg::Component::End() {}
 #pragma endregion Game_Loop
 
 mg::Component::Component(GameObject& owner)
-	: m_pOwner{ &owner }
+	: m_pGameObject{ &owner }
 	, m_active{ true }
 {
 }

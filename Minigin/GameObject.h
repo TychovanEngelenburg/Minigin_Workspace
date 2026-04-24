@@ -23,22 +23,14 @@ namespace mg
 	{
 	public:
 		// Getters
-		Transform& GetTransform();
+		Transform2D& GetTransform();
 		std::string const& GetName() const noexcept;
 		bool IsActive() const noexcept;
 		bool IsDestroyed() const noexcept;
 
-		GameObject* GetParent() const noexcept;
-		size_t GetChildCount() const noexcept;
-		GameObject* GetChildAt(size_t idx) const noexcept;
-		bool HasChild(GameObject* pChild);
-		bool IsChildOf(GameObject* pChild);
-
 		// Scene info
 		void SetActive(bool isActive);
 		void Destroy();
-
-		void SetParent(GameObject* pParent, bool keepWorldPos = false);
 
 		// Components
 		template<typename T, typename... Args>
@@ -68,7 +60,7 @@ namespace mg
 		GameObject& operator=(GameObject&& other) = delete;
 
 	private:
-		Transform m_transform;
+		Transform2D m_transform;
 		std::string m_name;
 		bool m_active;
 		bool m_destroyed;
