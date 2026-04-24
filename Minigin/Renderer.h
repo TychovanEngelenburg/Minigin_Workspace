@@ -17,12 +17,10 @@ namespace mg
 	class Renderer final : public Singleton<Renderer>
 	{
 	public:
-		const SDL_Color& GetBackgroundColor() const;
+		const SDL_Color& BackgroundColor() const;
 		SDL_Renderer* GetSDLRenderer() const noexcept;
 
 		void RenderTexture(Texture2D const& texture, Transform2D const& transform, SDL_FRect const& src = {}, bool flipX = false, bool flipY = false) const;
-		//void RenderTexture(Texture2D const& texture, float x, float y) const;
-		//void RenderTexture(Texture2D const& texture, float x, float y, float width, float height) const;
 		void SetBackgroundColor(SDL_Color const& color);
 
 		void Init(SDL_Window* window);

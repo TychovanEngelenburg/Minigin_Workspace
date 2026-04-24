@@ -23,7 +23,7 @@ void FPS_UI::Update()
 {
 	static double constexpr m_accuTimePerSec{ 1 };
 
-	m_accuTime += mg::DeltaClock::GetDeltaTime();
+	m_accuTime += mg::DeltaClock::DeltaTime();
 	++m_frameCount;
 	if (m_accuTime >= m_accuTimePerSec)
 	{

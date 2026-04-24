@@ -25,7 +25,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     Minigin/DeltaClock.cpp
     Minigin/Types/Font.cpp
     Minigin/Types/Texture2D.cpp
-    Minigin/Types/Transform.cpp
+    "Minigin/Transform2D.cpp"
     Minigin/EngineComponents/TextComponent.cpp
     Minigin/EngineComponents/Sprite.cpp
     Minigin/EngineComponents/Component.cpp 

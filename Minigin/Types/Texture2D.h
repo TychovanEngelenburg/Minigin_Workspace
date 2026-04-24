@@ -16,7 +16,7 @@ namespace mg
 	{
 	public:
 		SDL_Texture* GetSDLTexture() const noexcept;
-		glm::vec2 GetSize() const;
+		glm::vec2 Size() const;
 
 		explicit Texture2D(SDL_Texture* texture);
 		explicit Texture2D(std::filesystem::path const& fullPath);

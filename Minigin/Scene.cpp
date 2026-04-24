@@ -13,7 +13,7 @@ mg::GameObject* mg::Scene::GetObjectByName(std::string_view objName)
 {
 	return std::find_if(m_pObjects.begin(), m_pObjects.end(), [&objName](auto const& ptr)
 		{
-			return ptr->GetName() == objName;
+			return ptr->Name() == objName;
 		})->get();
 }
 

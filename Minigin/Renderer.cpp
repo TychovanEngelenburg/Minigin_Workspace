@@ -34,11 +34,11 @@ void mg::Renderer::RenderTexture(Texture2D const& texture, Transform2D const& tr
 	}
 
 	SDL_FRect dst{};
-	auto pos{ transform.GetWorldPosition() };
+	auto pos{ transform.WorldPosition() };
 	dst.x = pos.x;
 	dst.y = pos.y;
 
-	auto scale{ transform.GetWorldScale() };
+	auto scale{ transform.WorldScale() };
 
 	if (hasSrc)
 	{
@@ -54,7 +54,7 @@ void mg::Renderer::RenderTexture(Texture2D const& texture, Transform2D const& tr
 	dst.h *= scale.y;
 
 	// Negative to comply with GLM's Y-up (Clockwise) rotation.
-	auto rot = -transform.GetWorldRotationZ();
+	auto rot = -transform.WorldRotationZ();
 
 	//SDL_FPoint rotPivot{ dst.w * 0.5f, dst.h * 0.5f };
 	SDL_FPoint rotPivot{ 0.f, 0.f };
@@ -74,7 +74,7 @@ void mg::Renderer::RenderTexture(Texture2D const& texture, Transform2D const& tr
 	}
 
 	SDL_RenderTextureRotated(
-		Renderer::GetInstance().GetSDLRenderer(),
+		Renderer::Instance().GetSDLRenderer(),
 		texture.GetSDLTexture(),
 		hasSrc ? &src : nullptr,
 		&dst,
@@ -85,30 +85,10 @@ void mg::Renderer::RenderTexture(Texture2D const& texture, Transform2D const& tr
 }
 
 
-const SDL_Color& mg::Renderer::GetBackgroundColor() const
+const SDL_Color& mg::Renderer::BackgroundColor() const
 {
 	return m_clearColor;
 }
-
-
-//void mg::Renderer::RenderTexture(Texture2D const& texture, float const x, float const y) const
-//{
-//	SDL_FRect dst{};
-//	dst.x = x;
-//	dst.y = y;
-//	SDL_GetTextureSize(texture.GetSDLTexture(), &dst.w, &dst.h);
-//	SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
-//}
-//
-//void mg::Renderer::RenderTexture(Texture2D const& texture, float const x, float const y, float const width, float const height) const
-//{
-//	SDL_FRect dst{};
-//	dst.x = x;
-//	dst.y = y;
-//	dst.w = width;
-//	dst.h = height;
-//	SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
-//}
 
 void mg::Renderer::SetBackgroundColor(SDL_Color const& color)
 {
@@ -157,11 +137,11 @@ void mg::Renderer::Render() const
 	ImGui::NewFrame();
 
 
-	auto const& color = GetBackgroundColor();
+	auto const& color = BackgroundColor();
 	SDL_SetRenderDrawColor(m_pRenderer, color.r, color.g, color.b, color.a);
 	SDL_RenderClear(m_pRenderer);
 
-	SceneManager::GetInstance().Render();
+	SceneManager::Instance().Render();
 	ImGui::Render();
 
 	ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), m_pRenderer);

@@ -1,19 +1,19 @@
-#include "Transform.h"
+#include "Transform2D.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "GameObject.h"
 
-glm::vec3 mg::Transform2D::GetWorldPosition() const noexcept
+glm::vec3 mg::Transform2D::WorldPosition() const noexcept
 {
 	return glm::vec3(GetWorldMatrix()[3]);
 }
 
-float mg::Transform2D::GetWorldRotationZ() const noexcept
+float mg::Transform2D::WorldRotationZ() const noexcept
 {
 	auto const& worldMat = GetWorldMatrix();
 	return glm::degrees(std::atan2(worldMat[1][0], worldMat[0][0]));
 }
 
-glm::vec2 mg::Transform2D::GetWorldScale() const noexcept
+glm::vec2 mg::Transform2D::WorldScale() const noexcept
 {
 	auto const& worldMat = GetWorldMatrix();
 
@@ -25,17 +25,17 @@ glm::vec2 mg::Transform2D::GetWorldScale() const noexcept
 
 
 
-glm::vec3 const& mg::Transform2D::GetLocalPosition() const noexcept
+glm::vec3 const& mg::Transform2D::LocalPosition() const noexcept
 {
 	return m_localPosition;
 }
 
-float mg::Transform2D::GetLocalRotation() const noexcept
+float mg::Transform2D::LocalRotation() const noexcept
 {
 	return m_localRotation;
 }
 
-glm::vec2 const& mg::Transform2D::GetLocalScale() const noexcept
+glm::vec2 const& mg::Transform2D::LocalScale() const noexcept
 {
 	return m_localScale;
 }
@@ -56,12 +56,12 @@ glm::mat4 const& mg::Transform2D::GetWorldMatrix() const
 }
 
 
-mg::Transform2D* mg::Transform2D::GetParent() const noexcept
+mg::Transform2D* mg::Transform2D::Parent() const noexcept
 {
 	return m_pParent;
 }
 
-size_t mg::Transform2D::GetChildCount() const noexcept
+size_t mg::Transform2D::ChildCount() const noexcept
 {
 	return m_pChildren.size();
 }
@@ -147,7 +147,6 @@ void mg::Transform2D::MarkWorldDirty()
 	}
 }
 
-
 void mg::Transform2D::SetParent(Transform2D* pParent, bool keepRelativeWorld)
 {
 
@@ -158,9 +157,9 @@ void mg::Transform2D::SetParent(Transform2D* pParent, bool keepRelativeWorld)
 
 	if (pParent == nullptr)
 	{
-		SetLocalPosition(GetWorldPosition());
-		SetLocalRotation(GetWorldRotationZ());
-		SetLocalScale(GetWorldScale());
+		SetLocalPosition(WorldPosition());
+		SetLocalRotation(WorldRotationZ());
+		SetLocalScale(WorldScale());
 	}
 	else
 	{

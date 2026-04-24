@@ -2,7 +2,7 @@
 #define GAMEOBJECT_H
 
 #include "EngineComponents/Component.h"
-#include "Types/Transform.h"
+#include "Transform2D.h"
 
 #include <string>
 #include <string_view>
@@ -23,8 +23,8 @@ namespace mg
 	{
 	public:
 		// Getters
-		Transform2D& GetTransform();
-		std::string const& GetName() const noexcept;
+		Transform2D& Transform();
+		std::string const& Name() const noexcept;
 		bool IsActive() const noexcept;
 		bool IsDestroyed() const noexcept;
 
@@ -68,9 +68,6 @@ namespace mg
 
 		GameObject* m_pParent;
 		std::vector<GameObject*> m_pChildren;
-
-		void AddChild(GameObject* pChild);
-		void RemoveChild(GameObject* pChild);
 	};
 
 

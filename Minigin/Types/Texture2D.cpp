@@ -9,7 +9,7 @@
 #include <glm/ext/vector_float2.hpp>
 #include <glm/fwd.hpp>
 
-glm::vec2 mg::Texture2D::GetSize() const
+glm::vec2 mg::Texture2D::Size() const
 {
 	float w{}, h{};
 	SDL_GetTextureSize(m_pTexture, &w, &h);
@@ -35,7 +35,7 @@ mg::Texture2D::Texture2D(std::filesystem::path const& filePath)
 	}
 
 	m_pTexture = SDL_CreateTextureFromSurface(
-		Renderer::GetInstance().GetSDLRenderer(),
+		Renderer::Instance().GetSDLRenderer(),
 		surface
 	);
 

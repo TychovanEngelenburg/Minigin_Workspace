@@ -5,7 +5,7 @@
 
 double mg::DeltaClock::m_deltaTime = 0.0;
 
-double mg::DeltaClock::GetDeltaTime() noexcept
+double mg::DeltaClock::DeltaTime() noexcept
 {
 	return m_deltaTime;
 }

@@ -11,19 +11,19 @@ namespace mg
 	class Transform2D final
 	{
 	public:
-		glm::vec3 GetWorldPosition() const noexcept;
-		float GetWorldRotationZ() const noexcept;
-		glm::vec2 GetWorldScale() const noexcept;
+		glm::vec3 WorldPosition() const noexcept;
+		float WorldRotationZ() const noexcept;
+		glm::vec2 WorldScale() const noexcept;
 
-		glm::vec3 const& GetLocalPosition() const noexcept;
-		float GetLocalRotation() const noexcept;
-		glm::vec2 const& GetLocalScale() const noexcept;
+		glm::vec3 const& LocalPosition() const noexcept;
+		float LocalRotation() const noexcept;
+		glm::vec2 const& LocalScale() const noexcept;
 
 		glm::mat4 const& GetLocalMatrix() const;
 		glm::mat4 const& GetWorldMatrix() const;
 
-		Transform2D* GetParent() const noexcept;
-		size_t GetChildCount() const noexcept;
+		Transform2D* Parent() const noexcept;
+		size_t ChildCount() const noexcept;
 		Transform2D* GetChildAt(size_t idx) const noexcept;
 		bool HasChild(Transform2D* pChild);
 		bool IsChildOf(Transform2D* pChild);

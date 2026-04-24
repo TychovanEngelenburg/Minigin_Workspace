@@ -23,10 +23,10 @@ namespace mg
             Axis
         };
 
-        int GetDeviceIdx() const noexcept;
-        int GetInputCode() const noexcept;
+        int DeviceIdx() const noexcept;
+        int InputCode() const noexcept;
 
-        ICommand* GetCommand() const noexcept;
+        ICommand* Command() const noexcept;
         DeviceType GetType() const noexcept;
         TriggerType GetTrigger() const noexcept;
         

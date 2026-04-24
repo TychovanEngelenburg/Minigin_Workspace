@@ -20,7 +20,7 @@ namespace mg
 	{
 	public:
 		std::string_view GetText() const noexcept;
-		glm::vec2 GetSize() const;
+		glm::vec2 Size() const;
 
 		void SetText(std::string_view text);
 		void SetColor(SDL_Color const& color);

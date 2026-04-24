@@ -31,7 +31,7 @@ bool mg::InputManager::ProcessInput()
 		{
 			case InputBinding::DeviceType::Gamepad:
 			{
-				device = m_pGamepads[binding->GetDeviceIdx()].get();
+				device = m_pGamepads[binding->DeviceIdx()].get();
 				break;
 			}
 
@@ -49,35 +49,35 @@ bool mg::InputManager::ProcessInput()
 		{
 			case InputBinding::TriggerType::Pressed:
 			{
-				if (device->GetButtonDown(binding->GetInputCode()))
+				if (device->GetButtonDown(binding->InputCode()))
 				{
-					binding->GetCommand()->Execute();
+					binding->Command()->Execute();
 				}
 				break;
 			}
 
 			case InputBinding::TriggerType::Held:
 			{
-				if (device->GetButton(binding->GetInputCode()))
+				if (device->GetButton(binding->InputCode()))
 				{
-					binding->GetCommand()->Execute();
+					binding->Command()->Execute();
 				}
 				break;
 			}
 
 			case InputBinding::TriggerType::Released:
 			{
-				if (device->GetButtonUp(binding->GetInputCode()))
+				if (device->GetButtonUp(binding->InputCode()))
 				{
-					binding->GetCommand()->Execute();
+					binding->Command()->Execute();
 				}
 				break;
 			}
 
 			case InputBinding::TriggerType::Axis:
 			{
-				//auto axis = device->GetAxis(binding->GetInputCode());
-				//binding->GetCommand()->Execute(axis);
+				//auto axis = device->GetAxis(binding->InputCode());
+				//binding->Command()->Execute(axis);
 				break;
 			}
 		}

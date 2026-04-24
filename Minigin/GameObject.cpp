@@ -2,7 +2,7 @@
 
 // .h includes
 #include "EngineComponents/Component.h"
-#include "Types/Transform.h"
+#include "Transform2D.h"
 
 #include <string_view>
 #include <memory>
@@ -10,12 +10,12 @@
 #include <string>
 #include <vector>
 
-mg::Transform2D& mg::GameObject::GetTransform()
+mg::Transform2D& mg::GameObject::Transform()
 {
 	return m_transform;
 }
 
-std::string const& mg::GameObject::GetName() const noexcept
+std::string const& mg::GameObject::Name() const noexcept
 {
 	return m_name;
 }

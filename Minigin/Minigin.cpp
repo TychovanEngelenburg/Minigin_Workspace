@@ -71,7 +71,7 @@ void PrintSDLVersion()
 void mg::Minigin::Run(std::function<void()> const& load)
 {
 	load();
-	SceneManager::GetInstance().Start();
+	SceneManager::Instance().Start();
 
 
 #ifndef __EMSCRIPTEN__
@@ -83,7 +83,7 @@ void mg::Minigin::Run(std::function<void()> const& load)
 	emscripten_set_main_loop_arg(&LoopCallback, this, 0, true);
 #endif
 
-	SceneManager::GetInstance().End();
+	SceneManager::Instance().End();
 }
 
 void mg::Minigin::RunOneFrame()
@@ -91,22 +91,22 @@ void mg::Minigin::RunOneFrame()
 
 	m_pDeltaClock->Update();
 
-	m_quit = !InputManager::GetInstance().ProcessInput();
+	m_quit = !InputManager::Instance().ProcessInput();
 	// TODO: Pass input to scene()
 
-	m_lag += DeltaClock::GetDeltaTime();
-	while (m_lag >= DeltaClock::GetFixedDeltaTime())
+	m_lag += DeltaClock::DeltaTime();
+	while (m_lag >= DeltaClock::FixedDeltaTime())
 	{
-		SceneManager::GetInstance().FixedUpdate();
-		m_lag -= DeltaClock::GetFixedDeltaTime();
+		SceneManager::Instance().FixedUpdate();
+		m_lag -= DeltaClock::FixedDeltaTime();
 	}
 
-	SceneManager::GetInstance().Update();
+	SceneManager::Instance().Update();
 
-	Renderer::GetInstance().Render();
+	Renderer::Instance().Render();
 
-	SceneManager::GetInstance().LateUpdate();
-	ResourceManager::GetInstance().UnloadUnusedResources();
+	SceneManager::Instance().LateUpdate();
+	ResourceManager::Instance().UnloadUnusedResources();
 }
 
 mg::Minigin::Minigin(std::filesystem::path const& dataPath)
@@ -141,14 +141,14 @@ mg::Minigin::Minigin(std::filesystem::path const& dataPath)
 		throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
 	}
 
-	Renderer::GetInstance().Init(g_window);
-	ResourceManager::GetInstance().Init(dataPath);
-	InputManager::GetInstance().Init();
+	Renderer::Instance().Init(g_window);
+	ResourceManager::Instance().Init(dataPath);
+	InputManager::Instance().Init();
 }
 
 mg::Minigin::~Minigin()
 {
-	Renderer::GetInstance().Destroy();
+	Renderer::Instance().Destroy();
 	SDL_DestroyWindow(g_window);
 	g_window = nullptr;
 	SDL_Quit();

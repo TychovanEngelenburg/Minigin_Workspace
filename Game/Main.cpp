@@ -46,7 +46,7 @@
 
 static void load()
 {
-	auto& scene = mg::SceneManager::GetInstance().CreateScene();
+	auto& scene = mg::SceneManager::Instance().CreateScene();
 
 #pragma region Environment
 	auto object = std::make_unique<mg::GameObject>("Background");
@@ -85,31 +85,31 @@ static void load()
 			0, static_cast<int>(mg::Keycodes::GamepadButton::DPadLeft), mg::InputBinding::DeviceType::Gamepad,
 			std::make_unique<MoveTankCommand>(gamepadPlayer.get(), glm::vec2(-1.f, 0.f), 200.f), mg::InputBinding::TriggerType::Held
 		);
-		mg::InputManager::GetInstance().AddBinding(std::move(moveLeft));
+		mg::InputManager::Instance().AddBinding(std::move(moveLeft));
 
 		auto moveUp = std::make_unique<mg::InputBinding>(
 			0, static_cast<int>(mg::Keycodes::GamepadButton::DPadUp), mg::InputBinding::DeviceType::Gamepad,
 			std::make_unique<MoveTankCommand>(gamepadPlayer.get(), glm::vec2(0.f, -1.f), 200.f), mg::InputBinding::TriggerType::Held
 		);
-		mg::InputManager::GetInstance().AddBinding(std::move(moveUp));
+		mg::InputManager::Instance().AddBinding(std::move(moveUp));
 
 		auto moveRight = std::make_unique<mg::InputBinding>(
 			0, static_cast<int>(mg::Keycodes::GamepadButton::DPadRight), mg::InputBinding::DeviceType::Gamepad,
 			std::make_unique<MoveTankCommand>(gamepadPlayer.get(), glm::vec2(1.f, 0.f), 200.f), mg::InputBinding::TriggerType::Held
 		);
-		mg::InputManager::GetInstance().AddBinding(std::move(moveRight));
+		mg::InputManager::Instance().AddBinding(std::move(moveRight));
 
 		auto moveDown = std::make_unique<mg::InputBinding>(
 			0, static_cast<int>(mg::Keycodes::GamepadButton::DPadDown), mg::InputBinding::DeviceType::Gamepad,
 			std::make_unique<MoveTankCommand>(gamepadPlayer.get(), glm::vec2(0.f, 1.f), 200.f), mg::InputBinding::TriggerType::Held
 		);
-		mg::InputManager::GetInstance().AddBinding(std::move(moveDown));
+		mg::InputManager::Instance().AddBinding(std::move(moveDown));
 
 		auto doDamage = std::make_unique<mg::InputBinding>(
 			0, static_cast<int>(mg::Keycodes::GamepadButton::X), mg::InputBinding::DeviceType::Gamepad,
 			std::make_unique<DamageTankCommand>(gamepadPlayer.get(), 1)
 		);
-		mg::InputManager::GetInstance().AddBinding(std::move(doDamage));
+		mg::InputManager::Instance().AddBinding(std::move(doDamage));
 	}
 
 	auto keyboardPlayer = std::make_unique<mg::GameObject>("Player2", glm::vec3(20, 120.f, 0.f));
@@ -124,32 +124,32 @@ static void load()
 			0, static_cast<int>(mg::Keycodes::KeyboardKey::A), mg::InputBinding::DeviceType::Keyboard,
 			std::make_unique<MoveTankCommand>(keyboardPlayer.get(), glm::vec2(-1.f, 0.f), 100.f), mg::InputBinding::TriggerType::Held
 		);
-		mg::InputManager::GetInstance().AddBinding(std::move(moveLeft));
+		mg::InputManager::Instance().AddBinding(std::move(moveLeft));
 
 		auto moveUp = std::make_unique<mg::InputBinding>(
 			0, static_cast<int>(mg::Keycodes::KeyboardKey::W), mg::InputBinding::DeviceType::Keyboard,
 			std::make_unique<MoveTankCommand>(keyboardPlayer.get(), glm::vec2(0.f, -1.f), 100.f), mg::InputBinding::TriggerType::Held
 		);
-		mg::InputManager::GetInstance().AddBinding(std::move(moveUp));
+		mg::InputManager::Instance().AddBinding(std::move(moveUp));
 
 		auto moveRight = std::make_unique<mg::InputBinding>(
 			0, static_cast<int>(mg::Keycodes::KeyboardKey::D), mg::InputBinding::DeviceType::Keyboard,
 			std::make_unique<MoveTankCommand>(keyboardPlayer.get(), glm::vec2(1.f, 0.f), 100.f), mg::InputBinding::TriggerType::Held
 		);
-		mg::InputManager::GetInstance().AddBinding(std::move(moveRight));
+		mg::InputManager::Instance().AddBinding(std::move(moveRight));
 
 		auto moveDown = std::make_unique<mg::InputBinding>(
 			0, static_cast<int>(mg::Keycodes::KeyboardKey::S), mg::InputBinding::DeviceType::Keyboard,
 			std::make_unique<MoveTankCommand>(keyboardPlayer.get(), glm::vec2(0.f, 1.f), 100.f), mg::InputBinding::TriggerType::Held
 		);
-		mg::InputManager::GetInstance().AddBinding(std::move(moveDown));
+		mg::InputManager::Instance().AddBinding(std::move(moveDown));
 
 
 		auto doDamage = std::make_unique<mg::InputBinding>(
 			0, static_cast<int>(mg::Keycodes::KeyboardKey::C), mg::InputBinding::DeviceType::Keyboard,
 			std::make_unique<DamageTankCommand>(keyboardPlayer.get(), 1)
 		);
-		mg::InputManager::GetInstance().AddBinding(std::move(doDamage));
+		mg::InputManager::Instance().AddBinding(std::move(doDamage));
 
 	}
 
@@ -165,10 +165,10 @@ static void load()
 		fpsCounter->AddComponent<FPS_UI>();
 	}
 
-	keyboardPlayer->GetTransform().SetLocalScale({ 2.f, 2.f });
-	keyboardPlayer->GetTransform().Rotate(45.f);
-	fpsCounter->GetTransform().SetParent(&keyboardPlayer->GetTransform(), true);
-	fpsCounter->GetTransform().SetParent(nullptr, true);
+	keyboardPlayer->Transform().SetLocalScale({ 2.f, 2.f });
+	keyboardPlayer->Transform().Rotate(45.f);
+	fpsCounter->Transform().SetParent(&keyboardPlayer->Transform(), true);
+	fpsCounter->Transform().SetParent(nullptr, true);
 	scene.Add(std::move(fpsCounter));
 
 

@@ -44,7 +44,7 @@ void mg::TextComponent::Update()
 			throw std::runtime_error(std::string("Render text failed: ") + SDL_GetError());
 		}
 
-		auto texture = SDL_CreateTextureFromSurface(Renderer::GetInstance().GetSDLRenderer(), surf);
+		auto texture = SDL_CreateTextureFromSurface(Renderer::Instance().GetSDLRenderer(), surf);
 		if (texture == nullptr)
 		{
 			throw std::runtime_error(std::string("Create text texture from surface failed: ") + SDL_GetError());
@@ -60,18 +60,18 @@ void mg::TextComponent::Render() const
 {
 	if (m_pTextTexture)
 	{
-		Renderer::GetInstance().RenderTexture(*m_pTextTexture, GetOwner()->GetTransform());
+		Renderer::Instance().RenderTexture(*m_pTextTexture, GetOwner()->Transform());
 	}
 }
 std::string_view mg::TextComponent::GetText() const noexcept
 {
 	return m_text;
 }
-glm::vec2 mg::TextComponent::GetSize() const
+glm::vec2 mg::TextComponent::Size() const
 {
 	if (m_pTextTexture)
 	{
-		return 	m_pTextTexture->GetSize();
+		return 	m_pTextTexture->Size();
 	}
 	else
 	{
@@ -86,7 +86,7 @@ mg::TextComponent::TextComponent(GameObject& owner, std::string_view text, std::
 	, m_needsUpdate(true)
 	, m_text(text)
 	, m_color(color)
-	, m_pFont(mg::ResourceManager::GetInstance().LoadFont(fontFile, size))
+	, m_pFont(mg::ResourceManager::Instance().LoadFont(fontFile, size))
 	, m_pTextTexture(nullptr)
 {
 

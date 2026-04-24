@@ -1,16 +1,16 @@
 #include "InputBinding.h"
 
-int mg::InputBinding::GetDeviceIdx() const noexcept
+int mg::InputBinding::DeviceIdx() const noexcept
 {
 	return m_deviceIndex;
 }
 
-int mg::InputBinding::GetInputCode() const noexcept
+int mg::InputBinding::InputCode() const noexcept
 {
 	return m_inputCode;
 }
 
-mg::ICommand* mg::InputBinding::GetCommand() const noexcept
+mg::ICommand* mg::InputBinding::Command() const noexcept
 {
 	return m_pCommand.get();
 }
