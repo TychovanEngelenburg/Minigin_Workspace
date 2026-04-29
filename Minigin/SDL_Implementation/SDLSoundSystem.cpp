@@ -314,6 +314,11 @@ private:
 
 	void Shutdown()
 	{
+		if (m_pMixer)
+		{
+			MIX_StopAllTracks(m_pMixer, 0); 
+		}
+
 		while (!m_activeTracks.empty())
 		{
 			UnloadTrack(m_activeTracks.back());
