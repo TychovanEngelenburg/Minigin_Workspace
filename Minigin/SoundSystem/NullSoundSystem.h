@@ -19,7 +19,7 @@ namespace mg
         void SetMusicVolume([[maybe_unused]] float volume) override {}
         void SetSFXVolume([[maybe_unused]] float volume) override {}
 
-        bool ToggleMute() override { return false; }
+        void ToggleMute() override { }
 	};
 }
 

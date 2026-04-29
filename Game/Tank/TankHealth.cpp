@@ -31,6 +31,9 @@ void TankHealth::Damage(int amount)
 	{
 		Kill();
 	}
+
+	// TODO: Remove
+	DemoPlaySound();
 }
 
 void TankHealth::Kill()

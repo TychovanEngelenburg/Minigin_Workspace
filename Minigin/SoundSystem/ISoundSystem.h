@@ -30,7 +30,7 @@ namespace mg
 		virtual void SetMusicVolume(float volume) = 0;
 		virtual void SetSFXVolume(float volume) = 0;
 
-		virtual bool ToggleMute() = 0;
+		virtual void ToggleMute() = 0;
 	};
 }
 

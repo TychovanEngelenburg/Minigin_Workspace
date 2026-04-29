@@ -21,7 +21,7 @@ namespace mg
         void SetMusicVolume(float volume) override;
         void SetSFXVolume(float volume) override;
 
-        bool ToggleMute() override;
+        void ToggleMute() override;
 
         SDLSoundSystem();
 

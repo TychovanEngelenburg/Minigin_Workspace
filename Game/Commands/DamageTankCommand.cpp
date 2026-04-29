@@ -6,6 +6,7 @@
 void DamageTankCommand::Execute()
 {
 	m_pTankHealth->Damage(m_damageAmount);
+	// Sound effect is played by tank upon damage.
 }
 
 DamageTankCommand::DamageTankCommand(mg::GameObject* object, int damageAmnt)

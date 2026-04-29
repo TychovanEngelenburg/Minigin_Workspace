@@ -44,7 +44,7 @@ add_library(minigin_engine STATIC
     Minigin/SDL_Implementation/SDLSoundSystem.cpp
 
     Minigin/SoundSystem/SoundServiceLocator.cpp
-)
+ )
 target_include_directories(minigin_engine PUBLIC
   ${CMAKE_SOURCE_DIR}
 )

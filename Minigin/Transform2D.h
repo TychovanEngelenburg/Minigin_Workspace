@@ -32,6 +32,7 @@ namespace mg
 		void SetLocalRotation(float newDegr);
 		void SetLocalScale(glm::vec2 const& newScale);
 
+		// TODO: Translate must do actual translation matrix math (and move along the player's rotation)
 		void Translate(glm::vec3 const& delta);
 		void Rotate(float degr);
 

@@ -30,7 +30,6 @@
 #include "EngineComponents/Sprite.h"
 #include "UI/FPS_UI.h"
 #include "UI/PlayerHealth_UI.h"
-
 // Input
 #include "Minigin/InputHandling/InputBinding.h"
 #include "Minigin/InputHandling/InputCodes.h"
@@ -41,6 +40,7 @@
 
 // Audio
 #include "Minigin/SoundSystem/SoundServiceLocator.h"
+#include "Minigin/SoundSystem/LoggingSoundSystem.h"
 #include "Minigin/SDL_Implementation/SDLSoundSystem.h"
 /// <summary>
 /// This script and the surrounding "Game" folder is a temporary stand in for the eventual external game project. 
@@ -49,12 +49,18 @@
 
 static void load()
 {
+#if _DEBUG
+	mg::SoundServiceLocator::Register(std::make_unique<mg::LoggingSoundSystem<mg::SDLSoundSystem>>());
+#else
 	mg::SoundServiceLocator::Register(std::make_unique<mg::SDLSoundSystem>());
+#endif // _DEBUG
+
 
 	auto& scene = mg::SceneManager::Instance().CreateScene();
 	
 	auto& audioSystem = mg::SoundServiceLocator::Fetch();
-	audioSystem.PlaySFX({ "./Data/Audio_Tron1982/11 - Sounds (Derezzed).wav", "derezzed", 3});
+	audioSystem.PlayMusic({ "./Data/Audio_Tron1982/03_IO_Tower.wav", "music", -1});
+	audioSystem.SetMusicVolume(.5f);
 	//audioSystem.PlayMusic({ "./Data/Audio_Tron1982/11 - Sounds (Derezzed).wav", "derezzed", -1});
 
 #pragma region Environment
@@ -192,7 +198,7 @@ static void load()
 	{
 		auto& textComp = PlayerOneControls->AddComponent<mg::TextComponent>("00", "Lingua.otf", textSize);
 		textComp.SetColor({ 255, 255, 255, 255 });
-		textComp.SetText("Use the D-Pad to move Player 1, X to inflict damage"); //, A and B to gain score");
+		textComp.SetText("Use the D-Pad to move Player 1, X to inflict damage and play a soundeffect"); //, A and B to gain score");
 	}
 
 	yPos += textSize + marginSize;
@@ -200,7 +206,7 @@ static void load()
 	{
 		auto& textComp = PlayerTwoControls->AddComponent<mg::TextComponent>("00", "Lingua.otf", textSize);
 		textComp.SetColor({ 255, 255, 255, 255 });
-		textComp.SetText("Use WASD to move Player 2, C to inflict damage"); //, Z and X to gain score");
+		textComp.SetText("Use WASD to move Player 2, C to inflict damage and P and play a soundeffect"); //, Z and X to gain score");
 	}
 
 	yPos += textSize + marginSize; // White line

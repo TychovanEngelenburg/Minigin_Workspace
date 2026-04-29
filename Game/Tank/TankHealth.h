@@ -1,8 +1,11 @@
 #ifndef TANKHEALTH_H
 #define TANKHEALTH_H
-#include "EngineComponents/Component.h"
-#include "EventSource.h"
+#include "Minigin/EngineComponents/Component.h"
+#include "Minigin/EventSource.h"
 #include "GameEvents.h"
+
+#include "Minigin/SoundSystem/ISoundSystem.h"
+#include "Minigin/SoundSystem/SoundServiceLocator.h"
 
 namespace mg
 {
@@ -34,5 +37,13 @@ private:
 	int m_currentLives;
 
 	mg::EventSource<PlayerLivesChangedEvent> m_onDeath;
+
+
+	// Temporary demonstration code
+	void DemoPlaySound()
+	{
+		mg::SoundServiceLocator::Fetch().PlaySFX({ "./Data/Audio_Tron1982/09_Sounds_MCP_Blip.wav", "damageTaken", 0 });
+	}
+
 };
 #endif // !TANKHEALTH_H

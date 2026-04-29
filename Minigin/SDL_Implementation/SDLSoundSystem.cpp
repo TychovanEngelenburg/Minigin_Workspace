@@ -386,10 +386,9 @@ void mg::SDLSoundSystem::SetSFXVolume(float volume)
 	m_pImpl->Push({ AudioEventType::SetSFXVolume, {}, volume });
 }
 
-bool mg::SDLSoundSystem::ToggleMute()
+void mg::SDLSoundSystem::ToggleMute()
 {
 	m_pImpl->Push({ AudioEventType::ToggleMute });
-	return true;
 }
 
 mg::SDLSoundSystem::SDLSoundSystem()
