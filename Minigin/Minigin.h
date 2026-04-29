@@ -1,7 +1,7 @@
 #ifndef MINIGIN_H
 #define MINIGIN_H
 
-#include "DeltaClock.h"
+#include "Minigin/DeltaClock.h"
 
 #include <filesystem>
 #include <functional>

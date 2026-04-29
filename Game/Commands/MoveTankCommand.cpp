@@ -1,6 +1,6 @@
 #include "Commands/MoveTankCommand.h"
-#include "GameObject.h"
-#include "DeltaClock.h"
+#include "Minigin/GameObject.h"
+#include "Minigin/DeltaClock.h"
 #include <glm/vec2.hpp>
 
 void MoveTankCommand::Execute()

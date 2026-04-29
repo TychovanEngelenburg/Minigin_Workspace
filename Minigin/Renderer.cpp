@@ -1,6 +1,6 @@
-﻿#include "Renderer.h"
-#include "SceneManager.h"
-#include "SDL_Implementation/SDLTexture2D.h"
+﻿#include "Minigin/Renderer.h"
+#include "Minigin/SceneManager.h"
+#include "Minigin/SDL_Implementation/SDLTexture2D.h"
 
 #include <SDL3/SDL_video.h>
 #include <stdexcept>
@@ -15,7 +15,7 @@
 #include <backends/imgui_impl_sdl3.h>
 #include <backends/imgui_impl_sdlrenderer3.h>
 
-#include "ImGUI/imgui_plot.h"
+#include "Minigin/ImGUI/imgui_plot.h"
 
 SDL_Renderer* mg::Renderer::GetSDLRenderer() const noexcept
 {

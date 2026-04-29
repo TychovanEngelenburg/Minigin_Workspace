@@ -3,13 +3,13 @@
 #include <windows.h>
 #endif
 
-#include "Minigin.h"
+#include "Minigin/Minigin.h"
 
-#include "InputHandling/InputManager.h"
-#include "SceneManager.h"
-#include "ResourceManager.h"
-#include "DeltaClock.h"
-#include "Renderer.h"
+#include "Minigin/InputHandling/InputManager.h"
+#include "Minigin/SceneManager.h"
+#include "Minigin/ResourceManager.h"
+#include "Minigin/DeltaClock.h"
+#include "Minigin/Renderer.h"
 
 #include <stdexcept>
 #include <sstream>

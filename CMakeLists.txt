@@ -17,8 +17,7 @@ else()
   set(TARGET_PARAM WIN32)
 endif()
 
-# list source files here
-add_executable(${TARGET_NAME} ${TARGET_PARAM}
+add_library(minigin_engine STATIC
     Minigin/GameObject.cpp    
     Minigin/InputHandling/InputManager.cpp
     Minigin/Minigin.cpp
@@ -44,17 +43,22 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     Minigin/SDL_Implementation/SDLTexture2D.cpp
     Minigin/SDL_Implementation/SDLSoundSystem.cpp
 
-    
     Minigin/SoundSystem/SoundServiceLocator.cpp
+)
+target_include_directories(minigin_engine PUBLIC
+  ${CMAKE_SOURCE_DIR}
+)
+target_compile_features(minigin_engine PUBLIC cxx_std_20)
 
+# list source files here
+add_executable(${TARGET_NAME} ${TARGET_PARAM}
     Game/Main.cpp
     Game/Tank/TankHealth.cpp
     Game/UI/FPS_UI.cpp
     Game/UI/PlayerHealth_UI.cpp
     Game/Commands/MoveTankCommand.cpp
     Game/Commands/DamageTankCommand.cpp 
-   )
-
+)
 
 # enable c++20 features
 target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)
@@ -186,14 +190,25 @@ target_link_libraries(imgui PUBLIC SDL3::SDL3)
 # enable c++20 features
 target_compile_features(imgui PUBLIC cxx_std_20)
 
+# ONLY REAL CHANGE (ENGINE LINK)
+target_link_libraries(minigin_engine PUBLIC 
+  SDL3::SDL3 
+  SDL3_ttf::SDL3_ttf
+  SDL3_mixer::SDL3_mixer
+  glm::glm
+  imgui
+)
+
+target_link_libraries(${TARGET_NAME} PUBLIC minigin_engine)
+
 target_include_directories("${TARGET_NAME}" PUBLIC 
   ${CMAKE_SOURCE_DIR}/Minigin/
   ${CMAKE_SOURCE_DIR}/Game/
   ${glm_SOURCE_DIR}
-  ${sdl3_SOURCE_DIR}/include
+  ${sdl3_source_dir}/include
   ${sdl3_image_SOURCE_DIR}/include
   ${sdl3_ttf_SOURCE_DIR}/include
-    ${sdl3_mixer_SOURCE_DIR}/include
+  ${sdl3_mixer_SOURCE_DIR}/include
   ${imgui_SOURCE_DIR}
   ${VLD_INCLUDE_DIR}
 )

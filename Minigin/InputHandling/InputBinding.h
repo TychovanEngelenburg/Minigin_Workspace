@@ -1,7 +1,7 @@
 #ifndef INPUTBINDING_H
 #define INPUTBINDING_H
 #include <memory>
-#include "InputHandling/ICommand.h"
+#include "Minigin/InputHandling/ICommand.h"
 
 namespace mg
 {

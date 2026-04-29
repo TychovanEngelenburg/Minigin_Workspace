@@ -1,9 +1,9 @@
 #ifndef TEXTUREOBJECT_H
 #define TEXTUREOBJECT_H
 
-#include "EngineComponents/Component.h"
-#include "SDL_Implementation/SDLFont.h"
-#include "SDL_Implementation/SDLTexture2D.h"
+#include "Minigin/EngineComponents/Component.h"
+#include "Minigin/SDL_Implementation/SDLFont.h"
+#include "Minigin/SDL_Implementation/SDLTexture2D.h"
 
 #include <string>
 #include <string_view>

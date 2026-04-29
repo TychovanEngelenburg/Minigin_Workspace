@@ -1,4 +1,4 @@
-#include "GameObject.h"
+#include "Minigin/GameObject.h"
 
 // .h includes
 #include "EngineComponents/Component.h"

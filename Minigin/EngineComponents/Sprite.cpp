@@ -1,11 +1,10 @@
-#include "EngineComponents/Sprite.h"
-
-#include "ResourceManager.h"
-#include "Renderer.h"
-#include "GameObject.h"
+#include "Minigin/EngineComponents/Sprite.h"
+#include "Minigin/ResourceManager.h"
+#include "Minigin/Renderer.h"
+#include "Minigin/GameObject.h"
 
 // .h includes
-#include "EngineComponents/Component.h"
+#include "Minigin/EngineComponents/Component.h"
 #include <memory>
 #include <filesystem>
 

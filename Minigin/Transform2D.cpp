@@ -1,6 +1,6 @@
 #include "Transform2D.h"
 #include <glm/gtc/matrix_transform.hpp>
-#include "GameObject.h"
+#include "Minigin/GameObject.h"
 
 glm::vec3 mg::Transform2D::WorldPosition() const noexcept
 {

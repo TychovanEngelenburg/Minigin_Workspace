@@ -1,8 +1,8 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
-#include "EngineComponents/Component.h"
-#include "SDL_Implementation/SDLTexture2D.h"
+#include "Minigin/EngineComponents/Component.h"
+#include "Minigin/SDL_Implementation/SDLTexture2D.h"
 
 #include <memory>
 #include <filesystem>

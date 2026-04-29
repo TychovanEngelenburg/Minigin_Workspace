@@ -1,7 +1,7 @@
-#include "SceneManager.h"
+#include "Minigin/SceneManager.h"
 
 // .h includes
-#include "Scene.h"
+#include "Minigin/Scene.h"
 
 #include <memory>
 #include <vector>

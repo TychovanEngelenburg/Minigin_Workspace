@@ -1,6 +1,6 @@
 #ifndef GAMEPAD_H
 #define GAMEPAD_H
-#include "InputHandling/IInputDevice.h"
+#include "Minigin/InputHandling/IInputDevice.h"
 #include <memory>
 
 namespace mg

@@ -1,4 +1,4 @@
-#include "ImGUI/imgui_plot.h"
+#include "Minigin/ImGUI/imgui_plot.h"
 #include <imgui.h>
 #include <imgui_internal.h>
 

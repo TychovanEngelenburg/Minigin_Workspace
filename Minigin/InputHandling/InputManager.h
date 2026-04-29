@@ -1,14 +1,14 @@
 #ifndef INPUTMANAGER_H
 #define INPUTMANAGER_H
 
-#include "Singleton.h"
+#include "Minigin/Singleton.h"
 #include <memory>
 #include <vector>
 #include <array>
-#include "InputHandling/InputBinding.h"
+#include "Minigin/InputHandling/InputBinding.h"
 
-#include "InputHandling/Gamepad.h"
-#include "InputHandling/Keyboard.h"
+#include "Minigin/InputHandling/Gamepad.h"
+#include "Minigin/InputHandling/Keyboard.h"
 
 namespace mg
 {

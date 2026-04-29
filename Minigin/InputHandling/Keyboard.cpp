@@ -1,6 +1,6 @@
-#include "InputHandling/Keyboard.h"
+#include "Minigin/InputHandling/Keyboard.h"
 
-#include "InputHandling/InputCodes.h"
+#include "Minigin/InputHandling/InputCodes.h"
 #include <SDL3/SDL.h>
 #include <array>
 

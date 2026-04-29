@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <vector>
-#include "GameObject.h"
+#include "Minigin/GameObject.h"
 #include <string_view>
 
 namespace mg

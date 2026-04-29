@@ -1,6 +1,6 @@
-#include "Scene.h"
+#include "Minigin/Scene.h"
 
-#include "GameObject.h"
+#include "Minigin/GameObject.h"
 #include <algorithm>
 #include <cassert>
 #include <memory>

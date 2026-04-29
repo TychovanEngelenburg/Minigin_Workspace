@@ -1,7 +1,7 @@
 #ifndef DAMAGETANKCOMMAND_H
 #define DAMAGETANKCOMMAND_H
 #include "glm/glm.hpp"
-#include "InputHandling/GameObjectCommand.h" 
+#include "Minigin/InputHandling/GameObjectCommand.h" 
 
 namespace mg
 {

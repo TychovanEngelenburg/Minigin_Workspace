@@ -1,6 +1,6 @@
 #ifndef GAMEOBJECTCOMMAND_H
 #define GAMEOBJECTCOMMAND_H
-#include "InputHandling/ICommand.h"
+#include "Minigin/InputHandling/ICommand.h"
 
 namespace mg
 {

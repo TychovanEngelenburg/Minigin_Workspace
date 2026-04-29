@@ -1,9 +1,9 @@
 #include "UI/FPS_UI.h"
 
-#include "DeltaClock.h"
+#include "Minigin/DeltaClock.h"
 #include "EngineComponents/Component.h"
 #include "EngineComponents/TextComponent.h"
-#include "GameObject.h"
+#include "Minigin/GameObject.h"
 
 #include <cassert>
 #include <format>

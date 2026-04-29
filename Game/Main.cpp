@@ -20,28 +20,28 @@
 #endif
 
 // Game
-#include "Minigin.h"
-#include "SceneManager.h"
-#include "Scene.h"
+#include "Minigin/Minigin.h"
+#include "Minigin/SceneManager.h"
+#include "Minigin/Scene.h"
 
 // GameObject
-#include "GameObject.h"
+#include "Minigin/GameObject.h"
 #include "EngineComponents/TextComponent.h"
 #include "EngineComponents/Sprite.h"
 #include "UI/FPS_UI.h"
 #include "UI/PlayerHealth_UI.h"
 
 // Input
-#include "InputHandling/InputBinding.h"
-#include "InputHandling/InputCodes.h"
-#include "InputHandling/InputManager.h"
+#include "Minigin/InputHandling/InputBinding.h"
+#include "Minigin/InputHandling/InputCodes.h"
+#include "Minigin/InputHandling/InputManager.h"
 #include "Commands/MoveTankCommand.h"
 #include "Commands/DamageTankCommand.h"
 #include "Tank/TankHealth.h"
 
 // Audio
-#include "SoundSystem/SoundServiceLocator.h"
-#include "SDL_Implementation/SDLSoundSystem.h"
+#include "Minigin/SoundSystem/SoundServiceLocator.h"
+#include "Minigin/SDL_Implementation/SDLSoundSystem.h"
 /// <summary>
 /// This script and the surrounding "Game" folder is a temporary stand in for the eventual external game project. 
 /// It's purpose is to test engine functions and it should not be included in the final engine library!

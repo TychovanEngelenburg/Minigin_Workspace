@@ -2,7 +2,7 @@
 #define SCENEMANAGER_H
 
 #include "Singleton.h"
-#include "Scene.h"
+#include "Minigin/Scene.h"
 
 #include <memory>
 #include <vector>

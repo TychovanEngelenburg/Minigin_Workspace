@@ -1,6 +1,6 @@
 #ifndef SDL_SOUNDSYSTEM_H
 #define SDL_SOUNDSYSTEM_H
-#include "SoundSystem/ISoundSystem.h"
+#include "Minigin/SoundSystem/ISoundSystem.h"
 #include <memory>
 
 namespace mg

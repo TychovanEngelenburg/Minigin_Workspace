@@ -1,6 +1,6 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
-#include "InputHandling/IInputDevice.h"
+#include "Minigin/InputHandling/IInputDevice.h"
 
 #include <memory>
 

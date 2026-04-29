@@ -1,5 +1,5 @@
-#include "InputHandling/GameObjectCommand.h"
-#include "GameObject.h"
+#include "Minigin/InputHandling/GameObjectCommand.h"
+#include "Minigin/GameObject.h"
 
 mg::GameObject* mg::GameObjectCommand::GetGameObject() const
 {

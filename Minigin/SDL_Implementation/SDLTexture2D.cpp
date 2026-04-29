@@ -1,5 +1,5 @@
-#include "SDL_Implementation/SDLTexture2D.h"
-#include "Renderer.h"
+#include "Minigin/SDL_Implementation/SDLTexture2D.h"
+#include "Minigin/Renderer.h"
 
 #include <stdexcept>
 #include <SDL3/SDL_render.h>

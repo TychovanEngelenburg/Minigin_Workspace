@@ -3,8 +3,8 @@
 
 #include "Singleton.h"
 
-#include "SDL_Implementation/SDLFont.h"
-#include "SDL_Implementation/SDLTexture2D.h"
+#include "Minigin/SDL_Implementation/SDLFont.h"
+#include "Minigin/SDL_Implementation/SDLTexture2D.h"
 
 #include <filesystem>
 #include <map>

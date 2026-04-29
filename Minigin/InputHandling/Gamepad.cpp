@@ -1,5 +1,5 @@
 #include "Gamepad.h"
-#include "InputHandling/InputCodes.h"
+#include "Minigin/InputHandling/InputCodes.h"
 
 #if defined(_WIN32)
 #include "Windows.h"

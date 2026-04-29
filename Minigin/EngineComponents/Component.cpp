@@ -1,5 +1,5 @@
-#include "EngineComponents/Component.h"
-#include "GameObject.h"
+#include "Minigin/EngineComponents/Component.h"
+#include "Minigin/GameObject.h"
 
 mg::GameObject* mg::Component::GetOwner() const noexcept
 {

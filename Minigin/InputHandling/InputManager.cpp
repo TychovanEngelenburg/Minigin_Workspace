@@ -5,9 +5,9 @@
 
 
 #include "InputBinding.h"
-#include "InputHandling/ICommand.h"
+#include "Minigin/InputHandling/ICommand.h"
 #include "Gamepad.h"
-#include "InputHandling/IInputDevice.h"
+#include "Minigin/InputHandling/IInputDevice.h"
 
 bool mg::InputManager::ProcessInput()
 {

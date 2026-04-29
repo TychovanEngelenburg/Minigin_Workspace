@@ -1,7 +1,7 @@
-﻿#include "EngineComponents/TextComponent.h"
-#include "GameObject.h"
-#include "Renderer.h"
-#include "ResourceManager.h"
+﻿#include "Minigin/EngineComponents/TextComponent.h"
+#include "Minigin/GameObject.h"
+#include "Minigin/Renderer.h"
+#include "Minigin/ResourceManager.h"
 
 #include <stdexcept>
 #include <SDL3_ttf/SDL_ttf.h>
@@ -10,9 +10,9 @@
 #include <SDL3/SDL_render.h>
 
 // .h includes
-#include "EngineComponents/Component.h"
-#include "SDL_Implementation/SDLFont.h"
-#include "SDL_Implementation/SDLTexture2D.h"
+#include "Minigin/EngineComponents/Component.h"
+#include "Minigin/SDL_Implementation/SDLFont.h"
+#include "Minigin/SDL_Implementation/SDLTexture2D.h"
 
 #include <string>
 #include <string_view>
