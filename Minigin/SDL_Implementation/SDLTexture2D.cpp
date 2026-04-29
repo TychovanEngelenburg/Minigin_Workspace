@@ -1,4 +1,4 @@
-#include "Types/Texture2D.h"
+#include "SDL_Implementation/SDLTexture2D.h"
 #include "Renderer.h"
 
 #include <stdexcept>

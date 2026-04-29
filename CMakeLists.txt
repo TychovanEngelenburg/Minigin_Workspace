@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.26)
 project(Minigin)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 if(EMSCRIPTEN)
   message("Using Emscripten!")
 endif()
@@ -23,27 +27,33 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     Minigin/Scene.cpp
     Minigin/SceneManager.cpp
     Minigin/DeltaClock.cpp
-    Minigin/Types/Font.cpp
-    Minigin/Types/Texture2D.cpp
-    "Minigin/Transform2D.cpp"
+    Minigin/Transform2D.cpp
+    
     Minigin/EngineComponents/TextComponent.cpp
     Minigin/EngineComponents/Sprite.cpp
     Minigin/EngineComponents/Component.cpp 
+    
     Minigin/ImGUI/imgui_plot.cpp 
+    
     Minigin/InputHandling/Gamepad.cpp
     Minigin/InputHandling/InputBinding.cpp
     Minigin/InputHandling/Keyboard.cpp 
     Minigin/InputHandling/GameObjectCommand.cpp 
+
+    Minigin/SDL_Implementation/SDLFont.cpp
+    Minigin/SDL_Implementation/SDLTexture2D.cpp
+    Minigin/SDL_Implementation/SDLSoundSystem.cpp
+
     
-    
-    Game/UI/FPS_UI.cpp
+    Minigin/SoundSystem/SoundServiceLocator.cpp
+
     Game/Main.cpp
-     
     Game/Tank/TankHealth.cpp
+    Game/UI/FPS_UI.cpp
     Game/UI/PlayerHealth_UI.cpp
     Game/Commands/MoveTankCommand.cpp
     Game/Commands/DamageTankCommand.cpp 
- )
+   )
 
 
 # enable c++20 features
@@ -127,6 +137,31 @@ if(NOT SDL3_ttf_FOUND)
   endif()
 endif()
 
+# Add SDL3_mixer
+find_package(SDL3_mixer 3.2.0 CONFIG QUIET)
+if(NOT SDL3_mixer_FOUND)
+  if (WIN32)
+    FetchContent_Declare(
+      SDL3_mixer
+      URL https://github.com/libsdl-org/SDL_mixer/releases/download/release-3.2.0/SDL3_mixer-devel-3.2.0-VC.zip
+      DOWNLOAD_NO_PROGRESS ON
+      DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
+    )
+    FetchContent_MakeAvailable(SDL3_mixer)
+    list(PREPEND CMAKE_PREFIX_PATH "${sdl3_mixer_SOURCE_DIR}")
+    find_package(SDL3_mixer CONFIG REQUIRED)
+  else()
+    FetchContent_Declare(
+      SDL3_mixer
+      GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git
+      GIT_TAG release-3.2.0
+      GIT_SHALLOW TRUE
+      GIT_PROGRESS TRUE
+    )
+    FetchContent_MakeAvailable(SDL3_mixer)
+  endif()
+endif()
+
 # Dear ImGui
 FetchContent_Declare(
   imgui
@@ -158,15 +193,9 @@ target_include_directories("${TARGET_NAME}" PUBLIC
   ${sdl3_SOURCE_DIR}/include
   ${sdl3_image_SOURCE_DIR}/include
   ${sdl3_ttf_SOURCE_DIR}/include
+    ${sdl3_mixer_SOURCE_DIR}/include
   ${imgui_SOURCE_DIR}
   ${VLD_INCLUDE_DIR}
-)
-
-target_link_libraries("${TARGET_NAME}" PUBLIC 
-  SDL3::SDL3 
-  SDL3_ttf::SDL3_ttf
-  imgui
-  ${VLD_LIBRARIES}
 )
 
 if (WIN32)
@@ -183,10 +212,12 @@ target_include_directories("${TARGET_NAME}" PUBLIC
   ${VLD_INCLUDE_DIR}
 )
 
-target_link_libraries("${TARGET_NAME}" PUBLIC
-  SDL3::SDL3
+target_link_libraries("${TARGET_NAME}" PUBLIC 
+  SDL3::SDL3 
   SDL3_ttf::SDL3_ttf
+  SDL3_mixer::SDL3_mixer
   glm::glm
+  imgui
   ${VLD_LIBRARIES}
 )
 
@@ -227,6 +258,7 @@ elseif(WIN32)
   set(SDL_RUNTIME_DLLS
     SDL3::SDL3
     SDL3_ttf::SDL3_ttf
+    SDL3_mixer::SDL3_mixer
   )
 
   foreach(dllTarget IN LISTS SDL_RUNTIME_DLLS)
@@ -263,7 +295,9 @@ elseif(APPLE)
     COMMAND "${CMAKE_COMMAND}" -E make_directory "$<TARGET_BUNDLE_DIR:${TARGET_NAME}>/Contents/Frameworks"
     COMMAND "${CMAKE_COMMAND}" -E copy_if_different "$<TARGET_FILE:SDL3::SDL3-shared>" "$<TARGET_BUNDLE_DIR:${TARGET_NAME}>/Contents/Frameworks/"
     COMMAND "${CMAKE_COMMAND}" -E copy_if_different "$<TARGET_FILE:SDL3_ttf::SDL3_ttf-shared>" "$<TARGET_BUNDLE_DIR:${TARGET_NAME}>/Contents/Frameworks/"
+    COMMAND "${CMAKE_COMMAND}" -E copy_if_different "$<TARGET_FILE:SDL3_mixer::SDL3_mixer-shared>" "$<TARGET_BUNDLE_DIR:${TARGET_NAME}>/Contents/Frameworks/"
     COMMAND install_name_tool -change "@rpath/libSDL3_ttf.0.dylib" "@executable_path/../Frameworks/libSDL3_ttf.0.2.2.dylib" "$<TARGET_FILE:${TARGET_NAME}>"
+    COMMAND install_name_tool -change "@rpath/libSDL3_mixer.0.dylib" "@executable_path/../Frameworks/libSDL3_mixer.0.dylib" "$<TARGET_FILE:${TARGET_NAME}>"
     COMMAND install_name_tool -change "@rpath/libSDL3.0.dylib" "@executable_path/../Frameworks/libSDL3.0.dylib" "$<TARGET_FILE:${TARGET_NAME}>"
   )
 

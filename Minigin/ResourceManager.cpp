@@ -4,8 +4,8 @@
 #include <SDL3_ttf/SDL_ttf.h>
 
 // .h includes
-#include "Types/Font.h"
-#include "Types/Texture2D.h"
+#include "SDL_Implementation/SDLFont.h"
+#include "SDL_Implementation/SDLTexture2D.h"
 
 #include <filesystem>
 #include <map>

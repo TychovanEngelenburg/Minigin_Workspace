@@ -6,6 +6,8 @@
 #include <glm/ext/vector_float2.hpp>
 #include <glm/fwd.hpp>
 
+// TODO: Apply pointer implementation for texture usage.
+
 struct SDL_Texture;
 namespace mg
 {

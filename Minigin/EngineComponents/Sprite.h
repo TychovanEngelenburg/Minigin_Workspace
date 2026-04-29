@@ -2,7 +2,7 @@
 #define SPRITE_H
 
 #include "EngineComponents/Component.h"
-#include "Types/Texture2D.h"
+#include "SDL_Implementation/SDLTexture2D.h"
 
 #include <memory>
 #include <filesystem>

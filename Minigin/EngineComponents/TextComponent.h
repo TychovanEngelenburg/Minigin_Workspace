@@ -2,8 +2,8 @@
 #define TEXTUREOBJECT_H
 
 #include "EngineComponents/Component.h"
-#include "Types/Font.h"
-#include "Types/Texture2D.h"
+#include "SDL_Implementation/SDLFont.h"
+#include "SDL_Implementation/SDLTexture2D.h"
 
 #include <string>
 #include <string_view>

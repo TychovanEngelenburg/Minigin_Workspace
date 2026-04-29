@@ -77,7 +77,7 @@ bool mg::InputManager::ProcessInput()
 			case InputBinding::TriggerType::Axis:
 			{
 				//auto axis = device->GetAxis(binding->InputCode());
-				//binding->Command()->Execute(axis);
+				//binding->Command()->HandleEvent(axis);
 				break;
 			}
 		}

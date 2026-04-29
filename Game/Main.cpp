@@ -39,6 +39,9 @@
 #include "Commands/DamageTankCommand.h"
 #include "Tank/TankHealth.h"
 
+// Audio
+#include "SoundSystem/SoundServiceLocator.h"
+#include "SDL_Implementation/SDLSoundSystem.h"
 /// <summary>
 /// This script and the surrounding "Game" folder is a temporary stand in for the eventual external game project. 
 /// It's purpose is to test engine functions and it should not be included in the final engine library!
@@ -46,7 +49,13 @@
 
 static void load()
 {
+	mg::SoundServiceLocator::Register(std::make_unique<mg::SDLSoundSystem>());
+
 	auto& scene = mg::SceneManager::Instance().CreateScene();
+	
+	auto& audioSystem = mg::SoundServiceLocator::Fetch();
+	audioSystem.PlaySFX({ "./Data/Audio_Tron1982/11 - Sounds (Derezzed).wav", "derezzed", 3});
+	//audioSystem.PlayMusic({ "./Data/Audio_Tron1982/11 - Sounds (Derezzed).wav", "derezzed", -1});
 
 #pragma region Environment
 	auto object = std::make_unique<mg::GameObject>("Background");
@@ -72,10 +81,12 @@ static void load()
 
 
 
+
+
 	// Player characters initialisation. 
 	auto gamepadPlayer = std::make_unique<mg::GameObject>("Player1", glm::vec3(20, 100.f, 0.f));
 	{
-		auto& sprite = gamepadPlayer->AddComponent<mg::Sprite>("T_SpriteSheet_Tron.png", mg::SpriteSheet(13, 5));
+		auto& sprite = gamepadPlayer->AddComponent<mg::Sprite>("T_SpriteSheet_Tron.png", mg::SpriteSheet{ 13, 5 });
 		sprite.SetSprite(10, 0);
 
 		gamepadPlayer->AddComponent<TankHealth>();
@@ -114,7 +125,7 @@ static void load()
 
 	auto keyboardPlayer = std::make_unique<mg::GameObject>("Player2", glm::vec3(20, 120.f, 0.f));
 	{
-		auto& sprite = keyboardPlayer->AddComponent<mg::Sprite>("T_SpriteSheet_Tron.png", mg::SpriteSheet(13, 5));
+		auto& sprite = keyboardPlayer->AddComponent<mg::Sprite>("T_SpriteSheet_Tron.png", mg::SpriteSheet{ 13, 5 });
 		sprite.SetSprite(8, 0);
 
 		keyboardPlayer->AddComponent<TankHealth>();

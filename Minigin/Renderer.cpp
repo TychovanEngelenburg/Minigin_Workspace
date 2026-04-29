@@ -1,6 +1,6 @@
 ﻿#include "Renderer.h"
 #include "SceneManager.h"
-#include "Types/Texture2D.h"
+#include "SDL_Implementation/SDLTexture2D.h"
 
 #include <SDL3/SDL_video.h>
 #include <stdexcept>

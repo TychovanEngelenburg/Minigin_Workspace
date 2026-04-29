@@ -5,6 +5,8 @@
 
 struct TTF_Font;
 
+// TODO: Apply pointer implementation for font usage.
+
 namespace mg
 {
 	/**
