@@ -30,6 +30,7 @@
 #include "EngineComponents/Sprite.h"
 #include "UI/FPS_UI.h"
 #include "UI/PlayerHealth_UI.h"
+#include "Grid/GameGrid.h"
 // Input
 #include "Minigin/InputHandling/InputBinding.h"
 #include "Minigin/InputHandling/InputCodes.h"
@@ -57,9 +58,9 @@ static void load()
 
 
 	auto& scene = mg::SceneManager::Instance().CreateScene();
-	
+
 	auto& audioSystem = mg::SoundServiceLocator::Fetch();
-	audioSystem.PlayMusic({ "./Data/Audio_Tron1982/03_IO_Tower.wav", "music", -1});
+	audioSystem.PlayMusic({ "./Data/Audio_Tron1982/03_IO_Tower.wav", "music", -1 });
 	audioSystem.SetMusicVolume(.5f);
 	//audioSystem.PlayMusic({ "./Data/Audio_Tron1982/11 - Sounds (Derezzed).wav", "derezzed", -1});
 
@@ -83,6 +84,13 @@ static void load()
 	//	textComp.SetColor({ 255, 255, 0, 255 });
 	//	scene.Add(std::move(object));
 	//}
+
+	//auto grid = std::make_unique<mg::GameObject>("Grid", glm::vec3(20, 100.f, 0.f));
+	//{
+	//	grid->AddComponent<GameGrid>("LevelData/01.lvl", 576.f / 30.f);
+	//	scene.Add(std::move(grid));
+	//}
+
 #pragma endregion Environment
 
 

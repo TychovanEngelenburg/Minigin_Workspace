@@ -70,6 +70,11 @@ void mg::ResourceManager::UnloadUnusedResources()
 	}
 }
 
+std::filesystem::path const& mg::ResourceManager::DataPath()
+{
+	return m_dataPath;
+}
+
 void mg::ResourceManager::Init(std::filesystem::path const& dataPath)
 {
 	m_dataPath = dataPath;

@@ -1,7 +1,7 @@
 #include "Minigin/EngineComponents/Component.h"
 #include "Minigin/GameObject.h"
 
-mg::GameObject* mg::Component::GetOwner() const noexcept
+mg::GameObject* mg::Component::Owner() const noexcept
 {
 	return m_pGameObject;
 }
@@ -30,7 +30,7 @@ void mg::Component::LateUpdate() {}
 void mg::Component::End() {}
 #pragma endregion Game_Loop
 
-mg::Component::Component(GameObject& owner)
+mg::Component::Component(mg::GameObject& owner)
 	: m_pGameObject{ &owner }
 	, m_active{ true }
 {

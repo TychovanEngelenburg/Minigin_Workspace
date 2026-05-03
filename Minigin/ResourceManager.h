@@ -22,7 +22,7 @@ namespace mg
 		std::shared_ptr<Font> LoadFont(std::filesystem::path const& file, uint8_t size);
 
 		void UnloadUnusedResources();
-
+		std::filesystem::path const& DataPath();
 		void Init(const std::filesystem::path& data);
 	private:
 		friend class Singleton<ResourceManager>;

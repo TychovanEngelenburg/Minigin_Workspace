@@ -84,6 +84,47 @@ void mg::Renderer::RenderTexture(Texture2D const& texture, Transform2D const& tr
 	);
 }
 
+void mg::Renderer::RenderTexture(Texture2D const& texture, SDL_FRect const& dst, SDL_FRect const& src, bool flipX, bool flipY) const
+{
+
+	bool hasSrc{ true };
+	if (src.w == 0 && src.h == 0)
+	{
+		hasSrc = false;
+	}
+
+	SDL_FRect newDst{ dst };
+	if (hasSrc)
+	{
+		newDst.w = src.w;
+		newDst.h = src.h;
+	}
+	else
+	{
+		SDL_GetTextureSize(texture.GetSDLTexture(), &newDst.w, &newDst.h);
+	}
+
+	SDL_FlipMode flipMode{};
+	if (flipX && !flipY)
+	{
+		flipMode = SDL_FLIP_HORIZONTAL;
+	}
+	else if (!flipX && flipY)
+	{
+		flipMode = SDL_FLIP_VERTICAL;
+	}
+	if (flipX && flipY)
+	{
+		flipMode = SDL_FLIP_HORIZONTAL_AND_VERTICAL;
+	}
+
+	SDL_RenderTexture(
+		Renderer::Instance().GetSDLRenderer(),
+		texture.GetSDLTexture(),
+		hasSrc ? &src : nullptr,
+		&newDst
+	);
+}
 
 const SDL_Color& mg::Renderer::BackgroundColor() const
 {

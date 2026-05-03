@@ -9,7 +9,7 @@ void PlayerHealth_UI::OnNotify(PlayerLivesChangedEvent const& eventData)
 {
 	if (!m_pTextComp)
 	{
-		m_pTextComp = GetOwner()->GetComponent<mg::TextComponent>();
+		m_pTextComp = Owner()->GetComponent<mg::TextComponent>();
 		assert(m_pTextComp);
 	}
 

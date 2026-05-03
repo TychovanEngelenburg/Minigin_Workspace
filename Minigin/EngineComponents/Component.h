@@ -7,7 +7,7 @@ namespace mg
 	class Component
 	{
 	public:
-		GameObject* GetOwner() const noexcept;
+		mg::GameObject* Owner() const noexcept;
 		bool IsActive() const noexcept;
 
 		void SetActive(bool isActive);
@@ -26,10 +26,10 @@ namespace mg
 		Component& operator=(Component&& other) = delete;
 
 	protected:
-		Component(GameObject& owner);
+		Component(mg::GameObject& owner);
 
 	private:
-		GameObject* m_pGameObject;
+		mg::GameObject* m_pGameObject;
 		bool m_active;
 	};
 }

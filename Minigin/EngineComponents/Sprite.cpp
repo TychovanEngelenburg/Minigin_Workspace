@@ -36,7 +36,7 @@ void mg::Sprite::SetSprite(int x, int y)
 #pragma region Game_Loop
 void mg::Sprite::Render() const
 {
-	Renderer::Instance().RenderTexture(*m_pTexture, GetOwner()->Transform(), m_sourceRect);
+	Renderer::Instance().RenderTexture(*m_pTexture, Owner()->Transform(), m_sourceRect);
 }
 #pragma endregion Game_Loop
 

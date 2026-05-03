@@ -60,7 +60,7 @@ void mg::TextComponent::Render() const
 {
 	if (m_pTextTexture)
 	{
-		Renderer::Instance().RenderTexture(*m_pTextTexture, GetOwner()->Transform());
+		Renderer::Instance().RenderTexture(*m_pTextTexture, Owner()->Transform());
 	}
 }
 std::string_view mg::TextComponent::GetText() const noexcept
@@ -81,7 +81,7 @@ glm::vec2 mg::TextComponent::Size() const
 #pragma endregion Game_loop
 
 
-mg::TextComponent::TextComponent(GameObject& owner, std::string_view text, std::filesystem::path const& fontFile, uint8_t size, SDL_Color const& color)
+mg::TextComponent::TextComponent(mg::GameObject& owner, std::string_view text, std::filesystem::path const& fontFile, uint8_t size, SDL_Color const& color)
 	: Component(owner)
 	, m_needsUpdate(true)
 	, m_text(text)
