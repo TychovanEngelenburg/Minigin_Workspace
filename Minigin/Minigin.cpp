@@ -71,8 +71,6 @@ void PrintSDLVersion()
 void mg::Minigin::Run(std::function<void()> const& load)
 {
 	load();
-	SceneManager::Instance().Start();
-
 
 #ifndef __EMSCRIPTEN__
 	while (!m_quit)
@@ -86,13 +84,23 @@ void mg::Minigin::Run(std::function<void()> const& load)
 	SceneManager::Instance().End();
 }
 
+
 void mg::Minigin::RunOneFrame()
 {
 
 	m_pDeltaClock->Update();
 
-	m_quit = !InputManager::Instance().ProcessInput();
-	// TODO: Pass input to scene()
+
+	SDL_Event e;
+	while (SDL_PollEvent(&e))
+	{
+		if (e.type == SDL_EVENT_QUIT)
+		{
+			m_quit = true;
+			break;
+		}
+	}
+
 
 	m_lag += DeltaClock::DeltaTime();
 	while (m_lag >= DeltaClock::FixedDeltaTime())
@@ -100,6 +108,8 @@ void mg::Minigin::RunOneFrame()
 		SceneManager::Instance().FixedUpdate();
 		m_lag -= DeltaClock::FixedDeltaTime();
 	}
+	InputManager::Instance().ProcessInput();
+	SceneManager::Instance().ProcessInput();
 
 	SceneManager::Instance().Update();
 

@@ -12,6 +12,7 @@ namespace mg
 
 		void SetActive(bool isActive);
 
+		virtual void Awake();
 		virtual void Start();
 		virtual void FixedUpdate();
 		virtual void Update();

@@ -46,6 +46,14 @@ void mg::GameObject::Destroy()
 }
 
 #pragma region Game_Loop
+void mg::GameObject::Awake()
+{
+	for (auto& component : m_pComponents)
+	{
+		component->Awake();
+	}
+}
+
 void mg::GameObject::Start()
 {
 	for (auto& component : m_pComponents)
@@ -53,6 +61,7 @@ void mg::GameObject::Start()
 		component->Start();
 	}
 }
+
 void mg::GameObject::Update()
 {
 	for (auto& component : m_pComponents)

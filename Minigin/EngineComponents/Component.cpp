@@ -17,6 +17,8 @@ void mg::Component::SetActive(bool isActive)
 }
 
 #pragma region Game_Loop
+void mg::Component::Awake() {}
+
 void mg::Component::Start() {}
 
 void mg::Component::FixedUpdate() {}

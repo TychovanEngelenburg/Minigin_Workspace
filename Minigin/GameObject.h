@@ -42,6 +42,7 @@ namespace mg
 		void RemoveComponent();
 
 		// Game Loop
+		void Awake();
 		void Start();
 		void Update();
 		void FixedUpdate();
@@ -52,7 +53,7 @@ namespace mg
 		GameObject(std::string_view name, glm::vec3 pos = {0.f, 0.f, 0.f});
 		~GameObject();
 
-		// TODO: Implement Copy and Move constructors
+		// TODO: Implement Copy constructor?
 		GameObject(GameObject const& other) = delete;
 		GameObject(GameObject&& other) = delete;
 

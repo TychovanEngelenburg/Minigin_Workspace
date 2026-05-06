@@ -1,105 +1,22 @@
 #include "InputManager.h"
 
-#include <SDL3/SDL_events.h>
-#include <backends/imgui_impl_sdl3.h>
-
-
-#include "InputBinding.h"
-#include "Minigin/InputHandling/ICommand.h"
-#include "Gamepad.h"
-#include "Minigin/InputHandling/IInputDevice.h"
-
-bool mg::InputManager::ProcessInput()
+mg::Keyboard const* mg::InputManager::GetKeyboard()
 {
-	SDL_Event e;
-	while (SDL_PollEvent(&e)) {
-		if (e.type == SDL_EVENT_QUIT) {
-			return false;
-		}
-	}
+	return m_pKeyboard.get();
+}
 
+mg::Gamepad const* mg::InputManager::GetGamepad(size_t idx)
+{
+	return m_pGamepads[idx].get();
+}
+
+void mg::InputManager::ProcessInput()
+{
 	m_pKeyboard->Update();
 	for (auto& device : m_pGamepads)
 	{
 		device->Update();
 	}
-
-	for (auto& binding : m_pBindings)
-	{
-		IInputDevice* device{};
-		switch (binding->GetType())
-		{
-			case InputBinding::DeviceType::Gamepad:
-			{
-				device = m_pGamepads[binding->DeviceIdx()].get();
-				break;
-			}
-
-			case InputBinding::DeviceType::Keyboard:
-			default:
-			{
-				device = m_pKeyboard.get();
-				break;
-			}
-		}
-
-		
-
-		switch (binding->GetTrigger())
-		{
-			case InputBinding::TriggerType::Pressed:
-			{
-				if (device->GetButtonDown(binding->InputCode()))
-				{
-					binding->Command()->Execute();
-				}
-				break;
-			}
-
-			case InputBinding::TriggerType::Held:
-			{
-				if (device->GetButton(binding->InputCode()))
-				{
-					binding->Command()->Execute();
-				}
-				break;
-			}
-
-			case InputBinding::TriggerType::Released:
-			{
-				if (device->GetButtonUp(binding->InputCode()))
-				{
-					binding->Command()->Execute();
-				}
-				break;
-			}
-
-			case InputBinding::TriggerType::Axis:
-			{
-				//auto axis = device->GetAxis(binding->InputCode());
-				//binding->Command()->HandleEvent(axis);
-				break;
-			}
-		}
-	}
-	return true;
-}
-
-void mg::InputManager::AddBinding(std::unique_ptr<InputBinding> binding)
-{
-	m_pBindings.push_back(std::move(binding));
-}
-
-void mg::InputManager::RemoveBinding(InputBinding* binding)
-{
-	m_pBindings.erase(
-		std::remove_if(
-			m_pBindings.begin(),
-			m_pBindings.end(),
-			[binding](auto const& ptr) { return ptr.get() == binding; }
-		),
-		m_pBindings.end()
-	);
 }
 
 void mg::InputManager::Init()

@@ -44,7 +44,7 @@ add_library(minigin_engine STATIC
     Minigin/SDL_Implementation/SDLSoundSystem.cpp
 
     Minigin/SoundSystem/SoundServiceLocator.cpp
- )
+   "Minigin/InputHandling/SceneInput.cpp")
 target_include_directories(minigin_engine PUBLIC
   ${CMAKE_SOURCE_DIR}
 )
@@ -59,7 +59,9 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     Game/Commands/MoveTankCommand.cpp
     Game/Commands/DamageTankCommand.cpp  
     Game/Grid/GameGrid.cpp
-)
+    Game/GameStates.cpp 
+    "Game/GameContext.cpp" 
+    "Game/SceneLoading.cpp" "Game/Commands/StartGameCommand.cpp")
 
 # enable c++20 features
 target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)

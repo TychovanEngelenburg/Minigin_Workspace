@@ -9,6 +9,11 @@
 #include <vector>
 
 
+mg::SceneInput& mg::Scene::Input() const
+{
+	return *m_pInput;
+}
+
 mg::GameObject* mg::Scene::GetObjectByName(std::string_view objName)
 {
 	return std::find_if(m_pObjects.begin(), m_pObjects.end(), [&objName](auto const& ptr)
@@ -36,6 +41,17 @@ void mg::Scene::Remove(GameObject const& object)
 }
 
 #pragma region Game_Loop
+void mg::Scene::Awake()
+{
+	for (auto& object : m_pObjects)
+	{
+		if (object->IsActive())
+		{
+			object->Awake();
+		}
+	}
+}
+
 void mg::Scene::Start()
 {
 	for (auto& object : m_pObjects)
@@ -45,6 +61,11 @@ void mg::Scene::Start()
 			object->Start();
 		}
 	}
+}
+
+void mg::Scene::ProcessInput()
+{
+	m_pInput->ProcessInput();
 }
 
 void mg::Scene::FixedUpdate()
@@ -108,6 +129,11 @@ void mg::Scene::End()
 		}
 
 	}
+}
+mg::Scene::Scene()
+	: m_pInput{std::make_unique<SceneInput>()}
+	, m_pObjects{}
+{
 }
 #pragma endregion Game_Loop
 

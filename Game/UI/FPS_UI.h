@@ -12,7 +12,7 @@ namespace mg
 class FPS_UI final : public mg::Component
 {
 public:
-	void Start() override;
+	void Awake() override;
 	void Update() override;
 
 	explicit FPS_UI(mg::GameObject& owner);

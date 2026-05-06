@@ -3,22 +3,23 @@
 
 #include "Minigin/Singleton.h"
 #include <memory>
-#include <vector>
 #include <array>
-#include "Minigin/InputHandling/InputBinding.h"
 
 #include "Minigin/InputHandling/Gamepad.h"
 #include "Minigin/InputHandling/Keyboard.h"
+
+
+// TODO: Make service locator?
 
 namespace mg
 {
 	class InputManager final : public Singleton<InputManager>
 	{
 	public:
-		bool ProcessInput();
-
-		void AddBinding(std::unique_ptr<InputBinding> binding);
-		void RemoveBinding(InputBinding* binding);
+		Keyboard const* GetKeyboard();
+		Gamepad const* GetGamepad(size_t idx);
+		
+		void ProcessInput();
 
 		void Init();
 
@@ -32,7 +33,6 @@ namespace mg
 	private:
 		friend class Singleton<InputManager>;
 
-		std::vector<std::unique_ptr<InputBinding>> m_pBindings{};
 		std::unique_ptr<Keyboard> m_pKeyboard{};
 		std::array<std::unique_ptr<Gamepad>, 4> m_pGamepads{};
 

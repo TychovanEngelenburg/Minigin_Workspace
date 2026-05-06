@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include "Minigin/GameObject.h"
+#include "Minigin/InputHandling/SceneInput.h"
 #include <string_view>
 
 namespace mg
@@ -11,6 +12,8 @@ namespace mg
 	class Scene final
 	{
 	public:
+		SceneInput& Input() const;
+
 		/// <summary>
 		/// Quick and dirty way to get the first GameObject with a specific string name. 
 		/// Try to prevent use; heavy string comparison and no collision prevention.
@@ -21,12 +24,16 @@ namespace mg
 		void Add(std::unique_ptr<GameObject> object);
 		void Remove(GameObject const& object);
 
+		void Awake();
 		void Start();
+		void ProcessInput();
 		void FixedUpdate();
 		void Update();
 		void Render() const;
 		void LateUpdate();
 		void End();
+
+		explicit Scene();
 
 		~Scene();
 		Scene(Scene const& other) = delete;
@@ -36,8 +43,8 @@ namespace mg
 
 	private:
 		friend class SceneManager;
-		explicit Scene() = default;
 
+		std::unique_ptr<SceneInput> m_pInput;
 		std::vector<std::unique_ptr<GameObject>> m_pObjects;
 	};
 }
