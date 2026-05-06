@@ -19,7 +19,7 @@ public:
 	Mode const& GetMode() const noexcept;
 
 	void LoadMainMenu();
-	void StartGame(Mode mode);
+	void StartGame(/*Mode mode*/);
 	void NextLevel();
 	void LoadScoreboard();
 

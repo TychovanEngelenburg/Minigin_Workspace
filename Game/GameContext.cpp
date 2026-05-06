@@ -20,9 +20,9 @@ void GameContext::LoadMainMenu()
 	mg::SceneManager::Instance().SetActiveScene(m_menuScene);
 }
 
-void GameContext::StartGame(Mode mode)
+void GameContext::StartGame(/*Mode mode*/)
 {
-	mode; //TODO: actually implement this function with gamemodes.
+	//TODO: actually implement this function with gamemodes.
 
 	if (m_currentLevelScene == m_menuScene
 		|| m_currentLevelScene == m_scoreboardScene

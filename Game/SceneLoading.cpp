@@ -237,7 +237,7 @@ void SceneLoading::LoadMainMenuScene(mg::Scene& sceneOut)
 	sceneOut.Input().AddBinding(std::move(startGameInput));
 
 	startGameInput = std::make_unique<mg::InputBinding>(
-		0, static_cast<int>(mg::Keycodes::GamepadButton::A), mg::InputBinding::DeviceType::Keyboard,
+		0, static_cast<int>(mg::Keycodes::GamepadButton::A), mg::InputBinding::DeviceType::Gamepad,
 		std::make_unique<StartGameCommand>(), mg::InputBinding::TriggerType::Released
 	);
 	sceneOut.Input().AddBinding(std::move(startGameInput));

@@ -14,7 +14,7 @@ std::unique_ptr<IGameState> MainMenuState::HandleEvent(GameEvent const& event)
 	{
 		case GameEvent::StartPlaying:
 		{
-			GameContext::Instance().StartGame(GameContext::Mode::Singleplayer);
+			GameContext::Instance().StartGame();
 			return std::make_unique<PlayingState>();
 		}
 		default:
@@ -75,7 +75,7 @@ std::unique_ptr<IGameState> GameOverState::HandleEvent(GameEvent const& event)
 		case GameEvent::PlayAgain:
 		{
 			auto& gameContext{ GameContext::Instance() };
-			gameContext.StartGame(gameContext.GetMode());
+			gameContext.StartGame();
 
 			return std::make_unique < PlayingState>();
 		}
