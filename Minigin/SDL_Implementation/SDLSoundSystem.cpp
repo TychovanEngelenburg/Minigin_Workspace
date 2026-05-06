@@ -9,6 +9,7 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#include <algorithm>
 
 class mg::SDLSoundSystem::Impl
 {
@@ -23,71 +24,68 @@ public:
 
 	~Impl()
 	{
-		m_isRunning = false;
-		m_conditionVar.notify_all();
+
+		m_isRunning.store(false);
+		m_updateEventsCond.notify_all();
 
 		if (m_thread.joinable())
 		{
 			m_thread.join();
 		}
 
-		Shutdown();
+		if (m_pMusicTrack)
+		{
+			MIX_DestroyTrack(m_pMusicTrack);
+			m_pMusicTrack = nullptr;
+		}
+
+		for (auto* track : m_pActiveTracks)
+		{
+			if (track)
+			{
+				MIX_DestroyTrack(track);
+			}
+		}
+		m_pActiveTracks.clear();
 	}
 
 	void Push(AudioEvent&& event)
 	{
+		if (!m_isRunning.load())
+		{
+			return;
+		}
+
 		{
 			std::lock_guard<std::mutex> lock(m_mutex);
 			m_eventQueue.push(std::move(event));
 		}
-
-		m_conditionVar.notify_one();
+		m_updateEventsCond.notify_one();
 	}
 
-	void PreLoadSFX(std::string const& path)
-	{
-		std::lock_guard<std::mutex> lock(m_mutex);
 
-		if (m_audioCache.find(path) != m_audioCache.end())
-		{
-			return;
-		}
-
-		MIX_Audio* audio = MIX_LoadAudio(m_pMixer, path.c_str(), false);
-		if (!audio)
-		{
-			return;
-		}
-
-		m_audioCache[path] = audio;
-	}
 
 private:
-
-	MIX_Mixer* m_pMixer{ nullptr };
-
-	std::unordered_map<std::string, MIX_Audio*> m_audioCache;
-
-	std::vector<MIX_Track*> m_activeTracks;
-	MIX_Track* m_musicTrack{ nullptr };
-
 	std::thread m_thread;
 	std::mutex m_mutex;
-	std::condition_variable m_conditionVar;
-	std::queue<AudioEvent> m_eventQueue;
+	std::condition_variable m_updateEventsCond;
+
+	std::queue<AudioEvent> m_eventQueue{};
+
+	MIX_Mixer* m_pMixer{ nullptr };
+	std::unordered_map<std::string, MIX_Audio*> m_audioCache{};
+	std::vector<MIX_Track*> m_pActiveTracks{};
+	MIX_Track* m_pMusicTrack{ nullptr };
 
 	std::atomic<bool> m_isRunning{ true };
-
-	float m_musicVolume{ 1.0f };
-	float m_SFXVolume{ 1.0f };
+	std::atomic<float> m_musicVolume{ 1.0f };
+	std::atomic<float> m_SFXVolume{ 1.0f };
 	bool m_isMuted{ false };
 
-	MIX_Track* Play(MIX_Audio* audio, float volume, int loops = 0)
+
+
+	MIX_Track* CreateTrack(MIX_Audio* audio, float volume, int loops = 0)
 	{
-		if (!audio)
-		{
-			return nullptr;
-		}
 
 		MIX_Track* track = MIX_CreateTrack(m_pMixer);
 		if (!track)
@@ -106,59 +104,222 @@ private:
 
 		MIX_SetTrackAudio(track, audio);
 		MIX_SetTrackGain(track, volume);
-		//MIX_SetTrackLoops(track, static_cast<int>(loops));
-		// TODO: add setting individual track volume?
-		MIX_PlayTrack(track, options);
 
+		MIX_PlayTrack(track, options);
 		SDL_DestroyProperties(options);
 
 		return track;
 	}
 
-	MIX_Audio* LoadTrack(std::string const& path)
+	MIX_Audio* GetTrack(std::string const& path)
 	{
-		auto it = m_audioCache.find(path);
-		if (it != m_audioCache.end())
+
+		std::unique_lock<std::mutex> lock(m_mutex);
+		if (auto it = m_audioCache.find(path); it != m_audioCache.end())
 		{
 			return it->second;
 		}
+		lock.unlock();
 
-		MIX_Audio* audio = MIX_LoadAudio(m_pMixer, path.c_str(), false);
-		if (!audio)
+		MIX_Audio* newAudio = MIX_LoadAudio(m_pMixer, path.c_str(), false);
+		if (!newAudio)
 		{
 			return nullptr;
 		}
 
-		m_audioCache[path] = audio;
-		return audio;
+		lock.lock();
+		auto& cached = m_audioCache[path];
+		if (!cached)
+		{
+
+			cached = newAudio;
+		}
+		else
+		{
+			MIX_DestroyAudio(newAudio);
+		}
+		return cached;
+
 	}
 
-	void UnloadTrack(MIX_Track* track)
+	void CleanTracks()
 	{
-		if (!track || !m_pMixer)
+		if (!m_isRunning.load())
 		{
 			return;
 		}
 
-		MIX_StopTrack(track, 0);
-		MIX_DestroyTrack(track);
+		std::lock_guard<std::mutex> lock(m_mutex);
+		m_pActiveTracks.erase(
+			std::remove_if(m_pActiveTracks.begin(), m_pActiveTracks.end(), [](MIX_Track* track)
+				{
+					if (track == nullptr)
+					{
+						return true;
+					}
+
+					if (!MIX_TrackPlaying(track))
+					{
+						MIX_DestroyTrack(track);
+						return true;
+					}
+
+					return false;
+				}), m_pActiveTracks.end());
+
 	}
 
+	void PreLoadSFX(std::string const& path)
+	{
+		std::unique_lock<std::mutex> lock(m_mutex);
+		if (m_audioCache.find(path) != m_audioCache.end())
+		{
+			return;
+		}
+		lock.unlock();
+
+		MIX_Audio* audio = MIX_LoadAudio(m_pMixer, path.c_str(), false);
+		if (!audio)
+		{
+			return;
+		}
+
+		lock.lock();
+		m_audioCache[path] = audio;
+	}
+
+	void HandleEvent(AudioEvent const& event)
+	{
+		switch (event.type)
+		{
+			case AudioEventType::PreloadSFX:
+			{
+				PreLoadSFX(event.clip.filePath);
+				break;
+			}
+
+			case AudioEventType::PlaySFX:
+			{
+				auto* audio = GetTrack(event.clip.filePath);
+				if (!audio)
+				{
+					break;
+				}
+
+				auto* track = CreateTrack(audio, m_SFXVolume.load(), event.clip.loops);
+
+				if (track)
+				{
+					std::lock_guard<std::mutex> lock(m_mutex);
+					m_pActiveTracks.push_back(track);
+				}
+				break;
+			}
+
+			case AudioEventType::PlayMusic:
+			{
+				auto* audio = GetTrack(event.clip.filePath);
+				if (!audio)
+				{
+					break;
+				}
+
+				if (m_pMusicTrack)
+				{
+					MIX_DestroyTrack(m_pMusicTrack);
+					m_pMusicTrack = nullptr;
+				}
+
+				m_pMusicTrack = CreateTrack(audio, m_musicVolume.load(), event.clip.loops);
+				break;
+			}
+
+			case AudioEventType::StopMusic:
+			{
+				if (m_pMusicTrack)
+				{
+					MIX_DestroyTrack(m_pMusicTrack);
+					m_pMusicTrack = nullptr;
+				}
+				break;
+			}
+
+			case AudioEventType::PauseMusic:
+			{
+				if (m_pMusicTrack)
+				{
+					MIX_PauseTrack(m_pMusicTrack);
+				}
+				break;
+			}
+
+			case AudioEventType::ResumeMusic:
+			{
+				if (m_pMusicTrack)
+				{
+					MIX_ResumeTrack(m_pMusicTrack);
+				}
+				break;
+			}
+
+			case AudioEventType::SetMusicVolume:
+			{
+				m_musicVolume.store(event.value);
+				if (m_pMusicTrack)
+				{
+					MIX_SetTrackGain(m_pMusicTrack, m_musicVolume.load());
+				}
+				break;
+			}
+
+			case AudioEventType::SetSFXVolume:
+			{
+				m_SFXVolume.store(event.value);
+				break;
+			}
+
+			case AudioEventType::ToggleMute:
+			{
+				m_isMuted = !m_isMuted;
+
+				float gain = m_isMuted ? 0.f : 1.f;
+
+				if (m_pMusicTrack)
+				{
+					MIX_SetTrackGain(m_pMusicTrack, gain * m_musicVolume.load());
+				}
+
+
+				std::vector<MIX_Track*> tracksCopy;
+				{
+					std::lock_guard<std::mutex> lock(m_mutex);
+					tracksCopy = m_pActiveTracks;
+				}
+
+				for (auto* track : tracksCopy)
+				{
+					MIX_SetTrackGain(track, gain * m_SFXVolume.load());
+				}
+				break;
+			}
+		}
+	}
 
 	void ProcessEvents()
 	{
 		while (true)
 		{
 			AudioEvent event;
+
 			{
 				std::unique_lock<std::mutex> lock(m_mutex);
-			
-				m_conditionVar.wait(lock, [&]
+
+				m_updateEventsCond.wait(lock, [&]
 					{
-						return !m_eventQueue.empty() || !m_isRunning;
+						return !m_eventQueue.empty() || !m_isRunning.load();
 					});
 
-				if (!m_isRunning && m_eventQueue.empty())
+				if (m_eventQueue.empty() && !m_isRunning.load())
 				{
 					break;
 				}
@@ -169,194 +330,19 @@ private:
 
 			HandleEvent(event);
 
-			CleanupFinishedTracks();
+			CleanTracks();
 		}
-	}
-
-	void HandleEvent(AudioEvent const& event)
-	{
-		if (!m_isRunning)
-		{
-			return;
-		}
-
-		switch (event.type)
-		{
-			case AudioEventType::PlaySFX:
-			{
-				auto* audio = LoadTrack(event.clip.filePath);
-				if (!audio)
-				{
-					break;
-				}
-
-				auto* track = Play(audio, m_SFXVolume, event.clip.loops);
-
-				if (track)
-				{
-					std::lock_guard<std::mutex> lock(m_mutex);
-					m_activeTracks.push_back(track);
-				}
-				break;
-			}
-
-			case AudioEventType::PlayMusic:
-			{
-				auto* audio = LoadTrack(event.clip.filePath);
-				if (!audio)
-				{
-					break;
-				}
-
-				if (m_musicTrack)
-				{
-					UnloadTrack(m_musicTrack);
-					m_musicTrack = nullptr;
-				}
-
-				m_musicTrack = Play(audio, m_musicVolume, event.clip.loops);
-				break;
-			}
-
-			case AudioEventType::StopMusic:
-			{
-				if (m_musicTrack)
-				{
-					UnloadTrack(m_musicTrack);
-					m_musicTrack = nullptr;
-				}
-				break;
-			}
-
-			case AudioEventType::PauseMusic:
-			{
-				if (m_musicTrack)
-				{
-					MIX_PauseTrack(m_musicTrack);
-				}
-				break;
-			}
-
-			case AudioEventType::ResumeMusic:
-			{
-				if (m_musicTrack)
-				{
-					MIX_ResumeTrack(m_musicTrack);
-				}
-				break;
-			}
-
-			case AudioEventType::SetMusicVolume:
-			{
-				m_musicVolume = event.value;
-				if (m_musicTrack)
-				{
-					MIX_SetTrackGain(m_musicTrack, m_musicVolume);
-				}
-				break;
-			}
-
-			case AudioEventType::SetSFXVolume:
-			{
-				m_SFXVolume = event.value;
-				break;
-			}
-
-			case AudioEventType::ToggleMute:
-			{
-				m_isMuted = !m_isMuted;
-
-				float gain = m_isMuted ? 0.f : 1.f;
-
-				if (m_musicTrack)
-				{
-					MIX_SetTrackGain(m_musicTrack, gain * m_musicVolume);
-				}
-
-				
-				std::vector<MIX_Track*> tracksCopy;
-				{
-					std::lock_guard<std::mutex> lock(m_mutex);
-					tracksCopy = m_activeTracks;
-				}
-
-				for (auto* track : tracksCopy)
-				{
-					MIX_SetTrackGain(track, gain * m_SFXVolume);
-				}
-				break;
-			}
-		}
-	}
-
-	void CleanupFinishedTracks()
-	{
-		if (!m_isRunning)
-		{
-			return;
-		}
-
-		auto it = m_activeTracks.begin();
-
-		while (it != m_activeTracks.end())
-		{
-			if (!MIX_TrackPlaying(*it))
-			{
-				UnloadTrack(*it);
-				it = m_activeTracks.erase(it);
-			}
-			else
-			{
-				++it;
-			}
-		}
-	}
-
-	void Shutdown()
-	{
-		if (m_pMixer)
-		{
-			MIX_StopAllTracks(m_pMixer, 0); 
-		}
-
-		while (!m_activeTracks.empty())
-		{
-			UnloadTrack(m_activeTracks.back());
-			m_activeTracks.pop_back();
-		}
-
-		m_activeTracks.clear();
-
-		if (m_musicTrack)
-		{
-			UnloadTrack(m_musicTrack);
-			m_musicTrack = nullptr;
-		}
-
-		for (auto& [_, audio] : m_audioCache)
-		{
-			MIX_DestroyAudio(audio);
-		}
-
-		m_audioCache.clear();
-
-		if (m_pMixer)
-		{
-			MIX_DestroyMixer(m_pMixer);
-			m_pMixer = nullptr;
-		}
-		MIX_Quit();
 	}
 };
 
 
 #pragma region pImpl_Wrapper
-void mg::SDLSoundSystem::PreLoadSFX( AudioClip const& clip)
+void mg::SDLSoundSystem::PreLoadSFX(AudioClip const& clip)
 {
-	m_pImpl->PreLoadSFX(clip.filePath);
+	m_pImpl->Push({ AudioEventType::PreloadSFX, clip });
 }
 
-void mg::SDLSoundSystem::PlaySFX( AudioClip const& clip)
+void mg::SDLSoundSystem::PlaySFX(AudioClip const& clip)
 {
 	m_pImpl->Push({ AudioEventType::PlaySFX, clip });
 }

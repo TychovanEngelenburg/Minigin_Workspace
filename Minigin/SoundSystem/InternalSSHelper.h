@@ -13,7 +13,8 @@ namespace mg
 		ResumeMusic,
 		SetMusicVolume,
 		SetSFXVolume,
-		ToggleMute
+		ToggleMute,
+		PreloadSFX
 	};
 
 	struct AudioEvent
