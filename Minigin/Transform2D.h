@@ -28,6 +28,10 @@ namespace mg
 		bool HasChild(Transform2D* pChild);
 		bool IsChildOf(Transform2D* pChild);
 
+		void SetWorldPosition(glm::vec3 const& newPos);
+		void SetWorldRotation(float newDegr);
+		void SetWorldScale(glm::vec2 const& newScale);
+
 		void SetLocalPosition(glm::vec3 const& newPos);
 		void SetLocalRotation(float newDegr);
 		void SetLocalScale(glm::vec2 const& newScale);

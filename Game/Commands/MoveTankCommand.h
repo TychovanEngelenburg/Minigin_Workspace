@@ -1,7 +1,7 @@
 #ifndef MOVETANKCOMMAND_H
 #define MOVETANKCOMMAND_H
-#include "glm/glm.hpp"
 #include "Minigin/InputHandling/GameObjectCommand.h" 
+#include "Tank/TankMovement.h"
 
 namespace mg
 {
@@ -13,7 +13,7 @@ class MoveTankCommand final : public mg::GameObjectCommand
 public:
 	void Execute() override;
 
-	MoveTankCommand(mg::GameObject* object, glm::vec2 const& moveDir, float moveSpeed);
+	MoveTankCommand(mg::GameObject* object, TankMovement::Direction moveDir);
 
 	~MoveTankCommand() override = default;
 	MoveTankCommand(MoveTankCommand const& other) = delete;
@@ -22,7 +22,7 @@ public:
 	MoveTankCommand& operator=(MoveTankCommand&& other) = delete;
 
 private:
-	glm::vec3 m_movementDirection;
-	float m_movementSpeed;
+	TankMovement::Direction m_movementDirection;
+	TankMovement* m_pMovementComp;
 };
 #endif // !MOVEPLAYERCOMMAND_H

@@ -94,15 +94,15 @@ void mg::Renderer::RenderTexture(Texture2D const& texture, SDL_FRect const& dst,
 	}
 
 	SDL_FRect newDst{ dst };
-	if (hasSrc)
-	{
-		newDst.w = src.w;
-		newDst.h = src.h;
-	}
-	else
-	{
-		SDL_GetTextureSize(texture.GetSDLTexture(), &newDst.w, &newDst.h);
-	}
+	//if (hasSrc)
+	//{
+	//	newDst.w = src.w;
+	//	newDst.h = src.h;
+	//}
+	//else
+	//{
+	//	SDL_GetTextureSize(texture.GetSDLTexture(), &newDst.w, &newDst.h);
+	//}
 
 	SDL_FlipMode flipMode{};
 	if (flipX && !flipY)

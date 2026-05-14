@@ -100,6 +100,56 @@ bool mg::Transform2D::IsChildOf(Transform2D* pChild)
 	return false;
 }
 
+void mg::Transform2D::SetWorldPosition(glm::vec3 const& newPos)
+{
+	if (m_pParent)
+	{
+		glm::mat4 parentWorldInv = glm::inverse(m_pParent->GetWorldMatrix());
+		glm::vec4 localPos = parentWorldInv * glm::vec4(newPos, 1.f);
+		m_localPosition = glm::vec3(localPos);
+	}
+	else
+	{
+		m_localPosition = newPos;
+	}
+
+	MarkDirty();
+}
+
+void mg::Transform2D::SetWorldRotation(float newDegr)
+{
+	float rad = glm::radians(newDegr);
+
+	if (m_pParent)
+	{
+		float parentWorldRot = m_pParent->WorldRotationZ();
+		m_localRotation = glm::radians(newDegr - parentWorldRot);
+	}
+	else
+	{
+		m_localRotation = rad;
+	}
+
+	MarkDirty();
+}
+
+void mg::Transform2D::SetWorldScale(glm::vec2 const& newScale)
+{
+	if (m_pParent)
+	{
+		glm::vec2 parentScale = m_pParent->WorldScale();
+
+		m_localScale.x = newScale.x / (parentScale.x == 0.f ? 1.f : parentScale.x);
+		m_localScale.y = newScale.y / (parentScale.y == 0.f ? 1.f : parentScale.y);
+	}
+	else
+	{
+		m_localScale = newScale;
+	}
+
+	MarkDirty();
+}
+
 void mg::Transform2D::SetLocalPosition(glm::vec3 const& pos)
 {
 	m_localPosition = pos;

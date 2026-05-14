@@ -1,16 +1,14 @@
 #include "Commands/MoveTankCommand.h"
 #include "Minigin/GameObject.h"
-#include "Minigin/DeltaClock.h"
-#include <glm/vec2.hpp>
 
 void MoveTankCommand::Execute()
 { 
-	m_object->Transform().Translate( m_movementDirection * m_movementSpeed * static_cast<float>(mg::DeltaClock::DeltaTime()) );
+	m_pMovementComp->QueueDirection(m_movementDirection);
 }
 
-MoveTankCommand::MoveTankCommand(mg::GameObject* object, glm::vec2 const& moveDir, float moveSpeed)
+MoveTankCommand::MoveTankCommand(mg::GameObject* object, TankMovement::Direction moveDir)
 	: GameObjectCommand(object)
-	, m_movementDirection{ glm::normalize(moveDir).x,  glm::normalize(moveDir).y, 0.f }
-	, m_movementSpeed{ moveSpeed }
+	, m_movementDirection{ moveDir }
+	, m_pMovementComp{ object->GetComponent<TankMovement>() }
 {
 }

@@ -88,21 +88,6 @@ namespace mg
 		return returnRef;
 	}
 
-	
-	//template<typename T>
-	//inline bool GameObject::HasComponent() const
-	//{
-	//	for (auto& component : m_pComponents)
-	//	{
-	//		if (component.GetType() == std::type_index(typeid(T)))
-	//		{
-	//			return true;
-	//		}
-	//	}
-
-	//	return false;
-	//}
-
 	template<typename T>
 	inline T* GameObject::GetComponent() const
 	{
