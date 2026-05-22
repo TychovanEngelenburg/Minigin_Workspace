@@ -29,11 +29,12 @@ namespace mg
 class GameGrid final : public mg::Component
 {
 public:
+
 	float TileSize() const noexcept;
-	bool WallAt(int gridX, int gridY) const;
-	bool IsPath(int gridX, int gridY) const;
-	glm::ivec2 WorldToGrid(float worldX, float worldY) const;
-	glm::vec2 GridToWorld(int gridX, int gridY) const;
+	bool WallAt(glm::ivec2 const& gridPos) const;
+	bool IsPath(glm::ivec2 const& gridPos) const;
+	glm::ivec2 WorldToGrid(glm::vec2 const& worldPos) const;
+	glm::vec2 GridToWorld(glm::ivec2 const& gridPos) const;
 	glm::ivec2 IdToGrid(int idx) const;
 
 	void Render() const override;
@@ -41,8 +42,8 @@ public:
 	GameGrid(mg::GameObject& owner, std::filesystem::path const& filePath, float tileSize);
 
 private:
-	Tile* GetTile(int x, int y);
-	Tile const* GetTile(int x, int y) const;
+	Tile const* GetTile(glm::ivec2 const& gridPos) const;
+	Tile* GetTile(glm::ivec2 const& gridPos);
 
 	void LoadFromFile(std::filesystem::path const& filePath);
 	void ComputeWalkables();

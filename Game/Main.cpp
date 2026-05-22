@@ -21,7 +21,7 @@
 
 // Game
 #include "Minigin/Minigin.h"
-#include "Minigin/SceneManager.h"
+#include "Minigin/Scene/SceneManager.h"
 
 
 // Audio

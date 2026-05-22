@@ -1,5 +1,5 @@
 ﻿#include "Minigin/Renderer.h"
-#include "Minigin/SceneManager.h"
+#include "Minigin/Scene/SceneManager.h"
 #include "Minigin/SDL_Implementation/SDLTexture2D.h"
 
 #include <SDL3/SDL_video.h>
@@ -10,12 +10,6 @@
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_render.h>
 #include "Singleton.h"
-
-#include <imgui.h>
-#include <backends/imgui_impl_sdl3.h>
-#include <backends/imgui_impl_sdlrenderer3.h>
-
-#include "Minigin/ImGUI/imgui_plot.h"
 
 SDL_Renderer* mg::Renderer::GetSDLRenderer() const noexcept
 {
@@ -153,49 +147,22 @@ void mg::Renderer::Init(SDL_Window* window)
 		std::cout << "Failed to create the renderer: " << SDL_GetError() << "\n";
 		throw std::runtime_error(std::string("SDL_CreateRenderer Error: ") + SDL_GetError());
 	}
-
-
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-#if __EMSCRIPTEN__
-	// For an Emscripten build we are disabling file-system access, so let's not attempt to do a fopen() of the imgui.ini file.
-	// You may manually call LoadIniSettingsFromMemory() to load settings from your own storage.
-	io.IniFilename = NULL;
-#endif
-
-	ImGui_ImplSDL3_InitForSDLRenderer(window, m_pRenderer);
-	ImGui_ImplSDLRenderer3_Init(m_pRenderer);
-
 }
 
 void mg::Renderer::Render() const
 {
-	ImGui_ImplSDLRenderer3_NewFrame();
-	ImGui_ImplSDL3_NewFrame();
-	ImGui::NewFrame();
-
 
 	auto const& color = BackgroundColor();
 	SDL_SetRenderDrawColor(m_pRenderer, color.r, color.g, color.b, color.a);
 	SDL_RenderClear(m_pRenderer);
 
 	SceneManager::Instance().Render();
-	ImGui::Render();
-
-	ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), m_pRenderer);
 
 	SDL_RenderPresent(m_pRenderer);
 }
 
 void mg::Renderer::Destroy()
 {
-	ImGui_ImplSDLRenderer3_Shutdown();
-	ImGui_ImplSDL3_Shutdown();
-	ImGui::DestroyContext();
-
 	if (m_pRenderer != nullptr)
 	{
 		SDL_DestroyRenderer(m_pRenderer);

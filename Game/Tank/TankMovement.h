@@ -17,11 +17,13 @@ public:
         None
     };
 
-    void Update() override;
-    void MoveToTarget();
+    glm::vec2 MoveDirection() const noexcept;
+
+    void FixedUpdate() override;
+    void MoveToTarget(float elapsedSec);
     void QueueDirection(Direction dir);
 
-    TankMovement(  mg::GameObject& owner, GameGrid* pGrid, float moveSpeed );
+    TankMovement( mg::GameObject& owner, GameGrid* pGrid, float moveSpeed );
 
 private:
     bool CanMove(Direction dir) const;

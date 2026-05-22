@@ -11,11 +11,11 @@ namespace mg
 	class Transform2D final
 	{
 	public:
-		glm::vec3 WorldPosition() const noexcept;
+		glm::vec2 WorldPosition() const noexcept;
 		float WorldRotationZ() const noexcept;
 		glm::vec2 WorldScale() const noexcept;
 
-		glm::vec3 const& LocalPosition() const noexcept;
+		glm::vec2 const& LocalPosition() const noexcept;
 		float LocalRotation() const noexcept;
 		glm::vec2 const& LocalScale() const noexcept;
 
@@ -28,16 +28,16 @@ namespace mg
 		bool HasChild(Transform2D* pChild);
 		bool IsChildOf(Transform2D* pChild);
 
-		void SetWorldPosition(glm::vec3 const& newPos);
+		void SetWorldPosition(glm::vec2 const& newPos);
 		void SetWorldRotation(float newDegr);
 		void SetWorldScale(glm::vec2 const& newScale);
 
-		void SetLocalPosition(glm::vec3 const& newPos);
+		void SetLocalPosition(glm::vec2 const& newPos);
 		void SetLocalRotation(float newDegr);
 		void SetLocalScale(glm::vec2 const& newScale);
 
 		// TODO: Translate must do actual translation matrix math (and move along the player's rotation)
-		void Translate(glm::vec3 const& delta);
+		void Translate(glm::vec2 const& delta);
 		void Rotate(float degr);
 
 		void MarkDirty();
@@ -58,7 +58,7 @@ namespace mg
 		Transform2D* m_pParent;
 		std::vector<Transform2D*> m_pChildren;
 
-		glm::vec3 m_localPosition;
+		glm::vec2 m_localPosition;
 		float m_localRotation;
 		glm::vec2 m_localScale;
 

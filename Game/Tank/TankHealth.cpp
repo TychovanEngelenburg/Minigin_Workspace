@@ -1,5 +1,5 @@
 #include "TankHealth.h"
-#include "Minigin/GameObject.h"
+#include "Minigin/Scene/GameObject.h"
 #include "IEventListener.h"
 //#include <exception>
 

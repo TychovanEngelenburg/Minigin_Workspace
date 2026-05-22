@@ -6,7 +6,7 @@
 #include "Minigin/Minigin.h"
 
 #include "Minigin/InputHandling/InputManager.h"
-#include "Minigin/SceneManager.h"
+#include "Minigin/Scene/SceneManager.h"
 #include "Minigin/ResourceManager.h"
 #include "Minigin/DeltaClock.h"
 #include "Minigin/Renderer.h"
@@ -81,7 +81,7 @@ void mg::Minigin::Run(std::function<void()> const& load)
 	emscripten_set_main_loop_arg(&LoopCallback, this, 0, true);
 #endif
 
-	SceneManager::Instance().End();
+	SceneManager::Instance().OnApplicationQuit();
 }
 
 
@@ -126,7 +126,7 @@ mg::Minigin::Minigin(std::filesystem::path const& dataPath)
 {
 	PrintSDLVersion();
 
-	if (!SDL_InitSubSystem(SDL_INIT_VIDEO))
+	if (!SDL_Init(SDL_INIT_VIDEO))
 	{
 		SDL_Log("Renderer error: %s", SDL_GetError());
 		throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
@@ -146,6 +146,7 @@ mg::Minigin::Minigin(std::filesystem::path const& dataPath)
 		576,
 		SDL_WINDOW_OPENGL
 	);
+
 	if (g_window == nullptr)
 	{
 		throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
@@ -161,5 +162,10 @@ mg::Minigin::~Minigin()
 	Renderer::Instance().Destroy();
 	SDL_DestroyWindow(g_window);
 	g_window = nullptr;
+
+#if !defined(_WIN32)
+	SDL_QuitSubSystem(SDL_INIT_GAMEPAD);
+#endif
+
 	SDL_Quit();
 }

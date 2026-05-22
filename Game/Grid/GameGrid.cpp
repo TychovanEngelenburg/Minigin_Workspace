@@ -1,6 +1,6 @@
 #include "GameGrid.h"
 #include <fstream>
-#include "Minigin/GameObject.h"
+#include "Minigin/Scene/GameObject.h"
 #include "Minigin/ResourceManager.h"
 #include "Minigin/Renderer.h"
 #include <iostream>
@@ -19,28 +19,28 @@ GameGrid::GameGrid(mg::GameObject& owner, std::filesystem::path const& filePath,
 	m_pBackgroundTexture = mg::ResourceManager::Instance().LoadTexture("T_Motherboard_Background.png");
 }
 
-Tile* GameGrid::GetTile(int gridX, int gridY)
+Tile* GameGrid::GetTile(glm::ivec2 const& gridPos)
 {
-	if (gridX >= m_cols || gridX < 0 ||
-		gridY >= m_rows || gridY < 0)
+	if (gridPos.x >= m_cols || gridPos.x < 0 ||
+		gridPos.y >= m_rows || gridPos.y < 0)
 	{
 		return nullptr;
 	}
 
 
-	return &m_tiles[m_cols * gridY + gridX];
+	return &m_tiles[m_cols * gridPos.y + gridPos.x];
 }
 
-Tile const* GameGrid::GetTile(int gridX, int gridY) const
+Tile const* GameGrid::GetTile(glm::ivec2 const& gridPos) const
 {
-	if (gridX >= m_cols || gridX < 0 ||
-		gridY >= m_rows || gridY < 0)
+	if (gridPos.x >= m_cols || gridPos.x < 0 ||
+		gridPos.y >= m_rows || gridPos.y < 0)
 	{
 		return nullptr;
 	}
 
 
-	return &m_tiles[m_cols * gridY + gridX];
+	return &m_tiles[m_cols * gridPos.y + gridPos.x];
 }
 
 
@@ -49,9 +49,9 @@ float GameGrid::TileSize() const noexcept
 	return m_tileSize;
 }
 
-bool GameGrid::WallAt(int gridX, int gridY) const
+bool GameGrid::WallAt(glm::ivec2 const& gridPos) const
 {
-	auto tile = GetTile(gridX, gridY);
+	auto tile = GetTile(gridPos);
 	if (!tile)
 	{
 		return true;
@@ -60,28 +60,28 @@ bool GameGrid::WallAt(int gridX, int gridY) const
 	return tile->IsWall;
 }
 
-bool GameGrid::IsPath(int gridX, int gridY) const
+bool GameGrid::IsPath(glm::ivec2 const& gridPos) const
 {
-	return(!WallAt(gridX, gridY)
-		&& !WallAt(gridX + 1, gridY)
-		&& !WallAt(gridX + 1, gridY + 1)
-		&& !WallAt(gridX, gridY + 1)
+	return(!WallAt(gridPos)
+		&& !WallAt({ gridPos.x + 1, gridPos.y })
+		&& !WallAt({ gridPos.x + 1, gridPos.y + 1 })
+		&& !WallAt({ gridPos.x, gridPos.y + 1 })
 		);
 }
 
-glm::ivec2 GameGrid::WorldToGrid(float worldX, float worldY) const
+glm::ivec2 GameGrid::WorldToGrid(glm::vec2 const& worldPos) const
 {
 	return glm::ivec2(
-		floor((worldX - Owner()->Transform().WorldPosition().x) / m_tileSize),
-		floor((worldY - Owner()->Transform().WorldPosition().y) / m_tileSize)
+		floor((worldPos.x - Owner()->Transform().WorldPosition().x) / m_tileSize),
+		floor((worldPos.y - Owner()->Transform().WorldPosition().y) / m_tileSize)
 	);
 }
 
-glm::vec2 GameGrid::GridToWorld(int gridX, int gridY) const
+glm::vec2 GameGrid::GridToWorld(glm::ivec2 const& gridPos) const
 {
 	return glm::vec2(
-		Owner()->Transform().WorldPosition().x + m_tileSize * gridX,
-		Owner()->Transform().WorldPosition().y + m_tileSize * gridY
+		Owner()->Transform().WorldPosition().x + m_tileSize * gridPos.x,
+		Owner()->Transform().WorldPosition().y + m_tileSize * gridPos.y
 	);
 }
 
@@ -97,7 +97,7 @@ glm::ivec2 GameGrid::IdToGrid(int idx) const
 
 void GameGrid::Render() const
 {
-	glm::vec3 gridPos{ Owner()->Transform().LocalPosition() };
+	glm::vec2 gridPos{ Owner()->Transform().LocalPosition() };
 	SDL_FRect bgDst{ gridPos.x, gridPos.y, m_tileSize * m_cols, m_tileSize * m_rows };
 	mg::Renderer::Instance().RenderTexture(*m_pBackgroundTexture, bgDst);
 
@@ -215,7 +215,7 @@ void GameGrid::LoadFromFile(std::filesystem::path const& filePath)
 	{
 		for (int x = 0; x < m_cols; x++)
 		{
-			std::cout << (GetTile(x, y)->Walkable ? "." : (GetTile(x, y)->IsWall ? "#" : " "));
+			std::cout << (GetTile({ x, y })->Walkable ? "." : (GetTile({ x, y })->IsWall ? "#" : " "));
 		}
 		std::cout << '\n';
 	}
@@ -227,10 +227,10 @@ void GameGrid::ComputeWalkables()
 		for (int y = 0; y < m_rows; y++)
 		{
 			m_tiles[m_cols * y + x].Walkable = (
-				!WallAt(x, y) &&
-				!WallAt(x + 1, y) &&
-				!WallAt(x + 1, y + 1) &&
-				!WallAt(x, y + 1)
+				!WallAt({ x, y }) &&
+				!WallAt({ x + 1, y }) &&
+				!WallAt({ x + 1, y + 1 }) &&
+				!WallAt({ x, y + 1 })
 				);
 		}
 	}
@@ -243,27 +243,27 @@ void GameGrid::ComputeConnections()
 		for (int y = 0; y < m_rows; y++)
 		{
 
-			Tile const* left = GetTile(x - 1, y);
-			Tile const* up = GetTile(x, y - 1);
+			Tile const* left = GetTile({ x - 1, y });
+			Tile const* up = GetTile({ x, y - 1 });
 
 			bool hor = left && left->Walkable;
 			bool vert = up && up->Walkable;
 
 			if (hor && vert)
 			{
-				GetTile(x, y)->PathConnections = Tile::ConnectionMask::both;
+				GetTile({ x, y })->PathConnections = Tile::ConnectionMask::both;
 			}
 			else if (hor)
 			{
-				GetTile(x, y)->PathConnections = Tile::ConnectionMask::horizontal;
+				GetTile({ x, y })->PathConnections = Tile::ConnectionMask::horizontal;
 			}
 			else if (vert)
 			{
-				GetTile(x, y)->PathConnections = Tile::ConnectionMask::vertical;
+				GetTile({ x, y })->PathConnections = Tile::ConnectionMask::vertical;
 			}
 			else
 			{
-				GetTile(x, y)->PathConnections = Tile::ConnectionMask::none;
+				GetTile({ x, y })->PathConnections = Tile::ConnectionMask::none;
 			}
 		}
 	}

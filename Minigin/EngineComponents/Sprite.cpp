@@ -1,7 +1,7 @@
 #include "Minigin/EngineComponents/Sprite.h"
 #include "Minigin/ResourceManager.h"
 #include "Minigin/Renderer.h"
-#include "Minigin/GameObject.h"
+#include "Minigin/Scene/GameObject.h"
 
 // .h includes
 #include "Minigin/EngineComponents/Component.h"

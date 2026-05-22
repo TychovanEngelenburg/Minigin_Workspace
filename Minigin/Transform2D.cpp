@@ -1,10 +1,10 @@
 #include "Transform2D.h"
 #include <glm/gtc/matrix_transform.hpp>
-#include "Minigin/GameObject.h"
+#include "Minigin/Scene/GameObject.h"
 
-glm::vec3 mg::Transform2D::WorldPosition() const noexcept
+glm::vec2 mg::Transform2D::WorldPosition() const noexcept
 {
-	return glm::vec3(GetWorldMatrix()[3]);
+	return glm::vec2(GetWorldMatrix()[3]);
 }
 
 float mg::Transform2D::WorldRotationZ() const noexcept
@@ -25,7 +25,7 @@ glm::vec2 mg::Transform2D::WorldScale() const noexcept
 
 
 
-glm::vec3 const& mg::Transform2D::LocalPosition() const noexcept
+glm::vec2 const& mg::Transform2D::LocalPosition() const noexcept
 {
 	return m_localPosition;
 }
@@ -100,13 +100,14 @@ bool mg::Transform2D::IsChildOf(Transform2D* pChild)
 	return false;
 }
 
-void mg::Transform2D::SetWorldPosition(glm::vec3 const& newPos)
+void mg::Transform2D::SetWorldPosition(glm::vec2 const& newPos)
 {
+
 	if (m_pParent)
 	{
 		glm::mat4 parentWorldInv = glm::inverse(m_pParent->GetWorldMatrix());
-		glm::vec4 localPos = parentWorldInv * glm::vec4(newPos, 1.f);
-		m_localPosition = glm::vec3(localPos);
+		glm::vec4 localPos = parentWorldInv * glm::vec4(newPos, 0.f, 1.f);
+		m_localPosition = glm::vec2(localPos);
 	}
 	else
 	{
@@ -150,7 +151,7 @@ void mg::Transform2D::SetWorldScale(glm::vec2 const& newScale)
 	MarkDirty();
 }
 
-void mg::Transform2D::SetLocalPosition(glm::vec3 const& pos)
+void mg::Transform2D::SetLocalPosition(glm::vec2 const& pos)
 {
 	m_localPosition = pos;
 	MarkDirty();
@@ -169,7 +170,7 @@ void mg::Transform2D::SetLocalScale(glm::vec2 const& scale)
 }
 
 
-void mg::Transform2D::Translate(glm::vec3 const& delta)
+void mg::Transform2D::Translate(glm::vec2 const& delta)
 {
 	m_localPosition += delta;
 	MarkDirty();
@@ -217,7 +218,7 @@ void mg::Transform2D::SetParent(Transform2D* pParent, bool keepRelativeWorld)
 		{
 			glm::mat4 newLocal = glm::inverse(pParent->GetWorldMatrix()) * GetWorldMatrix();
 
-			m_localPosition = glm::vec3(newLocal[3]);
+			m_localPosition = glm::vec2(newLocal[3]);
 
 			glm::vec2 scale;
 			scale.x = glm::length(glm::vec3(newLocal[0]));
@@ -272,7 +273,7 @@ void mg::Transform2D::RecalculateLocal() const
 
 	m_localMatrix = glm::mat4(1.f);
 
-	m_localMatrix = glm::translate(m_localMatrix, m_localPosition);
+	m_localMatrix = glm::translate(m_localMatrix, glm::vec3(m_localPosition, 0.f));
 
 
 	m_localMatrix = glm::rotate(m_localMatrix, m_localRotation, glm::vec3(0, 0, 1));

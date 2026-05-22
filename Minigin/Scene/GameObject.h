@@ -1,8 +1,8 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
-#include "EngineComponents/Component.h"
-#include "Transform2D.h"
+#include <Minigin/EngineComponents/Component.h>
+#include <Minigin/Transform2D.h>
 
 #include <string>
 #include <string_view>
@@ -19,20 +19,21 @@
 namespace mg
 {
 	class Texture2D;
+	class Collider2D;
+	class Scene;
 	class GameObject final
 	{
 	public:
-		// Getters
 		Transform2D& Transform();
 		std::string const& Name() const noexcept;
 		bool IsActive() const noexcept;
 		bool IsDestroyed() const noexcept;
+		Scene* Scene() const noexcept;
 
-		// Scene info
+		void SetScene(mg::Scene* pScene );
 		void SetActive(bool isActive);
 		void Destroy();
 
-		// Components
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args);
 		template<typename T>
@@ -41,19 +42,30 @@ namespace mg
 		template<typename T>
 		void RemoveComponent();
 
-		// Game Loop
+		/// <summary>
+		/// Called when object is added to the scene.
+		/// </summary>
 		void Awake();
+
+		/// <summary>
+		/// Called when scene fully loaded.
+		/// </summary>
 		void Start();
+
+		void OnCollisionEnter(Collider2D* pOther);
+		void OnCollisionstay(Collider2D* pOther);
+		void OnCollisionExit(Collider2D* pOther);
+
 		void Update();
 		void FixedUpdate();
-		void Render() const;
 		void LateUpdate();
-		void End();
+		void Render() const;
+
+		void OnApplicationQuit();
 
 		GameObject(std::string_view name, glm::vec3 pos = {0.f, 0.f, 0.f});
 		~GameObject();
 
-		// TODO: Implement Copy constructor?
 		GameObject(GameObject const& other) = delete;
 		GameObject(GameObject&& other) = delete;
 
@@ -61,14 +73,16 @@ namespace mg
 		GameObject& operator=(GameObject&& other) = delete;
 
 	private:
+		mg::Scene* m_pScene{};
+
 		Transform2D m_transform;
 		std::string m_name;
 		bool m_active;
-		bool m_destroyed;
-		std::vector< std::unique_ptr<Component>> m_pComponents;
+		bool m_destroyed{};
+		std::vector< std::unique_ptr<Component>> m_pComponents{};
 
-		GameObject* m_pParent;
-		std::vector<GameObject*> m_pChildren;
+		GameObject* m_pParent{};
+		std::vector<GameObject*> m_pChildren{};
 	};
 
 
@@ -85,7 +99,7 @@ namespace mg
 		auto component{ std::make_unique<T>(*this, std::forward<Args>(args)...) };
 		auto& returnRef{ *component };
 		m_pComponents.emplace_back(std::move(component));
-		return returnRef;
+		return returnRef; 
 	}
 
 	template<typename T>

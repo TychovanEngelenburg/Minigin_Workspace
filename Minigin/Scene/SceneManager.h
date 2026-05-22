@@ -1,8 +1,8 @@
 #ifndef SCENEMANAGER_H
 #define SCENEMANAGER_H
 
-#include "Singleton.h"
-#include "Minigin/Scene.h"
+#include <Minigin/Singleton.h>
+#include <Minigin/Scene/Scene.h>
 
 #include <memory>
 #include <vector>
@@ -24,7 +24,7 @@ namespace mg
 		void Update();
 		void Render() const;
 		void LateUpdate();
-		void End();
+		void OnApplicationQuit();
 
 		SceneManager();
 		virtual ~SceneManager() = default;

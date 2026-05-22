@@ -18,7 +18,7 @@ namespace mg
 		virtual void Update();
 		virtual void Render() const;
 		virtual void LateUpdate();
-		virtual void End();
+		virtual void OnApplicationQuit();
 
 		virtual ~Component() = default;
 		Component(Component const& other) = delete;

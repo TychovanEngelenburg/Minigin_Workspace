@@ -1,6 +1,6 @@
 #ifndef SCENE_LOADING_H
 #define SCENE_LOADING_H
-#include "Scene.h"
+#include <Minigin/Scene/Scene.h>
 
 namespace SceneLoading
 {

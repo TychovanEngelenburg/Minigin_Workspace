@@ -1,5 +1,5 @@
 ﻿#include "Minigin/EngineComponents/TextComponent.h"
-#include "Minigin/GameObject.h"
+#include "Minigin/Scene/GameObject.h"
 #include "Minigin/Renderer.h"
 #include "Minigin/ResourceManager.h"
 

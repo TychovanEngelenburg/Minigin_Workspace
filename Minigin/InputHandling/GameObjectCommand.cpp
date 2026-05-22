@@ -1,5 +1,5 @@
 #include "Minigin/InputHandling/GameObjectCommand.h"
-#include "Minigin/GameObject.h"
+#include "Minigin/Scene/GameObject.h"
 
 mg::GameObject* mg::GameObjectCommand::GetGameObject() const
 {

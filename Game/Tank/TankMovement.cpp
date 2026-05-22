@@ -1,26 +1,10 @@
 #include "TankMovement.h"
 
 #include "Grid/GameGrid.h"
-#include "Minigin/GameObject.h"
+#include "Minigin/Scene/GameObject.h"
 #include "Minigin/DeltaClock.h"
 
 #include <glm/geometric.hpp>
-
-TankMovement::TankMovement(mg::GameObject& owner, GameGrid* pGrid, float moveSpeed)
-	: Component(owner)
-	, m_pGrid(pGrid)
-	, m_currentDirection(Direction::None)
-	, m_queuedDirection(Direction::None)
-	, m_currentTile(0, 0)
-	, m_targetTile(0, 0)
-	, m_inputRecieved{false}
-	, m_moveSpeed(moveSpeed)
-{
-	auto worldPos{ Owner()->Transform().WorldPosition() };
-
-	m_currentTile = pGrid->WorldToGrid(worldPos.x, worldPos.y);
-	m_targetTile = m_currentTile;
-}
 
 void TankMovement::QueueDirection(Direction dir)
 {
@@ -33,31 +17,32 @@ void TankMovement::QueueDirection(Direction dir)
 	m_inputRecieved = true;
 }
 
-void TankMovement::Update()
+glm::vec2 TankMovement::MoveDirection() const noexcept
+{
+	return DirectionToGridVector(m_currentDirection);
+}
+
+void TankMovement::FixedUpdate()
 {
 	if (m_inputRecieved)
 	{
-		MoveToTarget();
+		MoveToTarget(static_cast<float>(mg::DeltaClock::FixedDeltaTime()));
 
 		m_inputRecieved = false;
 	}
 }
 
-void TankMovement::MoveToTarget()
+void TankMovement::MoveToTarget(float elapsedSec)
 {
-	auto distToMove{ m_moveSpeed * static_cast<float>(mg::DeltaClock::DeltaTime()) };
+	auto distToMove{ m_moveSpeed * elapsedSec };
 
 	auto newPos{ Owner()->Transform().WorldPosition() };
 
-	glm::vec3 targetPos{
-		m_pGrid->GridToWorld(m_targetTile.x, m_targetTile.y).x,
-		m_pGrid->GridToWorld(m_targetTile.x, m_targetTile.y).y,
-		newPos.z
-	};
+	auto targetPos{ m_pGrid->GridToWorld(m_targetTile) };
 
 	while (distToMove > 0.f)
 	{
-		glm::vec3 moveTo{ targetPos - newPos };
+		glm::vec2 moveTo{ targetPos - newPos };
 		auto distToTarget{ glm::length(moveTo) };
 
 		if (distToMove >= distToTarget)
@@ -79,8 +64,8 @@ void TankMovement::MoveToTarget()
 			}
 
 			m_targetTile = m_currentTile + DirectionToGridVector(m_currentDirection);
-			targetPos.x = m_pGrid->GridToWorld(m_targetTile.x, m_targetTile.y).x;
-			targetPos.y = m_pGrid->GridToWorld(m_targetTile.x, m_targetTile.y).y;
+			targetPos.x = m_pGrid->GridToWorld(m_targetTile).x;
+			targetPos.y = m_pGrid->GridToWorld(m_targetTile).y;
 		}
 		else
 		{
@@ -105,7 +90,7 @@ bool TankMovement::CanMove(Direction dir) const
 
 	glm::ivec2 nextTile{ m_currentTile + DirectionToGridVector(dir) };
 
-	return m_pGrid->IsPath(nextTile.x, nextTile.y);
+	return m_pGrid->IsPath({ nextTile.x, nextTile.y });
 }
 
 glm::ivec2 TankMovement::DirectionToGridVector(Direction dir)
@@ -143,4 +128,20 @@ glm::ivec2 TankMovement::DirectionToGridVector(Direction dir)
 bool TankMovement::IsOppositeDirection(Direction dirA, Direction dirB)
 {
 	return DirectionToGridVector(dirA) == -DirectionToGridVector(dirB);
+}
+
+TankMovement::TankMovement(mg::GameObject& owner, GameGrid* pGrid, float moveSpeed)
+	: Component(owner)
+	, m_pGrid(pGrid)
+	, m_currentDirection(Direction::None)
+	, m_queuedDirection(Direction::None)
+	, m_currentTile(0, 0)
+	, m_targetTile(0, 0)
+	, m_inputRecieved{ false }
+	, m_moveSpeed(moveSpeed)
+{
+	auto worldPos{ Owner()->Transform().WorldPosition() };
+
+	m_currentTile = pGrid->WorldToGrid({ worldPos.x, worldPos.y });
+	m_targetTile = m_currentTile;
 }

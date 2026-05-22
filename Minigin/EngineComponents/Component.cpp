@@ -1,5 +1,5 @@
 #include "Minigin/EngineComponents/Component.h"
-#include "Minigin/GameObject.h"
+#include "Minigin/Scene/GameObject.h"
 
 mg::GameObject* mg::Component::Owner() const noexcept
 {
@@ -29,7 +29,7 @@ void mg::Component::Render() const {}
 
 void mg::Component::LateUpdate() {}
 
-void mg::Component::End() {}
+void mg::Component::OnApplicationQuit() {}
 #pragma endregion Game_Loop
 
 mg::Component::Component(mg::GameObject& owner)

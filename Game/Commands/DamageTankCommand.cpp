@@ -1,6 +1,6 @@
 #include "DamageTankCommand.h"
 #include "Minigin/InputHandling/GameObjectCommand.h" 
-#include "Minigin/GameObject.h"
+#include "Minigin/Scene/GameObject.h"
 #include "Tank/TankHealth.h"
 
 void DamageTankCommand::Execute()

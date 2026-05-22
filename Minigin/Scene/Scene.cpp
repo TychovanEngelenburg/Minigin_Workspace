@@ -1,6 +1,6 @@
-#include "Minigin/Scene.h"
+#include "Minigin/Scene/Scene.h"
 
-#include "Minigin/GameObject.h"
+#include "Minigin/Scene/GameObject.h"
 #include <algorithm>
 #include <cassert>
 #include <memory>
@@ -21,10 +21,12 @@ mg::GameObject* mg::Scene::GetObjectByName(std::string_view objName)
 			return ptr->Name() == objName;
 		})->get();
 }
-
+ 
 void mg::Scene::Add(std::unique_ptr<GameObject> object)
 {
 	assert(object != nullptr && "Cannot add a null GameObject to the scene.");
+	object->SetScene(this);
+	object->Awake();
 	m_pObjects.emplace_back(std::move(object));
 }
 
@@ -41,17 +43,6 @@ void mg::Scene::Remove(GameObject const& object)
 }
 
 #pragma region Game_Loop
-void mg::Scene::Awake()
-{
-	for (auto& object : m_pObjects)
-	{
-		if (object->IsActive())
-		{
-			object->Awake();
-		}
-	}
-}
-
 void mg::Scene::Start()
 {
 	for (auto& object : m_pObjects)
@@ -119,23 +110,24 @@ void mg::Scene::LateUpdate()
 	}
 }
 
-void mg::Scene::End()
+void mg::Scene::OnApplicationQuit()
 {
 	for (auto const& object : m_pObjects)
 	{
 		if (object->IsActive())
 		{
-			object->End();
+			object->OnApplicationQuit();
 		}
 
 	}
 }
+#pragma endregion Game_Loop
+
 mg::Scene::Scene()
 	: m_pInput{std::make_unique<SceneInput>()}
 	, m_pObjects{}
 {
 }
-#pragma endregion Game_Loop
 
 mg::Scene::~Scene()
 {

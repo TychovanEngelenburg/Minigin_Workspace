@@ -1,7 +1,7 @@
-#include "Minigin/SceneManager.h"
+#include "Minigin/Scene/SceneManager.h"
 
 // .h includes
-#include "Minigin/Scene.h"
+#include "Minigin/Scene/Scene.h"
 
 #include <memory>
 #include <vector>
@@ -31,13 +31,6 @@ size_t mg::SceneManager::CreateScene()
 {
 	// TODO: Look into why std::make_unique<Scene>() doesn't work here.
 	m_pScenes.emplace_back(std::make_unique<Scene>());
-	m_pScenes[m_pScenes.size() - 1]->Awake();
-
-
-	if (m_pScenes.size() == 1)
-	{
-		Start();
-	}
 	return m_pScenes.size() - 1;
 }
 
@@ -55,7 +48,6 @@ mg::Scene const& mg::SceneManager::CreateSceneAt(size_t sceneId)
 
 
 	m_pScenes[sceneId] = std::make_unique<Scene>();
-	m_pScenes[sceneId]->Awake();
 	return *m_pScenes[sceneId];
 }
 
@@ -96,10 +88,10 @@ void mg::SceneManager::LateUpdate()
 
 }
 
-void mg::SceneManager::End()
+void mg::SceneManager::OnApplicationQuit()
 {
 
-	m_pScenes[m_activeScene]->End();
+	m_pScenes[m_activeScene]->OnApplicationQuit();
 }
 mg::SceneManager::SceneManager()
 	: m_pScenes{}

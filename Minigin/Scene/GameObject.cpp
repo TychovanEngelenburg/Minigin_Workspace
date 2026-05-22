@@ -1,8 +1,6 @@
-#include "Minigin/GameObject.h"
+#include <Minigin/Scene/GameObject.h>
 
-// .h includes
-#include "EngineComponents/Component.h"
-#include "Transform2D.h"
+#include <Minigin/Scene/Scene.h>
 
 #include <string_view>
 #include <memory>
@@ -25,9 +23,20 @@ bool mg::GameObject::IsDestroyed() const noexcept
 	return m_destroyed;
 }
 
+mg::Scene* mg::GameObject::Scene() const noexcept
+{
+	return m_pScene;
+}
+
 bool mg::GameObject::IsActive() const noexcept
 {
 	return m_active;
+}
+
+
+void mg::GameObject::SetScene(mg::Scene* pScene)
+{
+	m_pScene = pScene;
 }
 
 void mg::GameObject::SetActive(bool isActive)
@@ -106,11 +115,11 @@ void mg::GameObject::LateUpdate()
 	}
 }
 
-void mg::GameObject::End()
+void mg::GameObject::OnApplicationQuit()
 {
 	for (auto& component : m_pComponents)
 	{
-		component->End();
+		component->OnApplicationQuit();
 	}
 }
 #pragma endregion
@@ -119,13 +128,9 @@ mg::GameObject::GameObject(std::string_view name, glm::vec3 pos)
 	: m_transform{this}
 	, m_name{ name }
 	, m_active{ true }
-	, m_destroyed{}
-	, m_pComponents{}
-	, m_pParent{}
-	, m_pChildren{}
 
 {
-	m_transform.SetLocalPosition(pos);
+	m_transform.SetLocalPosition({ pos.x, pos.y });
 }
 
 mg::GameObject::~GameObject()

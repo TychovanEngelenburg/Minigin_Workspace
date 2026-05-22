@@ -1,8 +1,8 @@
 #include "SceneLoading.h"
-#include "Minigin/Scene.h"
+#include "Minigin/Scene/Scene.h"
 
 // GameObject
-#include "Minigin/GameObject.h"
+#include "Minigin/Scene/GameObject.h"
 #include "EngineComponents/TextComponent.h"
 #include "EngineComponents/Sprite.h"
 #include "UI/FPS_UI.h"
@@ -18,6 +18,9 @@
 #include "Tank/TankHealth.h"
 #include "Tank/TankMovement.h"
 
+
+#include "Tank/PlayerBullet.h"
+
 void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 {
 #pragma region Environment
@@ -27,6 +30,16 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 	}
 
 #pragma endregion Environment
+
+
+	auto bullet = std::make_unique<mg::GameObject>("PlayerBullet_", glm::vec3(36.f, 146.f, 0.f));
+	{
+		bullet->AddComponent<BulletMovement>(grid->GetComponent<GameGrid>());
+
+		auto& sprite{ bullet->AddComponent<mg::Sprite>("T_SpriteSheet_Tron.png", mg::SpriteSheet(13, 5)) };
+		sprite.SetSprite(6, 0);
+	}
+
 	// Player characters initialisation. 
 	//auto gamepadPlayer = std::make_unique<mg::GameObject>("Player1", glm::vec3(20, 100.f, 0.f));
 	//{
@@ -177,6 +190,7 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 
 	//sceneOut.Add(std::move(gamepadPlayer));
 	sceneOut.Add(std::move(keyboardPlayer));
+	sceneOut.Add(std::move(bullet));
 
 	sceneOut.Add(std::move(fpsCounterUI));
 	sceneOut.Add(std::move(playerOneInfoUI));
@@ -184,11 +198,12 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 	sceneOut.Add(std::move(playerOneHealthUI));
 	sceneOut.Add(std::move(playerTwoHealthUI));
 
-	sceneOut.Awake();
 
 	auto& audioSystem = mg::SoundServiceLocator::Fetch();
 	audioSystem.PlayMusic({ "./Data/Audio_Tron1982/03_IO_Tower.wav", "music", -1 });
 	audioSystem.SetMusicVolume(.5f);
+
+	sceneOut.Start();
 }
 
 void SceneLoading::LoadMainMenuScene(mg::Scene& sceneOut)
@@ -211,4 +226,6 @@ void SceneLoading::LoadMainMenuScene(mg::Scene& sceneOut)
 		std::make_unique<StartGameCommand>(), mg::InputBinding::TriggerType::Released
 	);
 	sceneOut.Input().AddBinding(std::move(startGameInput));
+
+	sceneOut.Start();
 }

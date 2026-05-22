@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <vector>
-#include "Minigin/GameObject.h"
+#include "Minigin/Scene/GameObject.h"
 #include "Minigin/InputHandling/SceneInput.h"
 #include <string_view>
 
@@ -24,14 +24,13 @@ namespace mg
 		void Add(std::unique_ptr<GameObject> object);
 		void Remove(GameObject const& object);
 
-		void Awake();
 		void Start();
 		void ProcessInput();
 		void FixedUpdate();
 		void Update();
 		void Render() const;
 		void LateUpdate();
-		void End();
+		void OnApplicationQuit();
 
 		explicit Scene();
 

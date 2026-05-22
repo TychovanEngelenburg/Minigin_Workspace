@@ -1,5 +1,5 @@
 #include "Commands/MoveTankCommand.h"
-#include "Minigin/GameObject.h"
+#include "Minigin/Scene/GameObject.h"
 
 void MoveTankCommand::Execute()
 { 
