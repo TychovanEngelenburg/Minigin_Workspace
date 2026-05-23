@@ -1,5 +1,6 @@
 #include "Minigin/EngineComponents/Component.h"
 #include "Minigin/Scene/GameObject.h"
+#include "Minigin/CollisionSystem/CollisionSystem.h"
 
 mg::GameObject* mg::Component::Owner() const noexcept
 {
@@ -20,6 +21,12 @@ void mg::Component::SetActive(bool isActive)
 void mg::Component::Awake() {}
 
 void mg::Component::Start() {}
+
+void mg::Component::OnCollisionEnter(mg::CollisionData const& data) {}
+
+void mg::Component::OnCollisionStay(mg::CollisionData const& data) {}
+
+void mg::Component::OnCollisionExit(mg::CollisionData const& data) {}
 
 void mg::Component::FixedUpdate() {}
 

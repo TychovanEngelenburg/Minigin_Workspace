@@ -4,6 +4,8 @@
 namespace mg
 {
 	class GameObject;
+	struct CollisionData;
+
 	class Component
 	{
 	public:
@@ -14,10 +16,16 @@ namespace mg
 
 		virtual void Awake();
 		virtual void Start();
+
+		void OnCollisionEnter(CollisionData const& data);
+		void OnCollisionStay(CollisionData const& data);
+		void OnCollisionExit(CollisionData const& data);
+
 		virtual void FixedUpdate();
 		virtual void Update();
-		virtual void Render() const;
 		virtual void LateUpdate();
+		virtual void Render() const;
+		
 		virtual void OnApplicationQuit();
 
 		virtual ~Component() = default;

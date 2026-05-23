@@ -1,8 +1,9 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
-#include <Minigin/EngineComponents/Component.h>
-#include <Minigin/Transform2D.h>
+#include "Minigin/EngineComponents/Component.h"
+#include "Minigin/Transform2D.h"
+#include "Minigin/CollisionSystem/CollisionSystem.h"
 
 #include <string>
 #include <string_view>
@@ -19,7 +20,7 @@
 namespace mg
 {
 	class Texture2D;
-	class Collider2D;
+	struct CollisionData;
 	class Scene;
 	class GameObject final
 	{
@@ -52,9 +53,9 @@ namespace mg
 		/// </summary>
 		void Start();
 
-		void OnCollisionEnter(Collider2D* pOther);
-		void OnCollisionstay(Collider2D* pOther);
-		void OnCollisionExit(Collider2D* pOther);
+		void OnCollisionEnter(CollisionData const& data);
+		void OnCollisionStay(CollisionData const& data);
+		void OnCollisionExit(CollisionData const& data);
 
 		void Update();
 		void FixedUpdate();

@@ -42,9 +42,10 @@ add_library(${LIBRARY_TARGET} STATIC
     Minigin/SDL_Implementation/SDLFont.cpp
     Minigin/SDL_Implementation/SDLTexture2D.cpp
     Minigin/SDL_Implementation/SDLSoundSystem.cpp
+        Minigin/CollisionSystem/CollisionSystem.cpp
 
     Minigin/SoundSystem/SoundServiceLocator.cpp
-    Minigin/InputHandling/SceneInput.cpp)
+    Minigin/InputHandling/SceneInput.cpp "Minigin/CollisionSystem/BoxCollider2D.cpp")
 target_include_directories(minigin_engine PUBLIC
   ${CMAKE_SOURCE_DIR}
 )

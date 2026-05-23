@@ -1,6 +1,5 @@
-#include <Minigin/Scene/GameObject.h>
-
-#include <Minigin/Scene/Scene.h>
+#include "Minigin/Scene/GameObject.h"
+#include "Minigin/Scene/Scene.h"
 
 #include <string_view>
 #include <memory>
@@ -68,6 +67,30 @@ void mg::GameObject::Start()
 	for (auto& component : m_pComponents)
 	{
 		component->Start();
+	}
+}
+
+void mg::GameObject::OnCollisionEnter(mg::CollisionData const& data)
+{
+	for (auto& component : m_pComponents)
+	{
+		component->OnCollisionEnter(data);
+	}
+}
+
+void mg::GameObject::OnCollisionStay(mg::CollisionData const& data)
+{
+	for (auto& component : m_pComponents)
+	{
+		component->OnCollisionStay(data);
+	}
+}
+
+void mg::GameObject::OnCollisionExit(mg::CollisionData const& data)
+{
+	for (auto& component : m_pComponents)
+	{
+		component->OnCollisionExit(data);
 	}
 }
 

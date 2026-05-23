@@ -1,9 +1,10 @@
 #include "PlayerBullet.h"
 #include "Grid/GameGrid.h"
-#include "Minigin/Scene/GameObject.h"
-#include "Minigin/DeltaClock.h"
 
-
+#include <Minigin/Scene/GameObject.h>
+#include <Minigin/DeltaClock.h>
+#include <Minigin/CollisionSystem/BoxCollider2D.h>
+#include <cassert>
 void BulletMovement::Shoot(glm::vec2 const& pos, glm::vec2 const& dir)
 {
 	m_direction = dir;
@@ -13,17 +14,20 @@ void BulletMovement::Shoot(glm::vec2 const& pos, glm::vec2 const& dir)
 	Owner()->SetActive(true);
 }
 
+void BulletMovement::Awake()
+{
+    m_pCollider = Owner()->GetComponent<mg::BoxCollider2D>();
+
+    assert(m_pCollider && "Bullet gameobject must have a collider!");
+}
+
 void BulletMovement::FixedUpdate()
 {
     auto worldPos = Owner()->Transform().WorldPosition();
 
-    const float dt =
-        static_cast<float>(mg::DeltaClock::FixedDeltaTime());
-
-    glm::vec2 displacement = m_direction * m_speed * dt;
+    glm::vec2 displacement = m_direction * m_speed * static_cast<float>(mg::DeltaClock::FixedDeltaTime());
 
     bool bounced{ false };
-
 
     glm::vec2 xPos
     {
@@ -31,7 +35,7 @@ void BulletMovement::FixedUpdate()
         worldPos.y
     };
 
-    auto xTile = m_pGrid->WorldToGrid(xPos);
+    auto xTile{ m_pGrid->WorldToGrid(xPos) };
 
     if (m_pGrid->WallAt(xTile))
     {
@@ -49,7 +53,7 @@ void BulletMovement::FixedUpdate()
         worldPos.y + displacement.y
     };
 
-    auto yTile = m_pGrid->WorldToGrid(yPos);
+    auto yTile{ m_pGrid->WorldToGrid(yPos) };
 
     if (m_pGrid->WallAt(yTile))
     {
