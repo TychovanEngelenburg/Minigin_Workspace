@@ -16,69 +16,75 @@ void BulletMovement::Shoot(glm::vec2 const& pos, glm::vec2 const& dir)
 
 void BulletMovement::Awake()
 {
-    m_pCollider = Owner()->GetComponent<mg::BoxCollider2D>();
+	m_pCollider = Owner()->GetComponent<mg::BoxCollider2D>();
 
-    assert(m_pCollider && "Bullet gameobject must have a collider!");
+	assert(m_pCollider && "Bullet gameobject must have a collider!");
 }
 
 void BulletMovement::FixedUpdate()
 {
-    auto worldPos = Owner()->Transform().WorldPosition();
+	auto worldPos = Owner()->Transform().WorldPosition();
 
-    glm::vec2 displacement = m_direction * m_speed * static_cast<float>(mg::DeltaClock::FixedDeltaTime());
+	glm::vec2 displacement = m_direction * m_speed * static_cast<float>(mg::DeltaClock::FixedDeltaTime());
 
-    bool bounced{ false };
+	bool bounced{ false };
 
-    glm::vec2 xPos
-    {
-        worldPos.x + displacement.x,
-        worldPos.y
-    };
+	float xPos{ worldPos.x + displacement.x };
+	if (displacement.x > 0)
+	{
+		xPos += m_pCollider->LocalBounds().size.x;
+	}
 
-    auto xTile{ m_pGrid->WorldToGrid(xPos) };
+	if (m_pGrid->WallAt(m_pGrid->WorldToGrid({xPos, worldPos.y })) ||
+		m_pGrid->WallAt(m_pGrid->WorldToGrid({xPos, worldPos.y + m_pCollider->LocalBounds().size.y })))
+	{
+		m_direction.x = -m_direction.x;
+		bounced = true;
+	}
+	else
+	{
+		worldPos.x += displacement.x;
+	}
 
-    if (m_pGrid->WallAt(xTile))
-    {
-        m_direction.x = -m_direction.x;
-        bounced = true;
-    }
-    else
-    {
-        worldPos.x = xPos.x;
-    }
+	float yPos{ worldPos.y + displacement.y };
+	if (displacement.y > 0)
+	{
+		yPos += m_pCollider->LocalBounds().size.x;
+	}
 
-    glm::vec2 yPos
-    {
-        worldPos.x,
-        worldPos.y + displacement.y
-    };
+	if (m_pGrid->WallAt(m_pGrid->WorldToGrid({ worldPos.x,                                      yPos })) ||
+		m_pGrid->WallAt(m_pGrid->WorldToGrid({ worldPos.x + m_pCollider->LocalBounds().size.x,  yPos })))
+	{
+		m_direction.y = -m_direction.y;
+		bounced = true;
+	}
+	else
+	{
+		worldPos.y += displacement.y;
+	}
 
-    auto yTile{ m_pGrid->WorldToGrid(yPos) };
 
-    if (m_pGrid->WallAt(yTile))
-    {
-        m_direction.y = -m_direction.y;
-        bounced = true;
-    }
-    else
-    {
-        worldPos.y = yPos.y;
-    }
+	if (bounced)
+	{
+		++m_bounceCount;
 
-    if (bounced)
-    {
-        ++m_bounceCount;
-    }
+		if (m_bounceCount >= m_maxBounces)
+		{
+			//Owner()->SetActive(false);
+			m_bounceCount = 0;
+		}
+	}
 
-    Owner()->Transform().SetWorldPosition(worldPos);
+	Owner()->Transform().SetWorldPosition(worldPos);
 
-    m_currentTile = m_pGrid->WorldToGrid(worldPos);
+	m_currentTile = m_pGrid->WorldToGrid(worldPos);
 }
 
-BulletMovement::BulletMovement(mg::GameObject& owner, GameGrid* pGrid, float speed)
+BulletMovement::BulletMovement(mg::GameObject& owner, GameGrid* pGrid, float speed, int maxBounces)
 	: mg::Component(owner)
 	, m_pGrid{ pGrid }
-	, m_speed{speed}
+	, m_maxBounces{ maxBounces }
+	, m_speed{ speed }
 {
 
 }
