@@ -88,11 +88,6 @@ void mg::SceneManager::LateUpdate()
 
 }
 
-void mg::SceneManager::OnApplicationQuit()
-{
-
-	m_pScenes[m_activeScene]->OnApplicationQuit();
-}
 mg::SceneManager::SceneManager()
 	: m_pScenes{}
 	, m_activeScene{ 0 }

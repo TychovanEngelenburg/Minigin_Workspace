@@ -67,7 +67,7 @@ add_executable(${GAME_TARGET} ${TARGET_PARAM}
     Game/Tank/TankMovement.cpp
     Game/Tank/TankVisuals.cpp
     Game/Tank/PlayerBullet.cpp 
-    Game/Tank/TankBarrel.cpp)
+    Game/Tank/TankBarrel.cpp "Game/DamageOnCollision.cpp")
 
 # enable c++20 features
 target_compile_features(${GAME_TARGET} PUBLIC cxx_std_20)

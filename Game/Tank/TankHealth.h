@@ -1,11 +1,12 @@
 #ifndef TANKHEALTH_H
 #define TANKHEALTH_H
-#include "Minigin/EngineComponents/Component.h"
-#include "Minigin/EventSource.h"
-#include "GameEvents.h"
+#include "Helper/GameEvents.h"
 
-#include "Minigin/SoundSystem/ISoundSystem.h"
-#include "Minigin/SoundSystem/SoundServiceLocator.h"
+#include <Minigin/EngineComponents/Component.h>
+#include <Minigin/EventSource.h>
+
+#include <Minigin/SoundSystem/ISoundSystem.h>
+#include <Minigin/SoundSystem/SoundServiceLocator.h>
 
 namespace mg
 {

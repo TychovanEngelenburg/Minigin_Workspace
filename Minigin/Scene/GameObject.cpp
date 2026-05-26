@@ -137,14 +137,6 @@ void mg::GameObject::LateUpdate()
 		}
 	}
 }
-
-void mg::GameObject::OnApplicationQuit()
-{
-	for (auto& component : m_pComponents)
-	{
-		component->OnApplicationQuit();
-	}
-}
 #pragma endregion
 
 mg::GameObject::GameObject(std::string_view name, glm::vec3 pos)

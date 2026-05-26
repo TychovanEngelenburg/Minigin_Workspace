@@ -20,6 +20,7 @@ namespace mg
 		const SDL_Color& BackgroundColor() const;
 		SDL_Renderer* GetSDLRenderer() const noexcept;
 
+		void DrawRect(SDL_FRect const& rect);
 		void RenderTexture(Texture2D const& texture, Transform2D const& transform, SDL_FRect const& src = SDL_FRect{}, bool flipX = false, bool flipY = false) const;
 		void RenderTexture(Texture2D const& texture, SDL_FRect const& dst, SDL_FRect const& src = SDL_FRect{}, bool flipX = false, bool flipY = false) const;
 		void SetBackgroundColor(SDL_Color const& color);

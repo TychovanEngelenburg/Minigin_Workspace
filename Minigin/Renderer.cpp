@@ -16,6 +16,12 @@ SDL_Renderer* mg::Renderer::GetSDLRenderer() const noexcept
 	return m_pRenderer;
 }
 
+void mg::Renderer::DrawRect(SDL_FRect const& rect)
+{
+	SDL_SetRenderDrawColor(Renderer::Instance().GetSDLRenderer(), 255, 0, 0, 255);
+	SDL_RenderRect(Renderer::Instance().GetSDLRenderer(), &rect);
+}
+
 void mg::Renderer::RenderTexture(Texture2D const& texture, Transform2D const& transform, SDL_FRect const& src, bool flipX, bool flipY) const
 {
 	//assert((src.h > 0) ^ (src.w > 0));

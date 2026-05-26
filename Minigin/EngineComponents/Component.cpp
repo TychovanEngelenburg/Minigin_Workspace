@@ -35,8 +35,6 @@ void mg::Component::Update() {}
 void mg::Component::Render() const {}
 
 void mg::Component::LateUpdate() {}
-
-void mg::Component::OnApplicationQuit() {}
 #pragma endregion Game_Loop
 
 mg::Component::Component(mg::GameObject& owner)

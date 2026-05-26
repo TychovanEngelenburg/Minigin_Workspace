@@ -1,6 +1,7 @@
 #include "Minigin/Scene/Scene.h"
 
 #include "Minigin/Scene/GameObject.h"
+
 #include <algorithm>
 #include <cassert>
 #include <memory>
@@ -9,9 +10,14 @@
 #include <vector>
 
 
-mg::SceneInput& mg::Scene::Input() const
+mg::SceneInput& mg::Scene::InputSystem() const noexcept
 {
-	return *m_pInput;
+	return *m_pInputSystem;
+}
+
+mg::SceneCollisions& mg::Scene::CollisionSystem() const noexcept
+{
+	return *m_pCollisionSystem;
 }
 
 mg::GameObject* mg::Scene::GetObjectByName(std::string_view objName)
@@ -56,11 +62,13 @@ void mg::Scene::Start()
 
 void mg::Scene::ProcessInput()
 {
-	m_pInput->ProcessInput();
+	m_pInputSystem->ProcessInput();
 }
 
 void mg::Scene::FixedUpdate()
 {
+	m_pCollisionSystem->Update();
+
 	for (auto& object : m_pObjects)
 	{
 		if (object->IsActive())
@@ -109,27 +117,10 @@ void mg::Scene::LateUpdate()
 			});
 	}
 }
-
-void mg::Scene::OnApplicationQuit()
-{
-	for (auto const& object : m_pObjects)
-	{
-		if (object->IsActive())
-		{
-			object->OnApplicationQuit();
-		}
-
-	}
-}
 #pragma endregion Game_Loop
 
 mg::Scene::Scene()
-	: m_pInput{std::make_unique<SceneInput>()}
-	, m_pObjects{}
+	: m_pInputSystem{std::make_unique<SceneInput>()}
+	, m_pCollisionSystem{std::make_unique<SceneCollisions>()}
 {
-}
-
-mg::Scene::~Scene()
-{
-	m_pObjects.clear();
 }

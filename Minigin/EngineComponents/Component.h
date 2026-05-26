@@ -17,17 +17,15 @@ namespace mg
 		virtual void Awake();
 		virtual void Start();
 
-		void OnCollisionEnter(CollisionData const& data);
-		void OnCollisionStay(CollisionData const& data);
-		void OnCollisionExit(CollisionData const& data);
+		virtual void OnCollisionEnter(CollisionData const& data);
+		virtual void OnCollisionStay(CollisionData const& data);
+		virtual void OnCollisionExit(CollisionData const& data);
 
 		virtual void FixedUpdate();
 		virtual void Update();
 		virtual void LateUpdate();
 		virtual void Render() const;
 		
-		virtual void OnApplicationQuit();
-
 		virtual ~Component() = default;
 		Component(Component const& other) = delete;
 		Component(Component&& other) = delete;

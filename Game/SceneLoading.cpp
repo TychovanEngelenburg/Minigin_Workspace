@@ -1,25 +1,31 @@
 #include "SceneLoading.h"
-#include "Minigin/Scene/Scene.h"
 
-// GameObject
-#include "Minigin/Scene/GameObject.h"
-#include "EngineComponents/TextComponent.h"
-#include "EngineComponents/Sprite.h"
-#include "UI/FPS_UI.h"
-#include "UI/PlayerHealth_UI.h"
-#include "Grid/GameGrid.h"
+// Engine
+#include <Minigin/Scene/Scene.h>
+#include <Minigin/Scene/GameObject.h>
+#include <Minigin/EngineComponents/TextComponent.h>
+#include <Minigin/EngineComponents/Sprite.h>
+#include <Minigin/CollisionSystem/BoxCollider2D.h>
+
 // Input
-#include "Minigin/InputHandling/InputBinding.h"
-#include "Minigin/InputHandling/InputCodes.h"
-#include "Minigin/InputHandling/InputManager.h"
+#include <Minigin/InputHandling/InputBinding.h>
+#include <Minigin/InputHandling/InputCodes.h>
+
+// Commands
 #include "Commands/MoveTankCommand.h"
 #include "Commands/DamageTankCommand.h"
 #include "Commands/StartGameCommand.h"
+
+// UI
+#include "UI/FPS_UI.h"
+#include "UI/PlayerHealth_UI.h"
+
+// Game
+#include "Grid/GameGrid.h"
 #include "Tank/TankHealth.h"
 #include "Tank/TankMovement.h"
-
-
 #include "Tank/PlayerBullet.h"
+#include "DamageOnCollision.h"
 
 void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 {
@@ -35,9 +41,13 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 	auto bullet = std::make_unique<mg::GameObject>("PlayerBullet_", glm::vec3(36.f, 146.f, 0.f));
 	{
 		bullet->AddComponent<BulletMovement>(grid->GetComponent<GameGrid>());
+		bullet->AddComponent<DamageOnCollision>(1);
 
 		auto& sprite{ bullet->AddComponent<mg::Sprite>("T_SpriteSheet_Tron.png", mg::SpriteSheet(13, 5)) };
 		sprite.SetSprite(6, 0);
+
+		auto& hitBox{ bullet->AddComponent<mg::BoxCollider2D>() };
+		hitBox.SetSize({ 10.f, 8.f });
 	}
 
 	// Player characters initialisation. 
@@ -85,6 +95,9 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 		auto& sprite = keyboardPlayer->AddComponent<mg::Sprite>("T_SpriteSheet_Tron.png", mg::SpriteSheet{ 13, 5 });
 		sprite.SetSprite(8, 0);
 
+		auto& hitBox{ keyboardPlayer->AddComponent<mg::BoxCollider2D>() };
+		hitBox.SetSize(sprite.Size());
+
 		keyboardPlayer->AddComponent<TankHealth>();
 		keyboardPlayer->AddComponent<TankMovement>(grid->GetComponent<GameGrid>(), 100.f);
 
@@ -93,32 +106,32 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 			0, static_cast<int>(mg::Keycodes::KeyboardKey::A), mg::InputBinding::DeviceType::Keyboard,
 			std::make_unique<MoveTankCommand>(keyboardPlayer.get(), TankMovement::Direction::Left), mg::InputBinding::TriggerType::Held
 		);
-		sceneOut.Input().AddBinding(std::move(moveLeft));
+		sceneOut.InputSystem().AddBinding(std::move(moveLeft));
 
 		auto moveUp = std::make_unique<mg::InputBinding>(
 			0, static_cast<int>(mg::Keycodes::KeyboardKey::W), mg::InputBinding::DeviceType::Keyboard,
 			std::make_unique<MoveTankCommand>(keyboardPlayer.get(), TankMovement::Direction::Up), mg::InputBinding::TriggerType::Held
 		);
-		sceneOut.Input().AddBinding(std::move(moveUp));
+		sceneOut.InputSystem().AddBinding(std::move(moveUp));
 
 		auto moveRight = std::make_unique<mg::InputBinding>(
 			0, static_cast<int>(mg::Keycodes::KeyboardKey::D), mg::InputBinding::DeviceType::Keyboard,
 			std::make_unique<MoveTankCommand>(keyboardPlayer.get(), TankMovement::Direction::Right), mg::InputBinding::TriggerType::Held
 		);
-		sceneOut.Input().AddBinding(std::move(moveRight));
+		sceneOut.InputSystem().AddBinding(std::move(moveRight));
 
 		auto moveDown = std::make_unique<mg::InputBinding>(
 			0, static_cast<int>(mg::Keycodes::KeyboardKey::S), mg::InputBinding::DeviceType::Keyboard,
 			std::make_unique<MoveTankCommand>(keyboardPlayer.get(), TankMovement::Direction::Down), mg::InputBinding::TriggerType::Held
 		);
-		sceneOut.Input().AddBinding(std::move(moveDown));
+		sceneOut.InputSystem().AddBinding(std::move(moveDown));
 
 
 		auto doDamage = std::make_unique<mg::InputBinding>(
 			0, static_cast<int>(mg::Keycodes::KeyboardKey::C), mg::InputBinding::DeviceType::Keyboard,
 			std::make_unique<DamageTankCommand>(keyboardPlayer.get(), 1)
 		);
-		sceneOut.Input().AddBinding(std::move(doDamage));
+		sceneOut.InputSystem().AddBinding(std::move(doDamage));
 	}
 
 
@@ -219,13 +232,13 @@ void SceneLoading::LoadMainMenuScene(mg::Scene& sceneOut)
 		0, static_cast<int>(mg::Keycodes::KeyboardKey::K), mg::InputBinding::DeviceType::Keyboard,
 		std::make_unique<StartGameCommand>(), mg::InputBinding::TriggerType::Released
 	);
-	sceneOut.Input().AddBinding(std::move(startGameInput));
+	sceneOut.InputSystem().AddBinding(std::move(startGameInput));
 
 	startGameInput = std::make_unique<mg::InputBinding>(
 		0, static_cast<int>(mg::Keycodes::GamepadButton::A), mg::InputBinding::DeviceType::Gamepad,
 		std::make_unique<StartGameCommand>(), mg::InputBinding::TriggerType::Released
 	);
-	sceneOut.Input().AddBinding(std::move(startGameInput));
+	sceneOut.InputSystem().AddBinding(std::move(startGameInput));
 
 	sceneOut.Start();
 }

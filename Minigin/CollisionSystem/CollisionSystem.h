@@ -7,7 +7,7 @@
 namespace mg
 {
 
-	class CollisionSystem
+	class SceneCollisions
 	{
     public:
 
@@ -20,12 +20,13 @@ namespace mg
         std::vector<BoxCollider2D*> m_pColliders{};
         std::vector<std::pair<BoxCollider2D*, BoxCollider2D*>> m_pCollidingPairs{};
 
+        bool CanCollide(BoxCollider2D const& A, BoxCollider2D const& B);
         bool CheckOverlap(BoxCollider2D const& A, BoxCollider2D const& B);
 	};
 
     struct CollisionData
     {
-        BoxCollider2D* pCollider;
+        BoxCollider2D* pOtherCollider;
     };
 };
 

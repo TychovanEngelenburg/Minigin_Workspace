@@ -62,8 +62,6 @@ namespace mg
 		void LateUpdate();
 		void Render() const;
 
-		void OnApplicationQuit();
-
 		GameObject(std::string_view name, glm::vec3 pos = {0.f, 0.f, 0.f});
 		~GameObject();
 

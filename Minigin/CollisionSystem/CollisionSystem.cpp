@@ -5,19 +5,19 @@
 #include <glm/geometric.hpp>
 #include <cassert>
 #include <algorithm>
-void mg::CollisionSystem::Register(BoxCollider2D* pCollider)
+void mg::SceneCollisions::Register(BoxCollider2D* pCollider)
 {
 	assert(pCollider != nullptr);
 
 	m_pColliders.push_back(pCollider);
 }
 
-void mg::CollisionSystem::Unregister(BoxCollider2D* pCollider)
+void mg::SceneCollisions::Unregister(BoxCollider2D* pCollider)
 {
 	std::erase(m_pColliders, pCollider);
 }
 
-void mg::CollisionSystem::Update()
+void mg::SceneCollisions::Update()
 {
 	std::vector<std::pair<BoxCollider2D*, BoxCollider2D*>> collidingPairs{};
 	collidingPairs.reserve(collidingPairs.size());
@@ -28,6 +28,11 @@ void mg::CollisionSystem::Update()
 		{
 			auto colliderA{ m_pColliders[indexA] };
 			auto colliderB{ m_pColliders[indexB] };
+			if (!CanCollide(*colliderA, *colliderB))
+			{
+				continue;
+			}
+
 
 			if (CheckOverlap(*colliderA, *colliderB))
 			{
@@ -61,6 +66,8 @@ void mg::CollisionSystem::Update()
 			pair.second->Owner()->OnCollisionExit({ pair.first });
 		}
 	}
+
+	m_pCollidingPairs = collidingPairs;
 }
 
 bool OverlapOnAxis(mg::OBB const& a, mg::OBB const& b, glm::vec2 const& axis)
@@ -80,28 +87,46 @@ bool OverlapOnAxis(mg::OBB const& a, mg::OBB const& b, glm::vec2 const& axis)
 	return distance <= (aProjection + bProjection);
 }
 
-bool mg::CollisionSystem::CheckOverlap(BoxCollider2D const& A, BoxCollider2D const& B)
+bool mg::SceneCollisions::CanCollide(BoxCollider2D const& A, BoxCollider2D const& B)
+{
+	return true;
+}
+
+
+//#include <iostream>
+bool mg::SceneCollisions::CheckOverlap(BoxCollider2D const& A, BoxCollider2D const& B)
 {
 	OBB obbA{ A.GetOBB() };
 	OBB obbB{ B.GetOBB() };
 
+	int overlapping{};
+
 	if (!OverlapOnAxis(obbA, obbB, obbA.axisX))
 	{
+		//++overlapping;
 		return false;
 	}
 	if (!OverlapOnAxis(obbA, obbB, obbA.axisY))
 	{
+		//++overlapping;
 		return false;
 	}
 	if (!OverlapOnAxis(obbA, obbB, obbB.axisX))
 	{
+		++overlapping;
 		return false;
 	}
 	if (!OverlapOnAxis(obbA, obbB, obbB.axisY))
 	{
+		//++overlapping;
 		return false;
 	}
+	//if (overlapping >= 4)
+	//{
+	//std::cout << "Overlapping on " << overlapping << "axis.\n";
 
 	return true;
+	//}
+	//return false;
 }
 

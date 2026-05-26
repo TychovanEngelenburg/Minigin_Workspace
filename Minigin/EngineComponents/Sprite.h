@@ -24,6 +24,8 @@ namespace mg
 	class Sprite final : public Component
 	{
 	public:
+		glm::vec2 const& Size();
+
 		void SetTexture(std::filesystem::path const& filename);
 		void SetSprite(int x, int y);
 

@@ -24,7 +24,6 @@ namespace mg
 		void Update();
 		void Render() const;
 		void LateUpdate();
-		void OnApplicationQuit();
 
 		SceneManager();
 		virtual ~SceneManager() = default;

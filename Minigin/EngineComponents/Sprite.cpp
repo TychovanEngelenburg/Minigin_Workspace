@@ -8,6 +8,11 @@
 #include <memory>
 #include <filesystem>
 
+glm::vec2 const& mg::Sprite::Size()
+{
+	return glm::vec2(m_sourceRect.w, m_sourceRect.h);
+}
+
 void mg::Sprite::SetTexture(std::filesystem::path const& filePath)
 {
 	m_pTexture = ResourceManager::Instance().LoadTexture(filePath);

@@ -28,11 +28,20 @@ namespace mg
 
 		void SetCenter(glm::vec2 center);
 		void SetTopLeft(glm::vec2 topLeft);
-		void SetSize(glm::vec2 size, bool scaleAroundCenter);
+		void SetSize(glm::vec2 size, bool scaleAroundCenter = false);
 
 		Bounds const& LocalBounds() const;
 		mg::OBB GetOBB() const;
-		BoxCollider2D(mg::GameObject& owner, glm::vec2 size = {}, glm::vec2 offset = {});
+
+		void Awake() override;
+		void Render() const override;
+		explicit BoxCollider2D(mg::GameObject& owner, glm::vec2 size = {1.f, 1.f}, glm::vec2 offset = {});
+		~BoxCollider2D();
+
+		BoxCollider2D(BoxCollider2D const& other) = delete;
+		BoxCollider2D(BoxCollider2D&& other) = delete;
+		BoxCollider2D& operator=(BoxCollider2D const& other) = delete;
+		BoxCollider2D& operator=(BoxCollider2D&& other) = delete;
 
 	private:
 		Bounds m_bounds;
