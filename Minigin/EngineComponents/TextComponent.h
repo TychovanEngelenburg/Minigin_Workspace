@@ -29,12 +29,6 @@ namespace mg
 		void Render() const override;
 
 		TextComponent(mg::GameObject& owner, std::string_view text, std::filesystem::path const& fontFile, uint8_t size, SDL_Color const& color = { 255, 255, 255, 255 });
-		
-		~TextComponent() override = default;
-		TextComponent(TextComponent const& other) = delete;
-		TextComponent(TextComponent&& other) = delete;
-		TextComponent& operator=(TextComponent const& other) = delete;
-		TextComponent& operator=(TextComponent&& other) = delete;
 
 	private:
 		bool m_needsUpdate;

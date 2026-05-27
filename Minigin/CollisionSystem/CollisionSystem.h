@@ -7,7 +7,7 @@
 namespace mg
 {
 
-	class SceneCollisions
+	class SceneCollisions final
 	{
     public:
 

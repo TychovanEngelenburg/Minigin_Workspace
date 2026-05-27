@@ -1,6 +1,8 @@
 #include "GameStates.h"
-#include <memory>
+
 #include "GameContext.h"
+
+#include <memory>
 
 #pragma region MainMenuState
 void MainMenuState::OnEnter()

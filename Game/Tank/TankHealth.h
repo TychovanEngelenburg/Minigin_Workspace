@@ -5,8 +5,6 @@
 #include <Minigin/EngineComponents/Component.h>
 #include <Minigin/EventSource.h>
 
-#include <Minigin/SoundSystem/ISoundSystem.h>
-#include <Minigin/SoundSystem/SoundServiceLocator.h>
 
 namespace mg
 {
@@ -41,6 +39,8 @@ private:
 
 
 	// Temporary demonstration code
+	#include <Minigin/SoundSystem/ISoundSystem.h>
+	#include <Minigin/SoundSystem/SoundServiceLocator.h>
 	void DemoPlaySound()
 	{
 		mg::SoundServiceLocator::Fetch().PlaySFX({ "./Data/Audio_Tron1982/09_Sounds_MCP_Blip.wav", "damageTaken", 0 });

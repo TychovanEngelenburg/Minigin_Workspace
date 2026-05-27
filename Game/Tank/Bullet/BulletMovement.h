@@ -1,7 +1,8 @@
 #ifndef PLAYER_BULLET_H
 #define PLAYER_BULLET_H
 
-#include "Minigin/EngineComponents/Component.h"
+#include <Minigin/EngineComponents/Component.h>
+
 #include <glm/vec2.hpp>
 
 namespace mg

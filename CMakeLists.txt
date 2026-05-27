@@ -20,15 +20,15 @@ endif()
 set(LIBRARY_TARGET minigin_engine)
 
 add_library(${LIBRARY_TARGET} STATIC
-    "Minigin/Scene/GameObject.cpp"    
-    Minigin/InputHandling/InputManager.cpp
     Minigin/Minigin.cpp
     Minigin/Renderer.cpp
     Minigin/ResourceManager.cpp
-    "Minigin/Scene/Scene.cpp"
-    "Minigin/Scene/SceneManager.cpp"
     Minigin/DeltaClock.cpp
     Minigin/Transform2D.cpp
+
+    Minigin/Scene/GameObject.cpp  
+    Minigin/Scene/Scene.cpp
+    Minigin/Scene/SceneManager.cpp
     
     Minigin/EngineComponents/TextComponent.cpp
     Minigin/EngineComponents/Sprite.cpp
@@ -38,14 +38,18 @@ add_library(${LIBRARY_TARGET} STATIC
     Minigin/InputHandling/InputBinding.cpp
     Minigin/InputHandling/Keyboard.cpp 
     Minigin/InputHandling/GameObjectCommand.cpp 
+    Minigin/InputHandling/SceneInput.cpp 
+    Minigin/InputHandling/InputManager.cpp
 
     Minigin/SDL_Implementation/SDLFont.cpp
     Minigin/SDL_Implementation/SDLTexture2D.cpp
     Minigin/SDL_Implementation/SDLSoundSystem.cpp
-        Minigin/CollisionSystem/CollisionSystem.cpp
 
     Minigin/SoundSystem/SoundServiceLocator.cpp
-    Minigin/InputHandling/SceneInput.cpp "Minigin/CollisionSystem/BoxCollider2D.cpp")
+    
+    Minigin/CollisionSystem/CollisionSystem.cpp
+    Minigin/CollisionSystem/BoxCollider2D.cpp
+)
 target_include_directories(minigin_engine PUBLIC
   ${CMAKE_SOURCE_DIR}
 )
@@ -54,20 +58,27 @@ target_compile_features(minigin_engine PUBLIC cxx_std_20)
 # list source files here
 add_executable(${GAME_TARGET} ${TARGET_PARAM}
     Game/Main.cpp
-    Game/Tank/TankHealth.cpp
-    Game/UI/FPS_UI.cpp
-    Game/UI/PlayerHealth_UI.cpp
-    Game/Commands/MoveTankCommand.cpp
-    Game/Commands/DamageTankCommand.cpp  
-    Game/Grid/GameGrid.cpp
     Game/GameStates.cpp 
     Game/GameContext.cpp
+    Game/DamageOnCollision.cpp
     Game/SceneLoading.cpp
+    
+    Game/Commands/MoveTankCommand.cpp
     Game/Commands/StartGameCommand.cpp
+
+    Game/Grid/GameGrid.cpp
+    
+    Game/Tank/TankHealth.cpp
+    
+    Game/UI/FPS_UI.cpp
+    Game/UI/PlayerHealth_UI.cpp
+      
+
     Game/Tank/TankMovement.cpp
     Game/Tank/TankVisuals.cpp
-    Game/Tank/PlayerBullet.cpp 
-    Game/Tank/TankBarrel.cpp "Game/DamageOnCollision.cpp")
+    Game/Tank/Bullet/BulletMovement.cpp 
+    Game/Tank/TankBarrel.cpp 
+)
 
 # enable c++20 features
 target_compile_features(${GAME_TARGET} PUBLIC cxx_std_20)

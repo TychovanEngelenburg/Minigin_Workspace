@@ -1,6 +1,7 @@
 #include "TankVisuals.h"
-#include "Minigin/EngineComponents/Sprite.h"
-#include "Minigin/Scene/GameObject.h"
+
+#include <Minigin/EngineComponents/Sprite.h>
+#include <Minigin/Scene/GameObject.h>
 
 TankVisuals::TankVisuals(mg::GameObject& owner)
 	: Component(owner)

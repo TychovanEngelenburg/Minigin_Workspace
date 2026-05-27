@@ -1,7 +1,7 @@
 #ifndef FPS_UI_H
 #define FPS_UI_H
 
-#include "EngineComponents/Component.h"
+#include <Minigin/EngineComponents/Component.h>
 
 namespace mg
 {
@@ -16,12 +16,6 @@ public:
 	void Update() override;
 
 	explicit FPS_UI(mg::GameObject& owner);
-
-	~FPS_UI() override = default;
-	FPS_UI(FPS_UI const& other) = delete;
-	FPS_UI(FPS_UI&& other) = delete;
-	FPS_UI& operator=(FPS_UI const& other) = delete;
-	FPS_UI& operator=(FPS_UI&& other) = delete;
 
 private:
 	mg::TextComponent* m_pTextComp;

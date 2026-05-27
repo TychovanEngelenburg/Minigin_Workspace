@@ -25,9 +25,9 @@
 
 
 // Audio
-#include "Minigin/SoundSystem/SoundServiceLocator.h"
-#include "Minigin/SoundSystem/LoggingSoundSystem.h"
-#include "Minigin/SDL_Implementation/SDLSoundSystem.h"
+#include <Minigin/SoundSystem/SoundServiceLocator.h>
+#include <Minigin/SoundSystem/LoggingSoundSystem.h>
+#include <Minigin/SDL_Implementation/SDLSoundSystem.h>
 
 #include "GameContext.h"
 #include "GameStates.h"

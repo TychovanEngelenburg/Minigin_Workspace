@@ -1,8 +1,9 @@
 #include "TankMovement.h"
 
 #include "Grid/GameGrid.h"
-#include "Minigin/Scene/GameObject.h"
-#include "Minigin/DeltaClock.h"
+
+#include <Minigin/Scene/GameObject.h>
+#include <Minigin/DeltaClock.h>
 
 #include <glm/geometric.hpp>
 

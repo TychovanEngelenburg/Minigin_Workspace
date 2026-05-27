@@ -33,12 +33,6 @@ namespace mg
 
 		Sprite(GameObject& owner, std::filesystem::path const& filePath, SpriteSheet const& spriteSheetData = {});
 
-		~Sprite() override = default;
-		Sprite(Sprite const& other) = delete;
-		Sprite(Sprite&& other) = delete;
-		Sprite& operator=(Sprite const& other) = delete;
-		Sprite& operator=(Sprite&& other) = delete;
-
 	private:
 		std::shared_ptr<Texture2D> m_pTexture;
 		SpriteSheet  m_spriteSheet;

@@ -1,6 +1,7 @@
 #ifndef TANK_BARREL_H
 #define TANK_BARREL_H
-#include "Minigin/EngineComponents/Component.h"
+
+#include <Minigin/EngineComponents/Component.h>
 
 #include <filesystem>
 

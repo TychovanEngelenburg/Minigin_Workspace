@@ -1,8 +1,10 @@
 #include "TankBarrel.h"
-#include "PlayerBullet.h"
-#include "Minigin/Scene/GameObject.h"
-#include "Minigin/Scene/Scene.h"
-#include "Minigin/EngineComponents/Sprite.h"
+
+#include "Tank/Bullet/BulletMovement.h"
+
+#include <Minigin/Scene/GameObject.h>
+#include <Minigin/Scene/Scene.h>
+#include <Minigin/EngineComponents/Sprite.h>
 
 #include <memory>
 

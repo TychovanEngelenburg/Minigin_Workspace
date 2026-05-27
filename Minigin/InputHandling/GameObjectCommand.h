@@ -9,18 +9,14 @@ namespace mg
 	class GameObjectCommand : public ICommand
 	{
 	public:
-		GameObject* m_object;
-
 		GameObjectCommand(GameObject* object);
-
-		virtual ~GameObjectCommand() = default;
-		GameObjectCommand(GameObjectCommand const& other) = delete;
-		GameObjectCommand(GameObjectCommand&& other) = delete;
-		GameObjectCommand& operator=(GameObjectCommand const& other) = delete;
-		GameObjectCommand& operator=(GameObjectCommand&& other) = delete;
 
 	protected:
 		GameObject* GetGameObject() const;
+
+	private:
+		GameObject* m_pObject;
+
 	};
 }
 #endif // !GAMEOBJECTCOMMAND_H

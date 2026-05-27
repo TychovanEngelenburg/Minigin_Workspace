@@ -1,10 +1,13 @@
 #include "PlayerBullet.h"
+
 #include "Grid/GameGrid.h"
 
 #include <Minigin/Scene/GameObject.h>
 #include <Minigin/DeltaClock.h>
 #include <Minigin/CollisionSystem/BoxCollider2D.h>
+
 #include <cassert>
+
 void BulletMovement::Shoot(glm::vec2 const& pos, glm::vec2 const& dir)
 {
 	m_direction = dir;

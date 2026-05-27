@@ -1,8 +1,10 @@
 #include "GameGrid.h"
+
+#include <Minigin/Scene/GameObject.h>
+#include <Minigin/ResourceManager.h>
+#include <Minigin/Renderer.h>
+
 #include <fstream>
-#include "Minigin/Scene/GameObject.h"
-#include "Minigin/ResourceManager.h"
-#include "Minigin/Renderer.h"
 #include <iostream>
 
 GameGrid::GameGrid(mg::GameObject& owner, std::filesystem::path const& filePath, float tileSize)

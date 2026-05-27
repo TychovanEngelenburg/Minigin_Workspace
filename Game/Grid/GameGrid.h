@@ -1,11 +1,13 @@
 #ifndef GAMEGRID_H
 #define GAMEGRID_H
-#include "glm/vec2.hpp"
+
+#include <Minigin/EngineComponents/Component.h>
+#include <Minigin/SDL_Implementation/SDLTexture2D.h>
+
 #include <vector>
-#include "Minigin/EngineComponents/Component.h"
 #include <filesystem>
 #include <memory>
-#include "Minigin/SDL_Implementation/SDLTexture2D.h"
+
 struct Tile
 {
 
@@ -19,11 +21,6 @@ struct Tile
 		both
 	};
 	ConnectionMask PathConnections;
-};
-
-namespace mg
-{
-	class Texture2D;
 };
 
 class GameGrid final : public mg::Component

@@ -1,6 +1,8 @@
 #include "GameContext.h"
-#include "Minigin/Scene/SceneManager.h"
+
 #include "SceneLoading.h"
+
+#include <Minigin/Scene/SceneManager.h>
 
 GameContext::Mode const& GameContext::GetMode() const noexcept
 {

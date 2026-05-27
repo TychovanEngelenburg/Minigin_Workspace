@@ -1,7 +1,9 @@
 #include "UI/PlayerHealth_UI.h"
-#include "EngineComponents/Component.h"
-#include "EngineComponents/TextComponent.h"
-#include "Minigin/Scene/GameObject.h"
+
+#include <Minigin/EngineComponents/Component.h>
+#include <Minigin/EngineComponents/TextComponent.h>
+#include <Minigin/Scene/GameObject.h>
+
 #include <cassert>
 #include <string>
 

@@ -3,10 +3,10 @@
 
 mg::GameObject* mg::GameObjectCommand::GetGameObject() const
 {
-	return m_object;
+	return m_pObject;
 }
 
 mg::GameObjectCommand::GameObjectCommand(GameObject* object)
-	: m_object{object}
+	: m_pObject{object}
 {
 }

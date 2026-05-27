@@ -1,6 +1,7 @@
 #ifndef TANK_VISUALS_H
 #define TANK_VISUALS_H
-#include "Minigin/EngineComponents/Component.h"
+
+#include <Minigin/EngineComponents/Component.h>
 
 namespace mg
 {

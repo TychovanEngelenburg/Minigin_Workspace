@@ -1,16 +1,13 @@
 #include "UI/FPS_UI.h"
 
-#include "Minigin/DeltaClock.h"
-#include "EngineComponents/Component.h"
-#include "EngineComponents/TextComponent.h"
-#include "Minigin/Scene/GameObject.h"
+#include <Minigin/DeltaClock.h>
+#include <Minigin/EngineComponents/Component.h>
+#include <Minigin/EngineComponents/TextComponent.h>
+#include <Minigin/Scene/GameObject.h>
 
 #include <cassert>
 #include <format>
 #include <string>
-#include <iomanip>
-#include <ios>
-#include <sstream>
 
 #pragma region Game_Loop
 void FPS_UI::Awake()

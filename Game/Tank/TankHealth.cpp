@@ -1,6 +1,7 @@
 #include "TankHealth.h"
-#include "Minigin/Scene/GameObject.h"
-#include "IEventListener.h"
+
+#include <Minigin/Scene/GameObject.h>
+#include <Minigin/IEventListener.h>
 //#include <exception>
 
 bool TankHealth::IsDead() const noexcept

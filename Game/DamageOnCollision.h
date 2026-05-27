@@ -7,7 +7,7 @@ namespace mg
 	class GameObject;
 }
 
-class DamageOnCollision : public mg::Component
+class DamageOnCollision final : public mg::Component
 {
 public:
 	void OnCollisionEnter(mg::CollisionData const& data) override;

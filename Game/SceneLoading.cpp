@@ -24,7 +24,7 @@
 #include "Grid/GameGrid.h"
 #include "Tank/TankHealth.h"
 #include "Tank/TankMovement.h"
-#include "Tank/PlayerBullet.h"
+#include "Tank/Bullet/BulletMovement.h"
 #include "DamageOnCollision.h"
 
 void SceneLoading::LoadTestScene(mg::Scene& sceneOut)

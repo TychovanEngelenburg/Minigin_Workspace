@@ -1,12 +1,14 @@
 #ifndef GAME_CONTEXT_H
 #define GAME_CONTEXT_H
+
+#include "GameStates.h"
+
+#include <Minigin/Singleton.h>
 #include <vector>
 #include <string>
-#include "Minigin/Singleton.h"
-#include "GameStates.h"
 #include <memory>
 
-class GameContext : public mg::Singleton< GameContext>
+class GameContext final : public mg::Singleton< GameContext>
 {
 public:
 	enum class Mode
@@ -28,16 +30,8 @@ public:
 
 	GameContext();
 
-	virtual ~GameContext() = default;
-	GameContext(GameContext const& other) = delete;
-	GameContext(GameContext&& other) = delete;
-
-	GameContext& operator=(GameContext const& other) = delete;
-	GameContext& operator=(GameContext&& other) = delete;
-
 private:
 	friend class Singleton<GameContext>;
-
 
 	Mode m_mode;
 	size_t m_currentLevelScene;

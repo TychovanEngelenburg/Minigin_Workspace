@@ -1,5 +1,6 @@
 #ifndef GAME_STATES_H
 #define GAME_STATES_H
+
 #include <memory>
 
 enum class GameEvent
@@ -15,12 +16,12 @@ enum class GameEvent
 class IGameState
 {
 public:
-	virtual ~IGameState() = default;
-
 	virtual void OnEnter() {}
 	virtual void OnExit() {}
 
 	virtual std::unique_ptr<IGameState> HandleEvent(GameEvent const& event) = 0;
+
+	virtual ~IGameState() = default;
 };
 
 class MainMenuState final : public IGameState
