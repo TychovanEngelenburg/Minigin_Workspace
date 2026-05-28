@@ -20,7 +20,7 @@ namespace mg
 
 		void Start();
 		void FixedUpdate();
-		void ProcessInput();
+		void HandleInput();
 		void Update();
 		void Render() const;
 		void LateUpdate();

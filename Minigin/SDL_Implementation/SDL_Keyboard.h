@@ -6,7 +6,7 @@
 
 namespace mg
 {
-	class Keyboard final : public IInputDevice
+	class SDL_Keyboard final : public IInputDevice
 	{
 	public:
 		bool GetButton(int button) const;
@@ -15,13 +15,13 @@ namespace mg
 
 		void Update();
 
-		Keyboard();
+		SDL_Keyboard();
 
-		~Keyboard();
-		Keyboard(Keyboard const& other) = delete;
-		Keyboard(Keyboard&& other) = delete;
-		Keyboard& operator=(Keyboard const& other) = delete;
-		Keyboard& operator=(Keyboard&& other) = delete;
+		~SDL_Keyboard();
+		SDL_Keyboard(SDL_Keyboard const& other) = delete;
+		SDL_Keyboard(SDL_Keyboard&& other) = delete;
+		SDL_Keyboard& operator=(SDL_Keyboard const& other) = delete;
+		SDL_Keyboard& operator=(SDL_Keyboard&& other) = delete;
 
 	private:
 		class KeyboardImpl;

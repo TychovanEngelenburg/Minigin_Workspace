@@ -36,7 +36,7 @@ add_library(${LIBRARY_TARGET} STATIC
         
     Minigin/InputHandling/Gamepad.cpp
     Minigin/InputHandling/InputBinding.cpp
-    Minigin/InputHandling/Keyboard.cpp 
+    "Minigin/SDL_Implementation/SDL_Keyboard.cpp" 
     Minigin/InputHandling/GameObjectCommand.cpp 
     Minigin/InputHandling/SceneInput.cpp 
     Minigin/InputHandling/InputManager.cpp
@@ -44,12 +44,13 @@ add_library(${LIBRARY_TARGET} STATIC
     Minigin/SDL_Implementation/SDLFont.cpp
     Minigin/SDL_Implementation/SDLTexture2D.cpp
     Minigin/SDL_Implementation/SDLSoundSystem.cpp
+    Minigin/SDL_Implementation/SDL_GamePad.cpp
 
     Minigin/SoundSystem/SoundServiceLocator.cpp
     
     Minigin/CollisionSystem/CollisionSystem.cpp
     Minigin/CollisionSystem/BoxCollider2D.cpp
-)
+ "Minigin/InputSystem/AbstractInputSystem.cpp" "Minigin/InputSystem/InputServiceLocator.cpp" "Minigin/SDL_Implementation/SDL_InputSystem.cpp")
 target_include_directories(minigin_engine PUBLIC
   ${CMAKE_SOURCE_DIR}
 )

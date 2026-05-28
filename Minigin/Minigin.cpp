@@ -10,6 +10,7 @@
 #include "Minigin/ResourceManager.h"
 #include "Minigin/DeltaClock.h"
 #include "Minigin/Renderer.h"
+#include "Minigin/InputSystem/InputServiceLocator.h"
 
 #include <stdexcept>
 #include <sstream>
@@ -104,8 +105,8 @@ void mg::Minigin::RunOneFrame()
 		SceneManager::Instance().FixedUpdate();
 		m_lag -= DeltaClock::FixedDeltaTime();
 	}
-	InputManager::Instance().ProcessInput();
-	SceneManager::Instance().ProcessInput();
+	InputServiceLocator::Fetch().ProcessInput();
+	SceneManager::Instance().HandleInput();
 
 	SceneManager::Instance().Update();
 
@@ -150,7 +151,6 @@ mg::Minigin::Minigin(std::filesystem::path const& dataPath)
 
 	Renderer::Instance().Init(g_window);
 	ResourceManager::Instance().Init(dataPath);
-	InputManager::Instance().Init();
 }
 
 mg::Minigin::~Minigin()

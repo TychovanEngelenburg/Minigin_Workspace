@@ -14,7 +14,6 @@ namespace mg
 	class ISoundSystem
 	{
 	public:
-	public:
 		virtual ~ISoundSystem() = default;
 
 		virtual void PreLoadSFX(AudioClip const& clip) = 0;

@@ -10,6 +10,8 @@ namespace mg
         virtual bool GetButtonDown(int button) const = 0;
         virtual bool GetButtonUp(int button) const = 0;
 
+        virtual void Update() = 0;
+
         IInputDevice() = default;
 
         virtual ~IInputDevice() = default;

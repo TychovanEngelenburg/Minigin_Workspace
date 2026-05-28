@@ -5,7 +5,7 @@
 
 namespace mg
 {
-	class Gamepad final : public IInputDevice
+	class XInput_Gamepad final : public IInputDevice
 	{
 	public:
 		bool GetButton(int button) const override;
@@ -15,13 +15,13 @@ namespace mg
 
 		void Update();
 
-		explicit Gamepad(int index);
+		explicit XInput_Gamepad(int index);
 
-		~Gamepad();
-		Gamepad(Gamepad const& other) = delete;
-		Gamepad(Gamepad&& other) = delete;
-		Gamepad& operator=(Gamepad const& other) = delete;
-		Gamepad& operator=(Gamepad&& other) = delete;
+		~XInput_Gamepad();
+		XInput_Gamepad(XInput_Gamepad const& other) = delete;
+		XInput_Gamepad(XInput_Gamepad&& other) = delete;
+		XInput_Gamepad& operator=(XInput_Gamepad const& other) = delete;
+		XInput_Gamepad& operator=(XInput_Gamepad&& other) = delete;
 	private:
 		class GamepadImpl;
 		std::unique_ptr<GamepadImpl> m_pImpl;

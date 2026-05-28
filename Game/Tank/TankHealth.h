@@ -39,11 +39,11 @@ private:
 
 
 	// Temporary demonstration code
-	#include <Minigin/SoundSystem/ISoundSystem.h>
-	#include <Minigin/SoundSystem/SoundServiceLocator.h>
+	//#include <Minigin/SoundSystem/ISoundSystem.h>
+	//#include <Minigin/SoundSystem/SoundServiceLocator.h>
 	void DemoPlaySound()
 	{
-		mg::SoundServiceLocator::Fetch().PlaySFX({ "./Data/Audio_Tron1982/09_Sounds_MCP_Blip.wav", "damageTaken", 0 });
+		//mg::SoundServiceLocator::Fetch().PlaySFX({ "./Data/Audio_Tron1982/09_Sounds_MCP_Blip.wav", "damageTaken", 0 });
 	}
 
 };

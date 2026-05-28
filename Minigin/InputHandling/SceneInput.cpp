@@ -6,29 +6,31 @@
 
 #include "InputBinding.h"
 #include "Minigin/InputHandling/ICommand.h"
+#include "Minigin/InputSystem/InputServiceLocator.h"
 
 void mg::SceneInput::ProcessInput()
 {
+	auto& inputService{ InputServiceLocator::Fetch()};
+
 	for (auto& binding : m_pBindings)
 	{
 		IInputDevice const* device{};
+
 		switch (binding->GetType())
 		{
 			case InputBinding::DeviceType::Gamepad:
 			{
-				device = InputManager::Instance().GetGamepad(binding->DeviceIdx());
+				device = inputService.GetGamepad(binding->DeviceIdx());
 				break;
 			}
 
 			case InputBinding::DeviceType::Keyboard:
 			default:
 			{
-				device = InputManager::Instance().GetKeyboard();
+				device = inputService.GetKeyboard();
 				break;
 			}
 		}
-
-
 
 		switch (binding->GetTrigger())
 		{

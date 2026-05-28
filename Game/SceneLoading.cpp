@@ -6,6 +6,8 @@
 #include <Minigin/EngineComponents/TextComponent.h>
 #include <Minigin/EngineComponents/Sprite.h>
 #include <Minigin/CollisionSystem/BoxCollider2D.h>
+#include <Minigin/SoundSystem/SoundServiceLocator.h>
+#include <Minigin/SoundSystem/ISoundSystem.h>
 
 // Input
 #include <Minigin/InputHandling/InputBinding.h>
@@ -13,7 +15,6 @@
 
 // Commands
 #include "Commands/MoveTankCommand.h"
-#include "Commands/DamageTankCommand.h"
 #include "Commands/StartGameCommand.h"
 
 // UI
@@ -127,11 +128,11 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 		sceneOut.InputSystem().AddBinding(std::move(moveDown));
 
 
-		auto doDamage = std::make_unique<mg::InputBinding>(
-			0, static_cast<int>(mg::Keycodes::KeyboardKey::C), mg::InputBinding::DeviceType::Keyboard,
-			std::make_unique<DamageTankCommand>(keyboardPlayer.get(), 1)
-		);
-		sceneOut.InputSystem().AddBinding(std::move(doDamage));
+		//auto doDamage = std::make_unique<mg::InputBinding>(
+		//	0, static_cast<int>(mg::Keycodes::KeyboardKey::C), mg::InputBinding::DeviceType::Keyboard,
+		//	std::make_unique<DamageTankCommand>(keyboardPlayer.get(), 1)
+		//);
+		//sceneOut.InputSystem().AddBinding(std::move(doDamage));
 	}
 
 

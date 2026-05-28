@@ -1,5 +1,5 @@
-#include "SoundServiceLocator.h"
-#include "NullSoundSystem.h"
+#include "Minigin/SoundSystem/SoundServiceLocator.h"
+#include "Minigin/SoundSystem/NullSoundSystem.h"
 
 std::unique_ptr<mg::ISoundSystem> mg::SoundServiceLocator::m_pInstance = std::make_unique<mg::NullSoundSystem>();
 

@@ -64,7 +64,7 @@ void mg::SceneManager::FixedUpdate()
 
 }
 
-void mg::SceneManager::ProcessInput()
+void mg::SceneManager::HandleInput()
 {
 	m_pScenes[m_activeScene]->ProcessInput();
 }
