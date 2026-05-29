@@ -26,6 +26,8 @@ struct Tile
 class GameGrid final : public mg::Component
 {
 public:
+	std::vector<glm::ivec2> const& PlayerSpawnpoints() const noexcept;
+	std::vector<glm::ivec2> const& EnemySpawnpoints() const noexcept;
 
 	float TileSize() const noexcept;
 	bool WallAt(glm::ivec2 const& gridPos) const;
@@ -42,15 +44,18 @@ private:
 	Tile const* GetTile(glm::ivec2 const& gridPos) const;
 	Tile* GetTile(glm::ivec2 const& gridPos);
 
-	void LoadFromFile(std::filesystem::path const& filePath);
 	void ComputeWalkables();
 	void ComputeConnections();
+	void ProcessLine(std::string const& line);
+	void LoadFromFile(std::filesystem::path const& filePath);
 
 	glm::vec2 m_gridPos;
 	int m_rows;
 	int m_cols;
 	float m_tileSize;
 
+	std::vector<glm::ivec2> m_playerSpawns;
+	std::vector<glm::ivec2> m_enemySpawns;
 	std::vector<Tile> m_tiles;
 
 	std::shared_ptr<mg::Texture2D> m_pTileSheet;

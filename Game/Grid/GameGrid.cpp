@@ -46,6 +46,16 @@ Tile const* GameGrid::GetTile(glm::ivec2 const& gridPos) const
 }
 
 
+std::vector<glm::ivec2> const& GameGrid::PlayerSpawnpoints() const noexcept
+{
+	return m_playerSpawns;
+}
+
+std::vector<glm::ivec2> const& GameGrid::EnemySpawnpoints() const noexcept
+{
+	return m_enemySpawns;
+}
+
 float GameGrid::TileSize() const noexcept
 {
 	return m_tileSize;
@@ -134,94 +144,6 @@ void GameGrid::Render() const
 
 }
 
-void GameGrid::LoadFromFile(std::filesystem::path const& filePath)
-{
-	m_rows = 0;
-	m_cols = 0;
-	m_tiles.clear();
-
-	std::ifstream file(filePath, std::ios::binary);
-
-	if (!file.is_open())
-	{
-		throw std::runtime_error("Failed to open grid file");
-	}
-
-	std::string allText(
-		(std::istreambuf_iterator<char>(file)),
-		std::istreambuf_iterator<char>()
-	);
-
-	std::string currentLine{};
-
-	for (char character : allText)
-	{
-		if (character == '\n' || character == '\r')
-		{
-			if (!currentLine.empty())
-			{
-				if (m_cols == 0)
-				{
-					m_cols = static_cast<int>(currentLine.length());
-				}
-
-				++m_rows;
-
-				for (char tile : currentLine)
-				{
-					if (tile == '.')
-					{
-						m_tiles.push_back(Tile{ false, false });
-					}
-					else
-					{
-						m_tiles.push_back(Tile{ true, false });
-					}
-				}
-
-				currentLine.clear();
-			}
-		}
-		else
-		{
-			currentLine += character;
-		}
-	}
-
-	if (!currentLine.empty())
-	{
-		if (m_cols == 0)
-		{
-			m_cols = static_cast<int>(currentLine.length());
-		}
-
-		++m_rows;
-
-		for (char tile : currentLine)
-		{
-			if (tile == '.')
-			{
-				m_tiles.push_back(Tile{ false, false });
-			}
-			else
-			{
-				m_tiles.push_back(Tile{ true, false });
-			}
-		}
-	}
-
-	ComputeWalkables();
-	ComputeConnections();
-
-	for (int y = 0; y < m_rows; y++)
-	{
-		for (int x = 0; x < m_cols; x++)
-		{
-			std::cout << (GetTile({ x, y })->Walkable ? "." : (GetTile({ x, y })->IsWall ? "#" : " "));
-		}
-		std::cout << '\n';
-	}
-}
 void GameGrid::ComputeWalkables()
 {
 	for (int x = 0; x < m_cols; x++)
@@ -268,5 +190,108 @@ void GameGrid::ComputeConnections()
 				GetTile({ x, y })->PathConnections = Tile::ConnectionMask::none;
 			}
 		}
+	}
+}
+
+void GameGrid::ProcessLine(std::string const& line)
+{
+
+	if (line.empty())
+	{
+		return;
+	}
+
+	if (m_cols == 0)
+	{
+		m_cols = static_cast<int>(line.length());
+	}
+
+	for (size_t col = 0; col < line.length(); ++col)
+	{
+		const char tile = line[col];
+
+		glm::ivec2 gridPos
+		{
+			static_cast<int>(col),
+			m_rows
+		};
+
+		switch (tile)
+		{
+			case '.':
+			{
+				m_tiles.push_back(Tile{ false, false });
+				break;
+			}
+
+			case 'P':
+			{
+				m_tiles.push_back(Tile{ false, false });
+				m_playerSpawns.push_back(gridPos);
+				break;
+			}
+
+			case 'E':
+			{
+				m_tiles.push_back(Tile{ false, false });
+				m_enemySpawns.push_back(gridPos);
+				break;
+			}
+
+			default:
+			{
+				m_tiles.push_back(Tile{ true, false });
+				break;
+			}
+		}
+	}
+
+	++m_rows;
+
+}
+
+void GameGrid::LoadFromFile(std::filesystem::path const& filePath)
+{
+	m_rows = 0;
+	m_cols = 0;
+
+	m_tiles.clear();
+	m_playerSpawns.clear();
+	m_enemySpawns.clear();
+
+	std::ifstream file(filePath, std::ios::binary);
+
+	if (!file)
+	{
+		throw std::runtime_error("Failed to open grid file");
+	}
+
+	std::string line;
+	char ch{};
+
+	while (file.get(ch))
+	{
+		if (ch == '\n' || ch == '\r')
+		{
+			ProcessLine(line);
+			line.clear();
+		}
+		else
+		{
+			line += ch;
+		}
+	}
+	ProcessLine(line);
+
+	ComputeWalkables();
+	ComputeConnections();
+
+	for (int y = 0; y < m_rows; y++)
+	{
+		for (int x = 0; x < m_cols; x++)
+		{
+			std::cout << (GetTile({ x, y })->Walkable ? "." : (GetTile({ x, y })->IsWall ? "#" : " "));
+		}
+		std::cout << '\n';
 	}
 }

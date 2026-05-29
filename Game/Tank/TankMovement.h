@@ -24,7 +24,7 @@ public:
     void MoveToTarget(float elapsedSec);
     void QueueDirection(Direction dir);
 
-    TankMovement( mg::GameObject& owner, GameGrid* pGrid, float moveSpeed );
+    TankMovement( mg::GameObject& owner, GameGrid& pGrid, float moveSpeed );
 
 private:
     bool CanMove(Direction dir) const;

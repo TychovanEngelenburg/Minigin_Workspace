@@ -27,6 +27,8 @@
 #include "Tank/TankMovement.h"
 #include "Tank/Bullet/BulletMovement.h"
 #include "DamageOnCollision.h"
+#include "PlayerManager.h"
+
 
 void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 {
@@ -37,6 +39,11 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 	}
 
 #pragma endregion Environment
+
+	auto playerManager = std::make_unique<mg::GameObject>("PlayerManager");
+	{
+		playerManager->AddComponent<PlayerManager>(*grid->GetComponent<GameGrid>());
+	}
 
 
 	auto bullet = std::make_unique<mg::GameObject>("PlayerBullet_", glm::vec3(36.f, 146.f, 0.f));
@@ -91,49 +98,7 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 	//	sceneOut.Input().AddBinding(std::move(doDamage));
 	//}
 
-	auto keyboardPlayer = std::make_unique<mg::GameObject>("Player2", glm::vec3(20, 120.f, 0.f));
-	{
-		auto& sprite = keyboardPlayer->AddComponent<mg::Sprite>("T_SpriteSheet_Tron.png", mg::SpriteSheet{ 13, 5 });
-		sprite.SetSprite(8, 0);
-
-		auto& hitBox{ keyboardPlayer->AddComponent<mg::BoxCollider2D>() };
-		hitBox.SetSize(sprite.Size());
-
-		keyboardPlayer->AddComponent<TankHealth>();
-		keyboardPlayer->AddComponent<TankMovement>(grid->GetComponent<GameGrid>(), 100.f);
-
-		// TODO: look into moving bindings
-		auto moveLeft = std::make_unique<mg::InputBinding>(
-			0, static_cast<int>(mg::Keycodes::KeyboardKey::A), mg::InputBinding::DeviceType::Keyboard,
-			std::make_unique<MoveTankCommand>(keyboardPlayer.get(), TankMovement::Direction::Left), mg::InputBinding::TriggerType::Held
-		);
-		sceneOut.InputSystem().AddBinding(std::move(moveLeft));
-
-		auto moveUp = std::make_unique<mg::InputBinding>(
-			0, static_cast<int>(mg::Keycodes::KeyboardKey::W), mg::InputBinding::DeviceType::Keyboard,
-			std::make_unique<MoveTankCommand>(keyboardPlayer.get(), TankMovement::Direction::Up), mg::InputBinding::TriggerType::Held
-		);
-		sceneOut.InputSystem().AddBinding(std::move(moveUp));
-
-		auto moveRight = std::make_unique<mg::InputBinding>(
-			0, static_cast<int>(mg::Keycodes::KeyboardKey::D), mg::InputBinding::DeviceType::Keyboard,
-			std::make_unique<MoveTankCommand>(keyboardPlayer.get(), TankMovement::Direction::Right), mg::InputBinding::TriggerType::Held
-		);
-		sceneOut.InputSystem().AddBinding(std::move(moveRight));
-
-		auto moveDown = std::make_unique<mg::InputBinding>(
-			0, static_cast<int>(mg::Keycodes::KeyboardKey::S), mg::InputBinding::DeviceType::Keyboard,
-			std::make_unique<MoveTankCommand>(keyboardPlayer.get(), TankMovement::Direction::Down), mg::InputBinding::TriggerType::Held
-		);
-		sceneOut.InputSystem().AddBinding(std::move(moveDown));
-
-
-		//auto doDamage = std::make_unique<mg::InputBinding>(
-		//	0, static_cast<int>(mg::Keycodes::KeyboardKey::C), mg::InputBinding::DeviceType::Keyboard,
-		//	std::make_unique<DamageTankCommand>(keyboardPlayer.get(), 1)
-		//);
-		//sceneOut.InputSystem().AddBinding(std::move(doDamage));
-	}
+	
 
 
 
@@ -188,8 +153,8 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 		auto& textComp = playerTwoHealthUI->AddComponent<mg::TextComponent>("00", "Lingua.otf", textSize);
 		textComp.SetColor({ 255, 255, 255, 255 });
 
-		auto& healthDisp = playerTwoHealthUI->AddComponent<PlayerHealth_UI>();
-		keyboardPlayer->GetComponent<TankHealth>()->AddListener(&healthDisp);
+		//auto& healthDisp = playerTwoHealthUI->AddComponent<PlayerHealth_UI>();
+		//keyboardPlayer->GetComponent<TankHealth>()->AddListener(&healthDisp);
 	}
 
 	yPos += textSize + marginSize;
@@ -201,9 +166,10 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 	// in general transform needs a complete rework. (which is why I have avoided parenting for now)
 
 	sceneOut.Add(std::move(grid));
+	sceneOut.Add(std::move(playerManager));
 
 	//sceneOut.Add(std::move(gamepadPlayer));
-	sceneOut.Add(std::move(keyboardPlayer));
+	//sceneOut.Add(std::move(keyboardPlayer));
 	sceneOut.Add(std::move(bullet));
 
 	sceneOut.Add(std::move(fpsCounterUI));

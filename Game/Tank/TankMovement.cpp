@@ -131,9 +131,9 @@ bool TankMovement::IsOppositeDirection(Direction dirA, Direction dirB)
 	return DirectionToGridVector(dirA) == -DirectionToGridVector(dirB);
 }
 
-TankMovement::TankMovement(mg::GameObject& owner, GameGrid* pGrid, float moveSpeed)
+TankMovement::TankMovement(mg::GameObject& owner, GameGrid& pGrid, float moveSpeed)
 	: Component(owner)
-	, m_pGrid(pGrid)
+	, m_pGrid(&pGrid)
 	, m_currentDirection(Direction::None)
 	, m_queuedDirection(Direction::None)
 	, m_currentTile(0, 0)
@@ -143,6 +143,6 @@ TankMovement::TankMovement(mg::GameObject& owner, GameGrid* pGrid, float moveSpe
 {
 	auto worldPos{ Owner()->Transform().WorldPosition() };
 
-	m_currentTile = pGrid->WorldToGrid({ worldPos.x, worldPos.y });
+	m_currentTile = pGrid.WorldToGrid({ worldPos.x, worldPos.y });
 	m_targetTile = m_currentTile;
 }

@@ -3,7 +3,6 @@
 
 #include "Minigin/EngineComponents/Component.h"
 #include "Minigin/Transform2D.h"
-#include "Minigin/CollisionSystem/CollisionSystem.h"
 
 #include <string>
 #include <string_view>
@@ -19,7 +18,6 @@
 
 namespace mg
 {
-	class Texture2D;
 	struct CollisionData;
 	class Scene;
 	class GameObject final
@@ -31,7 +29,7 @@ namespace mg
 		bool IsDestroyed() const noexcept;
 		Scene* Scene() const noexcept;
 
-		void SetScene(mg::Scene* pScene );
+		void SetScene(mg::Scene* pScene);
 		void SetActive(bool isActive);
 		void Destroy();
 
@@ -62,7 +60,7 @@ namespace mg
 		void LateUpdate();
 		void Render() const;
 
-		GameObject(std::string_view name, glm::vec3 pos = {0.f, 0.f, 0.f});
+		GameObject(std::string_view name, glm::vec3 pos = { 0.f, 0.f, 0.f });
 		~GameObject();
 
 		GameObject(GameObject const& other) = delete;
@@ -98,7 +96,7 @@ namespace mg
 		auto component{ std::make_unique<T>(*this, std::forward<Args>(args)...) };
 		auto& returnRef{ *component };
 		m_pComponents.emplace_back(std::move(component));
-		return returnRef; 
+		return returnRef;
 	}
 
 	template<typename T>
