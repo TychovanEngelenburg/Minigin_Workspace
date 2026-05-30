@@ -10,6 +10,7 @@ namespace mg
 	{	
 	public:
 		SDL_InputSystem();
+		~SDL_InputSystem();
 	};
 }
 

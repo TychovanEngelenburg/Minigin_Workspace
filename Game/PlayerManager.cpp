@@ -4,11 +4,9 @@
 
 #include "Tank/TankHealth.h"
 #include "Tank/TankMovement.h"
-#include "Tank/Bullet/BulletMovement.h"
+#include "Tank/TankBarrel.h"
 
 #include "Grid/GameGrid.h"
-
-#include "DamageOnCollision.h"
 
 #include <Minigin/Scene/GameObject.h>
 #include <Minigin/InputHandling/InputBinding.h>
@@ -17,6 +15,7 @@
 #include <Minigin/CollisionSystem/BoxCollider2D.h>
 #include <Minigin/Scene/Scene.h>
 
+
 PlayerManager::PlayerManager(mg::GameObject& owner, GameGrid& grid)
 	: Component(owner)
 	, m_pGrid{ &grid }
@@ -24,31 +23,55 @@ PlayerManager::PlayerManager(mg::GameObject& owner, GameGrid& grid)
 
 }
 
-void PlayerManager::SpawnPlayer(int playerId)
-{
-	auto& sceneOut{ *Owner()->Scene() };
-
-	auto player = std::make_unique<mg::GameObject>("Player_" + std::to_string(playerId), glm::vec3(20, 120.f, 0.f));
+	mg::GameObject* PlayerManager::SpawnPlayer(int playerId, glm::ivec2 gridPos)
 	{
-		auto& sprite = player->AddComponent<mg::Sprite>("T_SpriteSheet_Tron.png", mg::SpriteSheet{ 13, 5 });
-		sprite.SetSprite(8, 0);
+		auto& sceneOut{ *Owner()->Scene() };
 
-		auto& hitBox{ player->AddComponent<mg::BoxCollider2D>() };
-		hitBox.SetSize(sprite.Size());
+		glm::vec2 playerSize{};
+		auto player = std::make_unique<mg::GameObject>("Player_" + std::to_string(playerId));
+		{
+			player->Transform().SetWorldPosition(m_pGrid->GridToWorld(gridPos));
 
-		player->AddComponent<TankHealth>();
-		player->AddComponent<TankMovement>(*m_pGrid, 100.f);
+			auto& sprite = player->AddComponent<mg::Sprite>("T_SpriteSheet_BattleTanks.png", mg::SpriteSheet{ 4, 5 });
+			sprite.SetSprite(2 * playerId, 3);
+			playerSize = sprite.Size();
+
+			auto& hitBox{ player->AddComponent<mg::BoxCollider2D>() };
+			hitBox.SetSize(playerSize);
+
+			player->AddComponent<TankHealth>();
+			player->AddComponent<TankMovement>(*m_pGrid);
+		}
+
+		auto barrel = std::make_unique<mg::GameObject>("barrel");
+		{
+			barrel->Transform().SetLocalPosition(playerSize / 2.f);
+
+			auto& sprite = barrel->AddComponent<mg::Sprite>("T_SpriteSheet_BattleTanks.png", mg::SpriteSheet{ 4, 5 });
+			sprite.SetSprite(0, 2);
+
+			barrel->AddComponent<TankBarrel>();
+
+			barrel->Transform().SetParent(&player->Transform());
+		}
+
+
+
+		if (playerId == 0)
+		{
+			BindKeyboard(player.get());
+		}
+
+		BindGamepad(player.get(), playerId);
+
+		auto pPlayer{ player.get() };
+		m_pPlayers.push_back(pPlayer);
+
+		sceneOut.Add(std::move(player));
+		sceneOut.Add(std::move(barrel));
+		
+		return pPlayer;
 	}
-
-	if (playerId == 0)
-	{
-		BindKeyboard(player.get());
-	}
-
-	BindGamepad(player.get(), playerId);
-
-	sceneOut.Add(std::move(player));
-}
 
 void PlayerManager::Awake()
 {
@@ -56,7 +79,7 @@ void PlayerManager::Awake()
 
 	for (int i = 0; i < playerSpawns.size(); i++)
 	{
-		SpawnPlayer(i);
+		SpawnPlayer(i, playerSpawns[i]);
 	}
 }
 

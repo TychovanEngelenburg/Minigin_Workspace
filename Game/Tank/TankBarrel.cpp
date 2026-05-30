@@ -1,6 +1,8 @@
 #include "TankBarrel.h"
 
 #include "Tank/Bullet/BulletMovement.h"
+#include "DamageOnCollision.h"
+
 
 #include <Minigin/Scene/GameObject.h>
 #include <Minigin/Scene/Scene.h>
@@ -19,36 +21,49 @@ void TankBarrel::Shoot()
 	m_pBullet->Shoot(transform.WorldPosition(), glm::vec2( sin(transform.WorldRotationZ()), cos(transform.WorldRotationZ())));
 }
 
-void TankBarrel::RotateClockwise()
+void TankBarrel::Awake()
 {
 }
 
-void TankBarrel::RotateCounterClock()
-{
-}
-
-TankBarrel::TankBarrel(mg::GameObject& owner, std::filesystem::path spritePath)
+TankBarrel::TankBarrel(mg::GameObject& owner)
 	: Component(owner)
-	, m_spritePath{ spritePath }
+	//, m_pGrid{pGrid}
 {
 }
 
 
 void TankBarrel::SpawnBullet()
 {
-	//if (m_pBullet)
+
+	//auto bullet = std::make_unique<mg::GameObject>("PlayerBullet_", glm::vec3(36.f, 146.f, 0.f));
 	//{
-	//	Owner()->Scene()->Remove(*m_pBullet->Owner());
+	//	//bullet->AddComponent<BulletMovement>(grid->GetComponent<GameGrid>());
+	//	bullet->AddComponent<DamageOnCollision>(1);
+
+	//	auto& sprite{ bullet->AddComponent<mg::Sprite>("T_SpriteSheet_Tron.png", mg::SpriteSheet(13, 5)) };
+	//	sprite.SetSprite(6, 0);
+
+	//	auto& hitBox{ bullet->AddComponent<mg::BoxCollider2D>() };
+	//	hitBox.SetSize({ 10.f, 8.f });
 	//}
 
-	//auto bullet = std::make_unique<mg::GameObject>("PlayerBullet_" + Owner()->Name(), glm::vec3(0.f, 0.f, 0.f));
-	//
-	//auto& bulletMovement{ bullet->AddComponent<BulletMovement>() };
-	//m_pBullet = &bulletMovement;
 
-	//auto& sprite{ bullet->AddComponent<mg::Sprite>("T_SpriteSheet_Tron.png", mg::SpriteSheet(13, 5)) };
-	//sprite.SetSprite(6, 0);
 
-	//bullet->SetActive(false);
-	//Owner()->Scene()->Add(std::move(bullet));
+
+
+	////if (m_pBullet)
+	////{
+	////	Owner()->Scene()->Remove(*m_pBullet->Owner());
+	////}
+
+	////auto bullet = std::make_unique<mg::GameObject>("PlayerBullet_" + Owner()->Name(), glm::vec3(0.f, 0.f, 0.f));
+	////
+	////auto& bulletMovement{ bullet->AddComponent<BulletMovement>() };
+	////m_pBullet = &bulletMovement;
+
+	////auto& sprite{ bullet->AddComponent<mg::Sprite>("T_SpriteSheet_Tron.png", mg::SpriteSheet(13, 5)) };
+	////sprite.SetSprite(6, 0);
+
+	////bullet->SetActive(false);
+	////Owner()->Scene()->Add(std::move(bullet));
 }

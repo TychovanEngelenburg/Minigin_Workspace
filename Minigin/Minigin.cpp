@@ -69,6 +69,7 @@ void PrintSDLVersion()
 
 void mg::Minigin::Run(std::function<void()> const& load)
 {
+	srand(time(NULL));
 	load();
 
 #ifndef __EMSCRIPTEN__

@@ -11,6 +11,8 @@ namespace mg
 	class Transform2D final
 	{
 	public:
+		GameObject& Owner() noexcept;
+
 		glm::vec2 WorldPosition() const noexcept;
 		float WorldRotationZ() const noexcept;
 		glm::vec2 WorldScale() const noexcept;
@@ -45,7 +47,7 @@ namespace mg
 
 		void SetParent(Transform2D* pParent, bool keepRelativeWorld = false);
 
-		Transform2D(GameObject* pOwner);
+		Transform2D(GameObject& owner);
 
 		~Transform2D() = default;
 		Transform2D(Transform2D const& other) = delete;

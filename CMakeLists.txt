@@ -50,7 +50,7 @@ add_library(${LIBRARY_TARGET} STATIC
     
     Minigin/CollisionSystem/CollisionSystem.cpp
     Minigin/CollisionSystem/BoxCollider2D.cpp
- "Minigin/InputSystem/AbstractInputSystem.cpp" "Minigin/InputSystem/InputServiceLocator.cpp" "Minigin/SDL_Implementation/SDL_InputSystem.cpp")
+ "Minigin/InputSystem/AbstractInputSystem.cpp" "Minigin/InputSystem/InputServiceLocator.cpp" "Minigin/SDL_Implementation/SDL_InputSystem.cpp" "Minigin/Helpers/Random.cpp")
 target_include_directories(minigin_engine PUBLIC
   ${CMAKE_SOURCE_DIR}
 )
@@ -79,7 +79,7 @@ add_executable(${GAME_TARGET} ${TARGET_PARAM}
     Game/Tank/TankVisuals.cpp
     Game/Tank/Bullet/BulletMovement.cpp 
     Game/Tank/TankBarrel.cpp 
- "Game/PlayerManager.cpp")
+ "Game/PlayerManager.cpp" "Game/Enemy/EnemyBehaviour.cpp")
 
 # enable c++20 features
 target_compile_features(${GAME_TARGET} PUBLIC cxx_std_20)

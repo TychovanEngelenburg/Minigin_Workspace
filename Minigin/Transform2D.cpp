@@ -2,6 +2,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Minigin/Scene/GameObject.h"
 
+mg::GameObject & mg::Transform2D::Owner() noexcept
+{
+	return *m_pGameObject;
+}
+
 glm::vec2 mg::Transform2D::WorldPosition() const noexcept
 {
 	return glm::vec2(GetWorldMatrix()[3]);
@@ -251,8 +256,8 @@ void mg::Transform2D::SetParent(Transform2D* pParent, bool keepRelativeWorld)
 	}
 }
 
-mg::Transform2D::Transform2D(GameObject* pOwner)
-	: m_pGameObject{ pOwner }
+mg::Transform2D::Transform2D(GameObject& owner)
+	: m_pGameObject{ &owner }
 	, m_pParent{}
 	, m_localPosition{}
 	, m_localRotation{}

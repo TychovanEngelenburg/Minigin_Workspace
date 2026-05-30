@@ -11,36 +11,43 @@ class TankMovement final : public mg::Component
 public:
     enum class Direction
     {
+        None,
         Up,
         Down,
         Left,
         Right,
-        None
+        End
     };
 
-    glm::vec2 MoveDirection() const noexcept;
-
-    void FixedUpdate() override;
-    void MoveToTarget(float elapsedSec);
-    void QueueDirection(Direction dir);
-
-    TankMovement( mg::GameObject& owner, GameGrid& pGrid, float moveSpeed );
-
-private:
-    bool CanMove(Direction dir) const;
     static glm::ivec2 DirectionToGridVector(Direction dir);
     static bool IsOppositeDirection(Direction dirOne, Direction dirTwo);
 
+    bool CanMove(Direction dir) const;
+    Direction const& MovingDirection() const noexcept;
+
+    void SetMoveSpeed(float speed);
+
+    void FixedUpdate() override;
+    void QueueMovement(Direction dir);
+
+    void Awake() override;
+
+    TankMovement( mg::GameObject& owner, GameGrid& pGrid);
+
+private:
+
+    void MoveToTarget(float elapsedSec);
+    
     GameGrid* m_pGrid;
 
-    Direction m_currentDirection;
-    Direction m_queuedDirection;
+    Direction m_currentDirection{};
+    Direction m_queuedDirection{};
 
-    glm::ivec2 m_currentTile;
-    glm::ivec2 m_targetTile;
+    glm::ivec2 m_currentTile{};
+    glm::ivec2 m_targetTile{};
 
-    bool m_inputRecieved;
-    float m_moveSpeed;
+    bool m_shouldMove{};
+    float m_moveSpeed{100.f};
 };
 
 #endif

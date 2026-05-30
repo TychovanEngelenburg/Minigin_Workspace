@@ -6,20 +6,21 @@
 #include <filesystem>
 
 class BulletMovement;
+class GameGrid;
+
 class TankBarrel final : public mg::Component
 {
 public:
 	void Shoot();
-	void RotateClockwise();
-	void RotateCounterClock();
 
-	TankBarrel(mg::GameObject& owner, std::filesystem::path spritePath);
+	void Awake() override;
+	TankBarrel(mg::GameObject& owner);
 
 private:
 	void SpawnBullet();
 
-	std::filesystem::path m_spritePath;
 	BulletMovement* m_pBullet{};
+	GameGrid* m_pGrid{};
 };
 
 

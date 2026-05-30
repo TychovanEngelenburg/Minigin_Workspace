@@ -26,6 +26,8 @@ public:
 	void Update()
 	{
 		SDL_PumpEvents();
+		SDL_UpdateGamepads();
+
 		m_previous = m_current;
 
 		if (!m_gamepad)

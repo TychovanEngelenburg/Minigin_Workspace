@@ -3,6 +3,7 @@
 
 #include <Minigin/EngineComponents/Component.h>
 #include <vector>
+#include <glm/vec2.hpp>
 
 namespace mg
 {
@@ -22,7 +23,7 @@ private:
 	GameGrid* m_pGrid;
 	std::vector<mg::GameObject*> m_pPlayers{};
 
-	void SpawnPlayer(int playerId = 0);
+	mg::GameObject* SpawnPlayer(int playerId = 0, glm::ivec2 gridPos = { 0, 0 });
 	void BindKeyboard(mg::GameObject* playerObj);
 	void BindGamepad(mg::GameObject* playerObj, int playerId);
 };

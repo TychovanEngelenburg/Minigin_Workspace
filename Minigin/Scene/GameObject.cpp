@@ -140,7 +140,7 @@ void mg::GameObject::LateUpdate()
 #pragma endregion
 
 mg::GameObject::GameObject(std::string_view name, glm::vec3 pos)
-	: m_transform{this}
+	: m_transform{*this}
 	, m_name{ name }
 	, m_active{ true }
 

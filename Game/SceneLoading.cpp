@@ -14,7 +14,6 @@
 #include <Minigin/InputHandling/InputCodes.h>
 
 // Commands
-#include "Commands/MoveTankCommand.h"
 #include "Commands/StartGameCommand.h"
 
 // UI
@@ -23,12 +22,15 @@
 
 // Game
 #include "Grid/GameGrid.h"
-#include "Tank/TankHealth.h"
-#include "Tank/TankMovement.h"
-#include "Tank/Bullet/BulletMovement.h"
-#include "DamageOnCollision.h"
 #include "PlayerManager.h"
 
+
+
+// temp
+#include "Tank/TankHealth.h"
+#include "Tank/TankMovement.h"
+#include "Tank/TankBarrel.h"
+#include "Enemy/EnemyBehaviour.h"
 
 void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 {
@@ -45,62 +47,33 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 		playerManager->AddComponent<PlayerManager>(*grid->GetComponent<GameGrid>());
 	}
 
-
-	auto bullet = std::make_unique<mg::GameObject>("PlayerBullet_", glm::vec3(36.f, 146.f, 0.f));
+	auto enemy = std::make_unique<mg::GameObject>("Enemy", glm::vec3(20, 120.f, 0.f));
 	{
-		bullet->AddComponent<BulletMovement>(grid->GetComponent<GameGrid>());
-		bullet->AddComponent<DamageOnCollision>(1);
+		auto& sprite = enemy->AddComponent<mg::Sprite>("T_SpriteSheet_BattleTanks.png", mg::SpriteSheet{ 4, 5 });
+		sprite.SetSprite(0, 4);
 
-		auto& sprite{ bullet->AddComponent<mg::Sprite>("T_SpriteSheet_Tron.png", mg::SpriteSheet(13, 5)) };
-		sprite.SetSprite(6, 0);
+		auto& hitBox{ enemy->AddComponent<mg::BoxCollider2D>() };
+		hitBox.SetSize(sprite.Size());
 
-		auto& hitBox{ bullet->AddComponent<mg::BoxCollider2D>() };
-		hitBox.SetSize({ 10.f, 8.f });
+		enemy->AddComponent<TankHealth>();
+
+		auto& movement{ enemy->AddComponent<TankMovement>(*grid->GetComponent<GameGrid>()) };
+		movement.SetMoveSpeed(50.f);
+	
+		 enemy->AddComponent<EnemyBehaviour>();
 	}
 
-	// Player characters initialisation. 
-	//auto gamepadPlayer = std::make_unique<mg::GameObject>("Player1", glm::vec3(20, 100.f, 0.f));
+	//auto bullet = std::make_unique<mg::GameObject>("PlayerBullet_", glm::vec3(36.f, 146.f, 0.f));
 	//{
-	//	auto& sprite = gamepadPlayer->AddComponent<mg::Sprite>("T_SpriteSheet_Tron.png", mg::SpriteSheet{ 13, 5 });
-	//	sprite.SetSprite(10, 0);
+	//	bullet->AddComponent<BulletMovement>(grid->GetComponent<GameGrid>());
+	//	bullet->AddComponent<DamageOnCollision>(1);
 
-	//	gamepadPlayer->AddComponent<TankHealth>();
+	//	auto& sprite{ bullet->AddComponent<mg::Sprite>("T_SpriteSheet_Tron.png", mg::SpriteSheet(13, 5)) };
+	//	sprite.SetSprite(6, 0);
 
-	//	// TODO: look into moving bindings
-	//	auto moveLeft = std::make_unique<mg::InputBinding>(
-	//		0, static_cast<int>(mg::Keycodes::GamepadButton::DPadLeft), mg::InputBinding::DeviceType::Gamepad,
-	//		std::make_unique<MoveTankCommand>(gamepadPlayer.get(), glm::vec2(-1.f, 0.f), 200.f), mg::InputBinding::TriggerType::Held
-	//	);
-	//	sceneOut.Input().AddBinding(std::move(moveLeft));
-
-	//	auto moveUp = std::make_unique<mg::InputBinding>(
-	//		0, static_cast<int>(mg::Keycodes::GamepadButton::DPadUp), mg::InputBinding::DeviceType::Gamepad,
-	//		std::make_unique<MoveTankCommand>(gamepadPlayer.get(), glm::vec2(0.f, -1.f), 200.f), mg::InputBinding::TriggerType::Held
-	//	);
-	//	sceneOut.Input().AddBinding(std::move(moveUp));
-
-	//	auto moveRight = std::make_unique<mg::InputBinding>(
-	//		0, static_cast<int>(mg::Keycodes::GamepadButton::DPadRight), mg::InputBinding::DeviceType::Gamepad,
-	//		std::make_unique<MoveTankCommand>(gamepadPlayer.get(), glm::vec2(1.f, 0.f), 200.f), mg::InputBinding::TriggerType::Held
-	//	);
-	//	sceneOut.Input().AddBinding(std::move(moveRight));
-
-	//	auto moveDown = std::make_unique<mg::InputBinding>(
-	//		0, static_cast<int>(mg::Keycodes::GamepadButton::DPadDown), mg::InputBinding::DeviceType::Gamepad,
-	//		std::make_unique<MoveTankCommand>(gamepadPlayer.get(), glm::vec2(0.f, 1.f), 200.f), mg::InputBinding::TriggerType::Held
-	//	);
-	//	sceneOut.Input().AddBinding(std::move(moveDown));
-
-	//	auto doDamage = std::make_unique<mg::InputBinding>(
-	//		0, static_cast<int>(mg::Keycodes::GamepadButton::X), mg::InputBinding::DeviceType::Gamepad,
-	//		std::make_unique<DamageTankCommand>(gamepadPlayer.get(), 1)
-	//	);
-	//	sceneOut.Input().AddBinding(std::move(doDamage));
+	//	auto& hitBox{ bullet->AddComponent<mg::BoxCollider2D>() };
+	//	hitBox.SetSize({ 10.f, 8.f });
 	//}
-
-	
-
-
 
 #pragma region UI
 	auto fpsCounterUI = std::make_unique<mg::GameObject>("FPS_Counter", glm::vec3(100.f, 0.f, 0.f));
@@ -167,10 +140,11 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 
 	sceneOut.Add(std::move(grid));
 	sceneOut.Add(std::move(playerManager));
+	sceneOut.Add(std::move(enemy));
 
 	//sceneOut.Add(std::move(gamepadPlayer));
 	//sceneOut.Add(std::move(keyboardPlayer));
-	sceneOut.Add(std::move(bullet));
+	//sceneOut.Add(std::move(bullet));
 
 	sceneOut.Add(std::move(fpsCounterUI));
 	sceneOut.Add(std::move(playerOneInfoUI));

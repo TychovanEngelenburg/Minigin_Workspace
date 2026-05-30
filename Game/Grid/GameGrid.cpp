@@ -91,10 +91,7 @@ glm::ivec2 GameGrid::WorldToGrid(glm::vec2 const& worldPos) const
 
 glm::vec2 GameGrid::GridToWorld(glm::ivec2 const& gridPos) const
 {
-	return glm::vec2(
-		Owner()->Transform().WorldPosition().x + m_tileSize * gridPos.x,
-		Owner()->Transform().WorldPosition().y + m_tileSize * gridPos.y
-	);
+	return glm::vec2(Owner()->Transform().WorldPosition() + static_cast<glm::vec2>(gridPos) * m_tileSize);
 }
 
 

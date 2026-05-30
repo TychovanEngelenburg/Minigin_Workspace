@@ -4,7 +4,7 @@
 
 void MoveTankCommand::Execute()
 { 
-	m_pMovementComp->QueueDirection(m_movementDirection);
+	m_pMovementComp->QueueMovement(m_movementDirection);
 }
 
 MoveTankCommand::MoveTankCommand(mg::GameObject* object, TankMovement::Direction moveDir)

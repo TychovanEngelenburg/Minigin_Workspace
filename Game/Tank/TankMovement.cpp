@@ -7,7 +7,7 @@
 
 #include <glm/geometric.hpp>
 
-void TankMovement::QueueDirection(Direction dir)
+void TankMovement::QueueMovement(Direction dir)
 {
 	m_queuedDirection = dir;
 	if (IsOppositeDirection(m_currentDirection, dir))
@@ -15,21 +15,33 @@ void TankMovement::QueueDirection(Direction dir)
 		m_currentDirection = dir;
 		std::swap(m_currentTile, m_targetTile);
 	}
-	m_inputRecieved = true;
+	m_shouldMove = true;
 }
 
-glm::vec2 TankMovement::MoveDirection() const noexcept
+void TankMovement::Awake()
 {
-	return DirectionToGridVector(m_currentDirection);
+	auto worldPos{ Owner()->Transform().WorldPosition() };
+	m_currentTile = m_pGrid->WorldToGrid({ worldPos.x, worldPos.y });
+	m_targetTile = m_currentTile;
+}
+
+TankMovement::Direction const& TankMovement::MovingDirection() const noexcept
+{
+	return m_currentDirection;
+}
+
+void TankMovement::SetMoveSpeed(float speed)
+{
+	m_moveSpeed = speed;
 }
 
 void TankMovement::FixedUpdate()
 {
-	if (m_inputRecieved)
+	if (m_shouldMove)
 	{
 		MoveToTarget(static_cast<float>(mg::DeltaClock::FixedDeltaTime()));
 
-		m_inputRecieved = false;
+		m_shouldMove = false;
 	}
 }
 
@@ -65,8 +77,7 @@ void TankMovement::MoveToTarget(float elapsedSec)
 			}
 
 			m_targetTile = m_currentTile + DirectionToGridVector(m_currentDirection);
-			targetPos.x = m_pGrid->GridToWorld(m_targetTile).x;
-			targetPos.y = m_pGrid->GridToWorld(m_targetTile).y;
+			targetPos = m_pGrid->GridToWorld(m_targetTile);
 		}
 		else
 		{
@@ -131,18 +142,8 @@ bool TankMovement::IsOppositeDirection(Direction dirA, Direction dirB)
 	return DirectionToGridVector(dirA) == -DirectionToGridVector(dirB);
 }
 
-TankMovement::TankMovement(mg::GameObject& owner, GameGrid& pGrid, float moveSpeed)
+TankMovement::TankMovement(mg::GameObject& owner, GameGrid& pGrid)
 	: Component(owner)
 	, m_pGrid(&pGrid)
-	, m_currentDirection(Direction::None)
-	, m_queuedDirection(Direction::None)
-	, m_currentTile(0, 0)
-	, m_targetTile(0, 0)
-	, m_inputRecieved{ false }
-	, m_moveSpeed(moveSpeed)
 {
-	auto worldPos{ Owner()->Transform().WorldPosition() };
-
-	m_currentTile = pGrid.WorldToGrid({ worldPos.x, worldPos.y });
-	m_targetTile = m_currentTile;
 }
