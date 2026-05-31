@@ -21,19 +21,18 @@ public:
 	void Awake() override;
 	void  FixedUpdate() override;
 
-	BulletMovement(mg::GameObject& owner, GameGrid* pGrid, float speed = 50.f, int maxBounces = 5);
+	BulletMovement(mg::GameObject& owner, GameGrid& pGrid);
 
 private:
-
 	mg::BoxCollider2D* m_pCollider{};
 	GameGrid* m_pGrid;
 	glm::ivec2 m_currentTile{};
 
-	int m_maxBounces;
+	int m_maxBounces{5};
 	int m_bounceCount{};
 
 	glm::vec2 m_direction{1.f, 1.f};
-	glm::vec2 m_speed;
+	glm::vec2 m_speed{100.f};
 };
 
 #endif // !PLAYER_BULLET_H

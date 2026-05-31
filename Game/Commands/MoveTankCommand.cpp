@@ -7,9 +7,9 @@ void MoveTankCommand::Execute()
 	m_pMovementComp->QueueMovement(m_movementDirection);
 }
 
-MoveTankCommand::MoveTankCommand(mg::GameObject* object, TankMovement::Direction moveDir)
+MoveTankCommand::MoveTankCommand(mg::GameObject& object, TankMovement::Direction moveDir)
 	: GameObjectCommand(object)
-	, m_movementDirection{ moveDir }
-	, m_pMovementComp{ object->GetComponent<TankMovement>() }
+	, m_movementDirection( moveDir )
+	, m_pMovementComp( object.GetComponent<TankMovement>() )
 {
 }

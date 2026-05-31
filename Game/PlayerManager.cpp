@@ -1,10 +1,13 @@
 #include "PlayerManager.h"
 
 #include "Commands/MoveTankCommand.h"
+#include "Commands/TurnBarrelCommand.h"
+#include "Commands/ShootCommand.h"
 
 #include "Tank/TankHealth.h"
 #include "Tank/TankMovement.h"
 #include "Tank/TankBarrel.h"
+#include "Tank/TankVisuals.h"
 
 #include "Grid/GameGrid.h"
 
@@ -33,8 +36,9 @@ PlayerManager::PlayerManager(mg::GameObject& owner, GameGrid& grid)
 			player->Transform().SetWorldPosition(m_pGrid->GridToWorld(gridPos));
 
 			auto& sprite = player->AddComponent<mg::Sprite>("T_SpriteSheet_BattleTanks.png", mg::SpriteSheet{ 4, 5 });
-			sprite.SetSprite(2 * playerId, 3);
+			player->AddComponent<TankVisuals>(glm::ivec2( 2 * playerId, 3 ));
 			playerSize = sprite.Size();
+
 
 			auto& hitBox{ player->AddComponent<mg::BoxCollider2D>() };
 			hitBox.SetSize(playerSize);
@@ -46,16 +50,37 @@ PlayerManager::PlayerManager(mg::GameObject& owner, GameGrid& grid)
 		auto barrel = std::make_unique<mg::GameObject>("barrel");
 		{
 			barrel->Transform().SetLocalPosition(playerSize / 2.f);
-
-			auto& sprite = barrel->AddComponent<mg::Sprite>("T_SpriteSheet_BattleTanks.png", mg::SpriteSheet{ 4, 5 });
-			sprite.SetSprite(0, 2);
-
-			barrel->AddComponent<TankBarrel>();
-
+			barrel->AddComponent<TankBarrel>(*m_pGrid);
 			barrel->Transform().SetParent(&player->Transform());
 		}
 
+		auto barrelVisuals = std::make_unique<mg::GameObject>("barrelTexture");
+		{
+			auto& sprite = barrelVisuals->AddComponent<mg::Sprite>("T_SpriteSheet_BattleTanks.png", mg::SpriteSheet{ 4, 5 });
+			sprite.SetSprite({ 0, 2 });
+			barrelVisuals->Transform().SetParent(&barrel->Transform());
+			barrelVisuals->Transform().SetLocalPosition(glm::vec2(-6.f, -6.f));
+		}
 
+
+		
+			auto turnLeft = std::make_unique<mg::InputBinding>(
+				0, static_cast<int>(mg::Keycodes::KeyboardKey::Z), mg::InputBinding::DeviceType::Keyboard,
+				std::make_unique<TurnBarrelCommand>(*barrel.get(), -90.f), mg::InputBinding::TriggerType::Held
+			);
+		sceneOut.InputSystem().AddBinding(std::move(turnLeft));
+
+		auto turnRight = std::make_unique<mg::InputBinding>(
+			0, static_cast<int>(mg::Keycodes::KeyboardKey::X), mg::InputBinding::DeviceType::Keyboard,
+			std::make_unique<TurnBarrelCommand>(*barrel.get(), 90.f), mg::InputBinding::TriggerType::Held
+		);
+		sceneOut.InputSystem().AddBinding(std::move(turnRight));
+
+		auto shoot = std::make_unique<mg::InputBinding>(
+			0, static_cast<int>(mg::Keycodes::KeyboardKey::LAlt), mg::InputBinding::DeviceType::Keyboard,
+			std::make_unique<ShootCommand>(*barrel.get()), mg::InputBinding::TriggerType::Released
+		);
+		sceneOut.InputSystem().AddBinding(std::move(shoot));
 
 		if (playerId == 0)
 		{
@@ -69,6 +94,7 @@ PlayerManager::PlayerManager(mg::GameObject& owner, GameGrid& grid)
 
 		sceneOut.Add(std::move(player));
 		sceneOut.Add(std::move(barrel));
+		sceneOut.Add(std::move(barrelVisuals));
 		
 		return pPlayer;
 	}
@@ -88,26 +114,26 @@ void PlayerManager::BindKeyboard(mg::GameObject* playerObj)
 	auto& scenInput{ Owner()->Scene()->InputSystem() };
 
 	auto moveLeft = std::make_unique<mg::InputBinding>(
-		0, static_cast<int>(mg::Keycodes::KeyboardKey::A), mg::InputBinding::DeviceType::Keyboard,
-		std::make_unique<MoveTankCommand>(playerObj, TankMovement::Direction::Left), mg::InputBinding::TriggerType::Held
+		0, static_cast<int>(mg::Keycodes::KeyboardKey::Left), mg::InputBinding::DeviceType::Keyboard,
+		std::make_unique<MoveTankCommand>(*playerObj, TankMovement::Direction::Left), mg::InputBinding::TriggerType::Held
 	);
 	scenInput.AddBinding(std::move(moveLeft));
 
 	auto moveUp = std::make_unique<mg::InputBinding>(
-		0, static_cast<int>(mg::Keycodes::KeyboardKey::W), mg::InputBinding::DeviceType::Keyboard,
-		std::make_unique<MoveTankCommand>(playerObj, TankMovement::Direction::Up), mg::InputBinding::TriggerType::Held
+		0, static_cast<int>(mg::Keycodes::KeyboardKey::Up), mg::InputBinding::DeviceType::Keyboard,
+		std::make_unique<MoveTankCommand>(*playerObj, TankMovement::Direction::Up), mg::InputBinding::TriggerType::Held
 	);
 	scenInput.AddBinding(std::move(moveUp));
 
 	auto moveRight = std::make_unique<mg::InputBinding>(
-		0, static_cast<int>(mg::Keycodes::KeyboardKey::D), mg::InputBinding::DeviceType::Keyboard,
-		std::make_unique<MoveTankCommand>(playerObj, TankMovement::Direction::Right), mg::InputBinding::TriggerType::Held
+		0, static_cast<int>(mg::Keycodes::KeyboardKey::Right), mg::InputBinding::DeviceType::Keyboard,
+		std::make_unique<MoveTankCommand>(*playerObj, TankMovement::Direction::Right), mg::InputBinding::TriggerType::Held
 	);
 	scenInput.AddBinding(std::move(moveRight));
 
 	auto moveDown = std::make_unique<mg::InputBinding>(
-		0, static_cast<int>(mg::Keycodes::KeyboardKey::S), mg::InputBinding::DeviceType::Keyboard,
-		std::make_unique<MoveTankCommand>(playerObj, TankMovement::Direction::Down), mg::InputBinding::TriggerType::Held
+		0, static_cast<int>(mg::Keycodes::KeyboardKey::Down), mg::InputBinding::DeviceType::Keyboard,
+		std::make_unique<MoveTankCommand>(*playerObj, TankMovement::Direction::Down), mg::InputBinding::TriggerType::Held
 	);
 	scenInput.AddBinding(std::move(moveDown));
 }
@@ -120,25 +146,25 @@ void PlayerManager::BindGamepad(mg::GameObject* playerObj, int playerId)
 
 	auto moveLeft = std::make_unique<mg::InputBinding>(
 		playerId, static_cast<int>(mg::Keycodes::GamepadButton::DPadLeft), mg::InputBinding::DeviceType::Gamepad,
-		std::make_unique<MoveTankCommand>(playerObj, TankMovement::Direction::Left), mg::InputBinding::TriggerType::Held
+		std::make_unique<MoveTankCommand>(*playerObj, TankMovement::Direction::Left), mg::InputBinding::TriggerType::Held
 	);
 	sceneInput.AddBinding(std::move(moveLeft));
 
 	auto moveUp = std::make_unique<mg::InputBinding>(
 		playerId, static_cast<int>(mg::Keycodes::GamepadButton::DPadUp), mg::InputBinding::DeviceType::Gamepad,
-		std::make_unique<MoveTankCommand>(playerObj, TankMovement::Direction::Up), mg::InputBinding::TriggerType::Held
+		std::make_unique<MoveTankCommand>(*playerObj, TankMovement::Direction::Up), mg::InputBinding::TriggerType::Held
 	);
 	sceneInput.AddBinding(std::move(moveUp));
 
 	auto moveRight = std::make_unique<mg::InputBinding>(
 		playerId, static_cast<int>(mg::Keycodes::GamepadButton::DPadRight), mg::InputBinding::DeviceType::Gamepad,
-		std::make_unique<MoveTankCommand>(playerObj, TankMovement::Direction::Right), mg::InputBinding::TriggerType::Held
+		std::make_unique<MoveTankCommand>(*playerObj, TankMovement::Direction::Right), mg::InputBinding::TriggerType::Held
 	);
 	sceneInput.AddBinding(std::move(moveRight));
 
 	auto moveDown = std::make_unique<mg::InputBinding>(
 		playerId, static_cast<int>(mg::Keycodes::GamepadButton::DPadDown), mg::InputBinding::DeviceType::Gamepad,
-		std::make_unique<MoveTankCommand>(playerObj, TankMovement::Direction::Down), mg::InputBinding::TriggerType::Held
+		std::make_unique<MoveTankCommand>(*playerObj, TankMovement::Direction::Down), mg::InputBinding::TriggerType::Held
 	);
 	sceneInput.AddBinding(std::move(moveDown));
 }

@@ -2,7 +2,7 @@
 
 #include "Tank/Bullet/BulletMovement.h"
 #include "DamageOnCollision.h"
-
+#include "Game/Grid/GameGrid.h"
 
 #include <Minigin/Scene/GameObject.h>
 #include <Minigin/Scene/Scene.h>
@@ -12,22 +12,28 @@
 
 void TankBarrel::Shoot()
 {
-
-	if (m_pBullet->IsActive())
+	if (m_pBullet->Owner()->IsActive())
 	{
 		return;
 	}
-	auto& transform{ Owner()->Transform() };
-	m_pBullet->Shoot(transform.WorldPosition(), glm::vec2( sin(transform.WorldRotationZ()), cos(transform.WorldRotationZ())));
+	auto& transform = Owner()->Transform();
+	auto angle = glm::radians(transform.WorldRotationZ());
+	
+	glm::vec2 direction{ cos(angle), sin(angle) };
+	float barrelLength{ 32.0f };
+	glm::vec2 spawnPos = transform.WorldPosition() + direction * barrelLength;
+
+	m_pBullet->Shoot(spawnPos + direction, direction);
 }
 
 void TankBarrel::Awake()
 {
+	SpawnBullet();
 }
 
-TankBarrel::TankBarrel(mg::GameObject& owner)
+TankBarrel::TankBarrel(mg::GameObject& owner, GameGrid& grid)
 	: Component(owner)
-	//, m_pGrid{pGrid}
+	, m_pGrid(&grid)
 {
 }
 
@@ -35,35 +41,19 @@ TankBarrel::TankBarrel(mg::GameObject& owner)
 void TankBarrel::SpawnBullet()
 {
 
-	//auto bullet = std::make_unique<mg::GameObject>("PlayerBullet_", glm::vec3(36.f, 146.f, 0.f));
-	//{
-	//	//bullet->AddComponent<BulletMovement>(grid->GetComponent<GameGrid>());
-	//	bullet->AddComponent<DamageOnCollision>(1);
+	auto bullet = std::make_unique<mg::GameObject>("PlayerBullet_", glm::vec3(36.f, 146.f, 0.f));
 
-	//	auto& sprite{ bullet->AddComponent<mg::Sprite>("T_SpriteSheet_Tron.png", mg::SpriteSheet(13, 5)) };
-	//	sprite.SetSprite(6, 0);
+	auto& moveScript = bullet->AddComponent<BulletMovement>(*m_pGrid);
+	bullet->AddComponent<DamageOnCollision>(1);
 
-	//	auto& hitBox{ bullet->AddComponent<mg::BoxCollider2D>() };
-	//	hitBox.SetSize({ 10.f, 8.f });
-	//}
+	auto& sprite{ bullet->AddComponent<mg::Sprite>("T_SpriteSheet_BattleTanks.png", mg::SpriteSheet(13, 5)) };
+	sprite.SetSprite({ 1, 2 });
 
+	auto& hitBox{ bullet->AddComponent<mg::BoxCollider2D>() };
+	hitBox.SetSize({ 10.f, 8.f });
 
 
 
-
-	////if (m_pBullet)
-	////{
-	////	Owner()->Scene()->Remove(*m_pBullet->Owner());
-	////}
-
-	////auto bullet = std::make_unique<mg::GameObject>("PlayerBullet_" + Owner()->Name(), glm::vec3(0.f, 0.f, 0.f));
-	////
-	////auto& bulletMovement{ bullet->AddComponent<BulletMovement>() };
-	////m_pBullet = &bulletMovement;
-
-	////auto& sprite{ bullet->AddComponent<mg::Sprite>("T_SpriteSheet_Tron.png", mg::SpriteSheet(13, 5)) };
-	////sprite.SetSprite(6, 0);
-
-	////bullet->SetActive(false);
-	////Owner()->Scene()->Add(std::move(bullet));
+	m_pBullet = &moveScript;
+	Owner()->Scene()->Add(std::move(bullet));
 }

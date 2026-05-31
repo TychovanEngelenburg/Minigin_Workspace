@@ -1,6 +1,7 @@
 #include "Transform2D.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "Minigin/Scene/GameObject.h"
+#include <cassert>
 
 mg::GameObject & mg::Transform2D::Owner() noexcept
 {
@@ -15,7 +16,12 @@ glm::vec2 mg::Transform2D::WorldPosition() const noexcept
 float mg::Transform2D::WorldRotationZ() const noexcept
 {
 	auto const& worldMat = GetWorldMatrix();
-	return glm::degrees(std::atan2(worldMat[1][0], worldMat[0][0]));
+	//glm::vec3 xAxis = glm::normalize(glm::vec3(worldMat[0]));
+
+	//return glm::degrees(
+	//	std::atan2(xAxis.y, xAxis.x)
+	//);
+	return glm::degrees(std::atan2(-worldMat[1][0], worldMat[0][0]));
 }
 
 glm::vec2 mg::Transform2D::WorldScale() const noexcept
@@ -124,8 +130,6 @@ void mg::Transform2D::SetWorldPosition(glm::vec2 const& newPos)
 
 void mg::Transform2D::SetWorldRotation(float newDegr)
 {
-	float rad = glm::radians(newDegr);
-
 	if (m_pParent)
 	{
 		float parentWorldRot = m_pParent->WorldRotationZ();
@@ -133,7 +137,7 @@ void mg::Transform2D::SetWorldRotation(float newDegr)
 	}
 	else
 	{
-		m_localRotation = rad;
+		m_localRotation = glm::radians(newDegr);
 	}
 
 	MarkDirty();
@@ -208,6 +212,7 @@ void mg::Transform2D::SetParent(Transform2D* pParent, bool keepRelativeWorld)
 
 	if (HasChild(pParent) || pParent == this || m_pParent == pParent)
 	{
+		//assert(!pParent == this && (!m_pParent == pParent));
 		return;
 	}
 
@@ -234,7 +239,7 @@ void mg::Transform2D::SetParent(Transform2D* pParent, bool keepRelativeWorld)
 			rotMat[0] = glm::vec3(newLocal[0]) / scale.x;
 			rotMat[1] = glm::vec3(newLocal[1]) / scale.y;
 			rotMat[2] = glm::vec3(0, 0, 1);
-			m_localRotation = std::atan2(-rotMat[1][0], rotMat[0][0]);
+			m_localRotation = std::atan2(rotMat[0][1], rotMat[0][0]);
 			
 			MarkDirty();
 		}

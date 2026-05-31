@@ -29,6 +29,7 @@
 // temp
 #include "Tank/TankHealth.h"
 #include "Tank/TankMovement.h"
+#include "Tank/TankVisuals.h"
 #include "Tank/TankBarrel.h"
 #include "Enemy/EnemyBehaviour.h"
 
@@ -50,7 +51,7 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 	auto enemy = std::make_unique<mg::GameObject>("Enemy", glm::vec3(20, 120.f, 0.f));
 	{
 		auto& sprite = enemy->AddComponent<mg::Sprite>("T_SpriteSheet_BattleTanks.png", mg::SpriteSheet{ 4, 5 });
-		sprite.SetSprite(0, 4);
+		enemy->AddComponent<TankVisuals>(glm::ivec2(0, 4));
 
 		auto& hitBox{ enemy->AddComponent<mg::BoxCollider2D>() };
 		hitBox.SetSize(sprite.Size());
@@ -61,19 +62,8 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 		movement.SetMoveSpeed(50.f);
 	
 		 enemy->AddComponent<EnemyBehaviour>();
+
 	}
-
-	//auto bullet = std::make_unique<mg::GameObject>("PlayerBullet_", glm::vec3(36.f, 146.f, 0.f));
-	//{
-	//	bullet->AddComponent<BulletMovement>(grid->GetComponent<GameGrid>());
-	//	bullet->AddComponent<DamageOnCollision>(1);
-
-	//	auto& sprite{ bullet->AddComponent<mg::Sprite>("T_SpriteSheet_Tron.png", mg::SpriteSheet(13, 5)) };
-	//	sprite.SetSprite(6, 0);
-
-	//	auto& hitBox{ bullet->AddComponent<mg::BoxCollider2D>() };
-	//	hitBox.SetSize({ 10.f, 8.f });
-	//}
 
 #pragma region UI
 	auto fpsCounterUI = std::make_unique<mg::GameObject>("FPS_Counter", glm::vec3(100.f, 0.f, 0.f));

@@ -20,6 +20,41 @@ public:
 	void Awake() override;
 
 private:
+	//enum Team
+	//{
+	//	Good,
+	//	Evil
+	//};
+
+	//enum TankType
+	//{
+	//	Player,
+	//	BasicEnemy,
+	//	Recogniser
+	//};
+
+	//struct PlayerInput
+	//{
+	//	int PlayerIndex;
+	//	bool CanTurnBarrel;
+	//};
+
+	//struct ShootConfig
+	//{
+	//	bool AutoShoot{true};
+	//	bool TurningBarrel{false};
+	//	float ShootInterval{1.f};
+	//};
+
+	//struct TankConfig
+	//{
+	//	TankType Type{TankType::BasicEnemy};
+	//	ShootConfig ShootConfig{};
+	//	Team Team{Team::Evil};
+	//	std::optional<PlayerInput> PlayerConfig;
+	//};
+
+
 	GameGrid* m_pGrid;
 	std::vector<mg::GameObject*> m_pPlayers{};
 

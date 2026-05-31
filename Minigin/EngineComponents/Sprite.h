@@ -27,7 +27,7 @@ namespace mg
 		glm::vec2 const& Size();
 
 		void SetTexture(std::filesystem::path const& filename);
-		void SetSprite(int x, int y);
+		void SetSprite(glm::ivec2 sprite, bool flipX = false, bool flipY = false);
 
 		void Render() const override;
 
@@ -36,8 +36,9 @@ namespace mg
 	private:
 		std::shared_ptr<Texture2D> m_pTexture;
 		SpriteSheet  m_spriteSheet;
-		SDL_FRect m_sourceRect;
-
+		SDL_FRect m_sourceRect{};
+		bool m_xFlipped{ false };
+		bool m_yFlipped{ false };
 	};
 }
 #endif // !SPRITE_H

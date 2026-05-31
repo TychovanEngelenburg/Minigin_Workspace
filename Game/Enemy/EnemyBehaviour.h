@@ -4,7 +4,6 @@
 
 #include <Minigin/EngineComponents/Component.h>
 
-class TankMovement;
 class EnemyBehaviour final : public mg::Component
 {
 public:

@@ -9,7 +9,7 @@ namespace mg
 	class GameObjectCommand : public ICommand
 	{
 	public:
-		GameObjectCommand(GameObject* object);
+		GameObjectCommand(GameObject& object);
 
 	protected:
 		GameObject* GetGameObject() const;

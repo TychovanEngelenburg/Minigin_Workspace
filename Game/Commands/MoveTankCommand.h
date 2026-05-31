@@ -15,7 +15,7 @@ class MoveTankCommand final : public mg::GameObjectCommand
 public:
 	void Execute() override;
 
-	MoveTankCommand(mg::GameObject* object, TankMovement::Direction moveDir);
+	MoveTankCommand(mg::GameObject& object, TankMovement::Direction moveDir);
 
 private:
 	TankMovement::Direction m_movementDirection;

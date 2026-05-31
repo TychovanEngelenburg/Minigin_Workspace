@@ -53,8 +53,7 @@ void mg::Renderer::RenderTexture(Texture2D const& texture, Transform2D const& tr
 	dst.w *= scale.x;
 	dst.h *= scale.y;
 
-	// Negative to comply with GLM's Y-up (Clockwise) rotation.
-	auto rot = -transform.WorldRotationZ();
+	auto rot = transform.WorldRotationZ();
 
 	//SDL_FPoint rotPivot{ dst.w * 0.5f, dst.h * 0.5f };
 	SDL_FPoint rotPivot{ 0.f, 0.f };

@@ -24,6 +24,7 @@ void BulletMovement::Awake()
 	assert(m_pCollider && "Bullet gameobject must have a collider!");
 }
 
+
 void BulletMovement::FixedUpdate()
 {
 	auto worldPos = Owner()->Transform().WorldPosition();
@@ -31,7 +32,6 @@ void BulletMovement::FixedUpdate()
 	glm::vec2 displacement = m_direction * m_speed * static_cast<float>(mg::DeltaClock::FixedDeltaTime());
 
 	bool bounced{ false };
-
 	float xPos{ worldPos.x + displacement.x };
 	if (displacement.x > 0)
 	{
@@ -73,7 +73,7 @@ void BulletMovement::FixedUpdate()
 
 		if (m_bounceCount >= m_maxBounces)
 		{
-			//Owner()->SetActive(false);
+			Owner()->SetActive(false);
 			m_bounceCount = 0;
 		}
 	}
@@ -83,11 +83,10 @@ void BulletMovement::FixedUpdate()
 	m_currentTile = m_pGrid->WorldToGrid(worldPos);
 }
 
-BulletMovement::BulletMovement(mg::GameObject& owner, GameGrid* pGrid, float speed, int maxBounces)
+BulletMovement::BulletMovement(mg::GameObject& owner, GameGrid& pGrid)
 	: mg::Component(owner)
-	, m_pGrid{ pGrid }
-	, m_maxBounces{ maxBounces }
-	, m_speed{ speed }
+	, m_pGrid{ &pGrid }
 {
 
 }
+

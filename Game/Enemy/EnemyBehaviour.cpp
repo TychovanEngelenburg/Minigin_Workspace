@@ -20,8 +20,7 @@ void EnemyBehaviour::Update()
     {
         m_currentDirection = GetRandomDirection();
 
-        m_directionTimer = 1.f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (3.f - 1.f)));
-        std::cout << "Dir: " << static_cast<int>(m_currentDirection) << "\n";
+        m_directionTimer = 1.f;// +static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (3.f - 1.f)));
     }
 
     m_pMovement->QueueMovement(m_currentDirection);
@@ -37,8 +36,8 @@ TankMovement::Direction EnemyBehaviour::GetRandomDirection()
     auto dir{ static_cast<TankMovement::Direction>(rand() % static_cast<int>(TankMovement::Direction::End)) };
 
 
-    if (dir == TankMovement::Direction::None /*||
-        !m_pMovement->CanMove(dir)*/ ||
+    if (dir == TankMovement::Direction::None ||
+        !m_pMovement->CanMove(dir) ||
         TankMovement::IsOppositeDirection(dir, m_pMovement->MovingDirection()))
     {
         return GetRandomDirection();

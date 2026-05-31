@@ -3,8 +3,6 @@
 
 #include <Minigin/EngineComponents/Component.h>
 
-#include <filesystem>
-
 class BulletMovement;
 class GameGrid;
 
@@ -12,9 +10,9 @@ class TankBarrel final : public mg::Component
 {
 public:
 	void Shoot();
-
 	void Awake() override;
-	TankBarrel(mg::GameObject& owner);
+
+	TankBarrel(mg::GameObject& owner, GameGrid& grid);
 
 private:
 	void SpawnBullet();

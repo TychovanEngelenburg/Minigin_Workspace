@@ -63,17 +63,16 @@ void mg::BoxCollider2D::Awake()
 
 void mg::BoxCollider2D::Render() const
 {
-	//auto const& worldPos{ Owner()->Transform().WorldPosition() };
-	//Renderer::Instance().DrawRect({ worldPos.x + m_bounds.offset.x, worldPos.y + m_bounds.offset.y, m_bounds.size.y, m_bounds.size.y });
 
-	const auto& obb{ GetOBB() };
 
-	Renderer::Instance().DrawRect({
-		obb.center.x - m_bounds.size.x * 0.5f,
-		obb.center.y - m_bounds.size.y * 0.5f,
-		obb.halfExtends.x * 2.f,
-		obb.halfExtends.y * 2.f
-		});
+	//const auto& obb{ GetOBB() };
+
+	//Renderer::Instance().DrawRect({
+	//	obb.center.x - m_bounds.size.x * 0.5f,
+	//	obb.center.y - m_bounds.size.y * 0.5f,
+	//	obb.halfExtends.x * 2.f,
+	//	obb.halfExtends.y * 2.f
+	//	});
 }
 
 mg::BoxCollider2D::BoxCollider2D(mg::GameObject& owner, glm::vec2 size, glm::vec2 offset)

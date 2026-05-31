@@ -6,7 +6,7 @@ mg::GameObject* mg::GameObjectCommand::GetGameObject() const
 	return m_pObject;
 }
 
-mg::GameObjectCommand::GameObjectCommand(GameObject* object)
-	: m_pObject{object}
+mg::GameObjectCommand::GameObjectCommand(GameObject& object)
+	: m_pObject(&object)
 {
 }
