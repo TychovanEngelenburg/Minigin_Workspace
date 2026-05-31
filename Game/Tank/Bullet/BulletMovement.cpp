@@ -1,19 +1,47 @@
 #include "Tank/Bullet/BulletMovement.h"
 
 #include "Grid/GameGrid.h"
-
+#include "Tank/Bullet/BulletPool.h"
 #include <Minigin/Scene/GameObject.h>
 #include <Minigin/DeltaClock.h>
 #include <Minigin/CollisionSystem/BoxCollider2D.h>
 
 #include <cassert>
 
+void BulletMovement::SetPool(BulletPool* pPool)
+{
+	m_pPool = pPool;
+}
+
+void BulletMovement::Destroy()
+{
+	if (m_pPool)
+	{
+		Owner()->SetActive(false);
+		m_pPool->ReturnBullet(this);
+	}
+	else
+	{
+		Owner()->Destroy();
+	}
+}
+
 void BulletMovement::Shoot(glm::vec2 const& pos, glm::vec2 const& dir)
 {
-	m_direction = dir;
 	Owner()->Transform().SetWorldPosition(pos);
+
 	m_currentTile = m_pGrid->WorldToGrid(pos);
+	if (m_pGrid->WallAt(m_currentTile)
+		|| m_pGrid->WallAt(m_pGrid->WorldToGrid({ pos.x + m_pCollider->LocalBounds().size.x, pos.y }))
+		|| m_pGrid->WallAt(m_pGrid->WorldToGrid({ pos.x , pos.y + m_pCollider->LocalBounds().size.y }))
+		|| m_pGrid->WallAt(m_pGrid->WorldToGrid({ pos.x + m_pCollider->LocalBounds().size.x, pos.y + m_pCollider->LocalBounds().size.y})) )
+	{
+		Destroy();
+	}
+
+	m_direction = dir;
 	m_bounceCount = 0;
+
 	Owner()->SetActive(true);
 }
 
@@ -22,6 +50,11 @@ void BulletMovement::Awake()
 	m_pCollider = Owner()->GetComponent<mg::BoxCollider2D>();
 
 	assert(m_pCollider && "Bullet gameobject must have a collider!");
+}
+
+void BulletMovement::OnCollisionEnter(mg::CollisionData const&)
+{
+	Destroy();
 }
 
 
@@ -38,8 +71,8 @@ void BulletMovement::FixedUpdate()
 		xPos += m_pCollider->LocalBounds().size.x;
 	}
 
-	if (m_pGrid->WallAt(m_pGrid->WorldToGrid({xPos, worldPos.y })) ||
-		m_pGrid->WallAt(m_pGrid->WorldToGrid({xPos, worldPos.y + m_pCollider->LocalBounds().size.y })))
+	if (m_pGrid->WallAt(m_pGrid->WorldToGrid({ xPos, worldPos.y })) ||
+		m_pGrid->WallAt(m_pGrid->WorldToGrid({ xPos, worldPos.y + m_pCollider->LocalBounds().size.y })))
 	{
 		m_direction.x = -m_direction.x;
 		bounced = true;
@@ -73,8 +106,7 @@ void BulletMovement::FixedUpdate()
 
 		if (m_bounceCount >= m_maxBounces)
 		{
-			Owner()->SetActive(false);
-			m_bounceCount = 0;
+			Destroy();
 		}
 	}
 

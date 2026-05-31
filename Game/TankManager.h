@@ -10,14 +10,14 @@ namespace mg
 	class GameObject;
 }
 
+class BulletPool;
 class GameGrid;
-class PlayerManager final : public mg::Component
+class TankManager final : public mg::Component
 {
 public:
-	PlayerManager(mg::GameObject& owner, GameGrid& grid);
-
-
+	void SetBulletPool(BulletPool* pool);
 	void Awake() override;
+	TankManager(mg::GameObject& owner, GameGrid& grid);
 
 private:
 	//enum Team
@@ -53,10 +53,10 @@ private:
 	//	Team Team{Team::Evil};
 	//	std::optional<PlayerInput> PlayerConfig;
 	//};
-
+	BulletPool* m_pBulletPool{};
 
 	GameGrid* m_pGrid;
-	std::vector<mg::GameObject*> m_pPlayers{};
+	std::vector<mg::GameObject*> m_pTanks{};
 
 	mg::GameObject* SpawnPlayer(int playerId = 0, glm::ivec2 gridPos = { 0, 0 });
 	void BindKeyboard(mg::GameObject* playerObj);

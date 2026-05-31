@@ -11,7 +11,7 @@ void TankVisuals::Awake()
 	m_pSprite = Owner()->GetComponent<mg::Sprite>();
 	assert(m_pMovement && "EnemyBehaviour requires Sprite");
 	//m_currentDirection = m_pMovement->MovingDirection();
-	//SetSprite();
+	SetSprite();
 }
 
 void TankVisuals::Update()

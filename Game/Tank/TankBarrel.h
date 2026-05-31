@@ -3,21 +3,19 @@
 
 #include <Minigin/EngineComponents/Component.h>
 
-class BulletMovement;
+class BulletPool;
 class GameGrid;
 
 class TankBarrel final : public mg::Component
 {
 public:
 	void Shoot();
-	void Awake() override;
+	void SetBulletPool(BulletPool* pool);
 
 	TankBarrel(mg::GameObject& owner, GameGrid& grid);
 
 private:
-	void SpawnBullet();
-
-	BulletMovement* m_pBullet{};
+	BulletPool* m_pBulletPool{};
 	GameGrid* m_pGrid{};
 };
 

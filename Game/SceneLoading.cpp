@@ -22,8 +22,8 @@
 
 // Game
 #include "Grid/GameGrid.h"
-#include "PlayerManager.h"
-
+#include "TankManager.h"
+#include "Tank/Bullet/BulletPool.h"
 
 
 // temp
@@ -43,10 +43,19 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 
 #pragma endregion Environment
 
-	auto playerManager = std::make_unique<mg::GameObject>("PlayerManager");
+	auto bulletManager = std::make_unique<mg::GameObject>("BulletManager");
 	{
-		playerManager->AddComponent<PlayerManager>(*grid->GetComponent<GameGrid>());
+		 bulletManager->AddComponent<BulletPool>(*grid->GetComponent<GameGrid>(), 32);
 	}
+
+	auto playerManager = std::make_unique<mg::GameObject>("TankManager");
+	{
+		auto& manegerComp = playerManager->AddComponent<TankManager>(*grid->GetComponent<GameGrid>());
+		manegerComp.SetBulletPool(bulletManager->GetComponent<BulletPool>());
+	}
+
+
+	
 
 	auto enemy = std::make_unique<mg::GameObject>("Enemy", glm::vec3(20, 120.f, 0.f));
 	{
@@ -129,6 +138,7 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 	// in general transform needs a complete rework. (which is why I have avoided parenting for now)
 
 	sceneOut.Add(std::move(grid));
+	sceneOut.Add(std::move(bulletManager));
 	sceneOut.Add(std::move(playerManager));
 	sceneOut.Add(std::move(enemy));
 
