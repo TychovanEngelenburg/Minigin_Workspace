@@ -1,21 +1,16 @@
 #ifndef TANK_PRESETS_H
 #define TANK_PRESETS_H
-#include "Game/Tank/Bullet/BulletConfig.h"
-#include "Game/Player/PlayerInputConfig.h"
-
+#include "Game/Config/BulletConfig.h"
+#include "Game/Config/PlayerInputConfig.h"
+#include "Game/Config/CollisionConfig.h"
 #include <Minigin/Config/SpriteConfig.h>
+
 
 #include <optional>
 #include <glm/vec2.hpp>
 #include <filesystem>
 
 inline const mg::SpriteSheet TankSheet{ "T_SpriteSheet_BattleTanks.png" , 4, 4 };
-
-enum class Allignment
-{
-	Good,
-	Evil
-};
 
 struct BarrelConfig
 {
@@ -37,7 +32,7 @@ struct TankConfig
 {
 	std::string Name;
 	mg::SpriteConfig Sprite{ TankSheet, { 3, 2 } };
-	Allignment Team{Allignment::Evil};
+	CollisionConfig Collisions{};
 	TankStats Stats{};
 
 	std::optional<BarrelConfig> Barrel{std::nullopt};

@@ -1,4 +1,4 @@
-#include "Game//Tank/TankManager.h"
+#include "TankManager.h"
 
 #include "Game/Commands/MoveTankCommand.h"
 #include "Game/Commands/TurnBarrelCommand.h"
@@ -8,10 +8,13 @@
 #include "Game/Tank/TankMovement.h"
 #include "Game/Tank/TankBarrel.h"
 #include "Game/Tank/TankVisuals.h"
-#include "Game/Tank/TankConfig.h"
 #include "Game/Tank/RotateWithTank.h"
+
 #include "Game/Grid/GameGrid.h"
+
 #include "Game/Enemy/EnemyBehaviour.h"
+
+#include "Game/Config/TankConfig.h"
 
 #include <Minigin/Scene/GameObject.h>
 #include <Minigin/InputHandling/InputBinding.h>
@@ -19,7 +22,6 @@
 #include <Minigin/EngineComponents/Sprite.h>
 #include <Minigin/CollisionSystem/BoxCollider2D.h>
 #include <Minigin/Scene/Scene.h>
-
 
 TankManager::TankManager(mg::GameObject& owner, GameGrid& grid)
 	: Component(owner)
@@ -144,6 +146,8 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 
 	auto& collider = tankObj->AddComponent<mg::BoxCollider2D>();
 	collider.SetSize(spriteSize);
+	collider.CollisionLayer = tankConfig.Collisions.Layer;
+	collider.CollisionMask = tankConfig.Collisions.LayerMask;
 
 	// Barrel
 	std::unique_ptr<mg::GameObject> barrelObj{};
@@ -217,83 +221,6 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 	return result;
 }
 
-// Function to be depricated!
-mg::GameObject* TankManager::SpawnPlayer(int playerId, glm::ivec2 gridPos)
-{
-	auto& sceneOut{ *Owner()->Scene() };
-
-	glm::vec2 playerSize{};
-	auto player = std::make_unique<mg::GameObject>("Player_" + std::to_string(playerId));
-	{
-		player->Transform().SetWorldPosition(m_pGrid->GridToWorld(gridPos));
-
-		auto& sprite = player->AddComponent<mg::Sprite>(TankSheet);
-		player->AddComponent<TankVisuals>(glm::ivec2(2 * playerId, 3));
-		playerSize = sprite.Size();
-
-
-		auto& hitBox{ player->AddComponent<mg::BoxCollider2D>() };
-		hitBox.SetSize(playerSize);
-
-		player->AddComponent<TankHealth>();
-		player->AddComponent<TankMovement>(*m_pGrid);
-	}
-
-	auto barrelObj = std::make_unique<mg::GameObject>("barrelObj");
-	{
-		barrelObj->Transform().SetLocalPosition(playerSize / 2.f);
-		auto& barrel = barrelObj->AddComponent<TankBarrel>(*m_pGrid);
-		barrelObj->Transform().SetParent(&player->Transform());
-
-		barrel.SetBulletPool(m_pBulletPool);
-	}
-
-	auto barrelVisuals = std::make_unique<mg::GameObject>("barrelTexture");
-	{
-		auto& sprite = barrelVisuals->AddComponent<mg::Sprite>(TankSheet);
-		sprite.SetSprite({ 0, 2 });
-		barrelVisuals->Transform().SetParent(&barrelObj->Transform());
-		barrelVisuals->Transform().SetLocalPosition(glm::vec2(-6.f, -6.f));
-	}
-
-
-
-	auto turnLeft = std::make_unique<mg::InputBinding>(
-		0, static_cast<int>(mg::Keycodes::KeyboardKey::Z), mg::InputBinding::DeviceType::Keyboard,
-		std::make_unique<TurnBarrelCommand>(*barrelObj.get(), -90.f), mg::InputBinding::TriggerType::Held
-	);
-	sceneOut.InputSystem().AddBinding(std::move(turnLeft));
-
-	auto turnRight = std::make_unique<mg::InputBinding>(
-		0, static_cast<int>(mg::Keycodes::KeyboardKey::X), mg::InputBinding::DeviceType::Keyboard,
-		std::make_unique<TurnBarrelCommand>(*barrelObj.get(), 90.f), mg::InputBinding::TriggerType::Held
-	);
-	sceneOut.InputSystem().AddBinding(std::move(turnRight));
-
-	auto shoot = std::make_unique<mg::InputBinding>(
-		0, static_cast<int>(mg::Keycodes::KeyboardKey::LCtrl), mg::InputBinding::DeviceType::Keyboard,
-		std::make_unique<ShootCommand>(*barrelObj.get()), mg::InputBinding::TriggerType::Released
-	);
-	sceneOut.InputSystem().AddBinding(std::move(shoot));
-
-
-
-	if (playerId == 0)
-	{
-		//BindKeyboard(player.get());
-	}
-
-	//BindGamepad(player.get(), playerId);
-
-	auto pPlayer{ player.get() };
-	m_pTanks.push_back(pPlayer);
-
-	sceneOut.Add(std::move(player));
-	sceneOut.Add(std::move(barrelObj));
-	sceneOut.Add(std::move(barrelVisuals));
-
-	return pPlayer;
-}
 
 void TankManager::SetBulletPool(BulletPool* pool)
 {
@@ -386,7 +313,7 @@ void TankManager::BindGamepad(mg::GameObject& playerObj, mg::GameObject* barrelO
 {
 	assert(playerId < 4);
 
-	auto& sceneInput{ Owner()->Scene()->InputSystem() };
+	auto& sceneInput{ m_pGrid->Owner()->Scene()->InputSystem() };
 
 	auto moveLeft = std::make_unique<mg::InputBinding>(
 		playerId, static_cast<int>(mg::Keycodes::GamepadButton::DPadLeft), mg::InputBinding::DeviceType::Gamepad,

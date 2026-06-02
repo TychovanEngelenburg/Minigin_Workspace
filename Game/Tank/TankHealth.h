@@ -15,28 +15,24 @@ class TankHealth final : public mg::Component
 {
 public:
 	bool IsDead() const noexcept;
-	bool CanRespawn() const noexcept;
-	int GetHealth() const noexcept;
-	int GetLives()const noexcept;
+	int Health() const noexcept;
+
 
 	void Damage(int amount = 1);
 	void Kill();
 	void ResetHealth();
-	void ResetLives();
-	void AddLife(int count = 1);
-	void AddListener(mg::IEventListener<PlayerLivesChangedEvent>* listener);
+	void AddListener(mg::IEventListener<PlayerDeath>* listener);
 
-	explicit TankHealth(mg::GameObject& owner, int lives = 4, int health = 1);
+	explicit TankHealth(mg::GameObject& owner, int playerId);
+	int maxHealth{1};
 
 private:
-	int const m_health;
-	int m_currentHealth;
+	int m_playerId;
+	int m_Health{1};
 
-	int const m_lives;
-	int m_currentLives;
 
-	mg::EventSource<PlayerLivesChangedEvent> m_onDeath;
-
+	mg::EventSource<PlayerDeath> m_onDeath;
+	void OnDeath();
 
 	// Temporary demonstration code
 	//#include <Minigin/SoundSystem/ISoundSystem.h>

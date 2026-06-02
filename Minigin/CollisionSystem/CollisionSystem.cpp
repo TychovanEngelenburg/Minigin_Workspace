@@ -87,9 +87,9 @@ bool OverlapOnAxis(mg::OBB const& a, mg::OBB const& b, glm::vec2 const& axis)
 	return distance <= (aProjection + bProjection);
 }
 
-bool mg::SceneCollisions::CanCollide(BoxCollider2D const& A, BoxCollider2D const& B)
+bool mg::SceneCollisions::CanCollide(BoxCollider2D const& a, BoxCollider2D const& b)
 {
-	return true;
+	return (a.CollisionMask & b.CollisionLayer) && (b.CollisionMask & a.CollisionLayer);
 }
 
 

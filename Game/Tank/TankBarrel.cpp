@@ -1,6 +1,6 @@
 #include "Game/Tank/TankBarrel.h"
 
-#include "Game/Tank/Bullet/BulletConfig.h"
+#include "Game/Config/BulletConfig.h"
 #include "Game/Tank/Bullet/BulletMovement.h"
 #include "Game/Tank/Bullet/BulletPool.h"
 #include "Game/Grid/GameGrid.h"

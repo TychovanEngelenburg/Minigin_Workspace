@@ -11,17 +11,17 @@ namespace mg
 	{
     public:
 
-        void Register(BoxCollider2D*);
-        void Unregister(BoxCollider2D*);
+        void Register(BoxCollider2D* pCollider);
+        void Unregister(BoxCollider2D* pCollider);
 
         void Update();
 
     private:
+        bool CanCollide(BoxCollider2D const& a, BoxCollider2D const& b);
+        bool CheckOverlap(BoxCollider2D const& a, BoxCollider2D const& b);
+
         std::vector<BoxCollider2D*> m_pColliders{};
         std::vector<std::pair<BoxCollider2D*, BoxCollider2D*>> m_pCollidingPairs{};
-
-        bool CanCollide(BoxCollider2D const& A, BoxCollider2D const& B);
-        bool CheckOverlap(BoxCollider2D const& A, BoxCollider2D const& B);
 	};
 
     struct CollisionData

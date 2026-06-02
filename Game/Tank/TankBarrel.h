@@ -2,7 +2,7 @@
 #define TANK_BARREL_H
 
 #include <Minigin/EngineComponents/Component.h>
-#include "Game/Tank/Bullet/BulletConfig.h"
+#include "Game/Config/BulletConfig.h"
 
 class BulletPool;
 class GameGrid;

@@ -4,8 +4,8 @@
 /// Simple holder for event data structs.
 // In case this project gets big/needs many events these are to be split up over multiple files.
 
-struct PlayerLivesChangedEvent
+struct PlayerDeath
 {
-	int livesLeft;
+	int playerId;
 };
 #endif // !GAME_EVENTS_H

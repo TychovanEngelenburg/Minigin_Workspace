@@ -1,6 +1,8 @@
 #ifndef BULLET_CONFIG_H
 #define BULLET_CONFIG_H
 
+#include "Game/Config/CollisionConfig.h"
+
 #include <Minigin/Config/SpriteConfig.h>
 #include <glm/vec2.hpp>
 
@@ -10,6 +12,7 @@ struct BulletConfig
 {
 	mg::SpriteConfig Sprite{ BulletSpriteSheet, { 0, 1 } };
 	glm::vec2 ColliderSize{ 8.f, 8.f };
+	CollisionConfig Collisions{};
 	float Speed{ 100.f };
 	int Damage{ 1 };
 };

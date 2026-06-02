@@ -3,7 +3,7 @@
 #include "Game/Tank/Bullet/BulletMovement.h"
 #include "Game/DamageOnCollision.h"
 #include "Game/Grid/GameGrid.h"
-#include "Game/Tank/Bullet/BulletConfig.h"
+#include "Game/Config/BulletConfig.h"
 
 #include <Minigin/Scene/Scene.h>
 #include <Minigin/Scene/GameObject.h>
@@ -24,6 +24,9 @@ BulletMovement* BulletPool::SpawnBullet(BulletConfig const& config)
 	bullet->Sprite().SetPivot(config.ColliderSize / 2.f);
 	bullet->Collider().SetSize(config.ColliderSize);
 	bullet->Collider().SetCenter({ 0.f, 0.f });
+
+	bullet->Collider().CollisionLayer = config.Collisions.Layer;
+	bullet->Collider().CollisionMask  = config.Collisions.LayerMask;
 
 	return bullet;
 }

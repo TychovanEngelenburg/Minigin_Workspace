@@ -2,35 +2,24 @@
 
 #include <Minigin/Scene/GameObject.h>
 #include <Minigin/IEventListener.h>
-//#include <exception>
 
 bool TankHealth::IsDead() const noexcept
 {
-	return m_currentHealth > 0;
+	return m_Health <= 0;
 }
 
-bool TankHealth::CanRespawn() const noexcept
-{
-	return m_lives > 0;
-}
-
-int TankHealth::GetHealth() const noexcept
+int TankHealth::Health() const noexcept
 { 
-	return m_currentHealth;
-}
-
-int TankHealth::GetLives() const noexcept
-{
-	return m_currentLives;
+	return m_Health;
 }
 
 void TankHealth::Damage(int amount)
 {
-	m_currentHealth -= amount;
+	m_Health -= amount;
 
-	if (m_currentHealth <= 0 )
+	if (IsDead())
 	{
-		Kill();
+		OnDeath();
 	}
 
 	// TODO: Remove
@@ -39,49 +28,32 @@ void TankHealth::Damage(int amount)
 
 void TankHealth::Kill()
 {
-	m_currentHealth = 0;
-	--m_currentLives;
-	m_onDeath.Notify({m_currentLives});
-
-
-	// TODO, handle this elsewhere using above event.
-	ResetHealth();
+	m_Health = 0;
+	OnDeath();
 }
+
+
 
 void TankHealth::ResetHealth()
 {
-	m_currentHealth = m_health;
+	m_Health = maxHealth;
 }
 
-void TankHealth::ResetLives()
-{
-	m_currentLives = m_lives;
-}
 
-void TankHealth::AddLife(int count)
-{
-	m_currentLives += count;
-}
-
-void TankHealth::AddListener(mg::IEventListener<PlayerLivesChangedEvent>* listener)
+void TankHealth::AddListener(mg::IEventListener<PlayerDeath>* listener)
 {
 	m_onDeath.AddListener(listener);
-	m_onDeath.Notify({ m_currentLives }); // Initial update
 }
 
-TankHealth::TankHealth(mg::GameObject& owner, int lives, int health)
+TankHealth::TankHealth(mg::GameObject& owner, int playerId)
 	: Component(owner)
-	, m_health{ health }
-	, m_currentHealth{ health }
-	, m_lives{ lives }
-	, m_currentLives{ lives }
+	, m_playerId(playerId)
 {
-	if (lives <= 0)
-	{
-		throw std::out_of_range("Cannot create TankHealth with invalid Life count!");
-	}
-	if (health <= 0)
-	{
-		throw std::out_of_range("Cannot create TankHealth with invalid health!");
-	}
+
+}
+
+void TankHealth::OnDeath()
+{
+	// TODO: Play sound
+	m_onDeath.Notify({ m_playerId });
 }

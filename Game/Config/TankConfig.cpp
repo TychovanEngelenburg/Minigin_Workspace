@@ -4,7 +4,10 @@ TankConfig TankPresets::Player(int playerId)
 {
 	TankConfig cfg{};
 	cfg.Name = "Player";
-	cfg.Team = Allignment::Good;
+	cfg.Collisions.Layer = static_cast<uint32_t>(GameCollisionLayer::Good);
+	cfg.Collisions.LayerMask =
+		static_cast<uint32_t>(GameCollisionLayer::Evil) |
+		static_cast<uint32_t>(GameCollisionLayer::Bullet);
 
 	cfg.Sprite.SheetPos = { 0 + playerId, 3 };
 
@@ -26,6 +29,8 @@ TankConfig TankPresets::Player(int playerId)
 	barrel.BulletConf.Damage = 1;
 	barrel.BulletConf.ColliderSize = { 8.f, 8.f };
 	barrel.BulletConf.Sprite.SheetPos = { 1, 1 };
+	barrel.BulletConf.Collisions.Layer = static_cast<uint32_t>(GameCollisionLayer::Bullet);
+	barrel.BulletConf.Collisions.LayerMask = static_cast<uint32_t>(GameCollisionLayer::Evil);
 	cfg.Barrel = barrel;
 
 
@@ -36,7 +41,11 @@ TankConfig TankPresets::BasicEnemy()
 {
 	TankConfig cfg{};
 	cfg.Name = "BasicEnemy";
-	cfg.Team = Allignment::Evil;
+
+	cfg.Collisions.Layer = static_cast<uint32_t>(GameCollisionLayer::Evil);
+	cfg.Collisions.LayerMask =
+		static_cast<uint32_t>(GameCollisionLayer::Good) |
+		static_cast<uint32_t>(GameCollisionLayer::Bullet);
 
 	cfg.Sprite.SheetPos = { 2, 3 };
 
@@ -51,6 +60,8 @@ TankConfig TankPresets::BasicEnemy()
 
 	barrel.BulletConf.Speed = 120.f;
 	barrel.BulletConf.Damage = 1;
+	barrel.BulletConf.Collisions.Layer = static_cast<uint32_t>(GameCollisionLayer::Bullet);
+	barrel.BulletConf.Collisions.LayerMask = static_cast<uint32_t>(GameCollisionLayer::Good);
 	cfg.Barrel = barrel;
 
 	return cfg;
@@ -60,7 +71,11 @@ TankConfig TankPresets::Recogniser()
 {
 	TankConfig cfg{};
 	cfg.Name = "Recogniser";
-	cfg.Team = Allignment::Evil;
+	
+	cfg.Collisions.Layer = static_cast<uint32_t>(GameCollisionLayer::Evil);
+	cfg.Collisions.LayerMask =
+		static_cast<uint32_t>(GameCollisionLayer::Good) |
+		static_cast<uint32_t>(GameCollisionLayer::Bullet);
 
 	cfg.Sprite.SheetPos = { 3, 3 };
 
@@ -75,6 +90,8 @@ TankConfig TankPresets::Recogniser()
 
 	barrel.BulletConf.Speed = 220.f;
 	barrel.BulletConf.Damage = 1;
+	barrel.BulletConf.Collisions.Layer = static_cast<uint32_t>(GameCollisionLayer::Bullet);
+	barrel.BulletConf.Collisions.LayerMask = static_cast<uint32_t>(GameCollisionLayer::Good);
 	cfg.Barrel = barrel;
 
 	return cfg;

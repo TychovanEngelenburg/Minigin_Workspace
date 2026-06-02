@@ -3,10 +3,10 @@
 
 #include <glm/vec2.hpp>
 #include "Minigin/EngineComponents/Component.h"
+#include <cstdint>
 
 namespace mg
 {
-
 	struct OBB
 	{
 		glm::vec2 center{};
@@ -25,7 +25,6 @@ namespace mg
 			glm::vec2 size{};
 		};
 
-
 		void SetCenter(glm::vec2 center);
 		void SetTopLeft(glm::vec2 topLeft);
 		void SetSize(glm::vec2 size, bool scaleAroundCenter = false);
@@ -35,13 +34,16 @@ namespace mg
 
 		void Awake() override;
 		void Render() const override;
-		explicit BoxCollider2D(mg::GameObject& owner, glm::vec2 size = {1.f, 1.f}, glm::vec2 offset = {});
+		explicit BoxCollider2D(mg::GameObject& owner, glm::vec2 size = { 1.f, 1.f }, glm::vec2 offset = {});
 
 		~BoxCollider2D();
 		BoxCollider2D(BoxCollider2D const& other) = delete;
 		BoxCollider2D(BoxCollider2D&& other) = delete;
 		BoxCollider2D& operator=(BoxCollider2D const& other) = delete;
 		BoxCollider2D& operator=(BoxCollider2D&& other) = delete;
+
+		uint32_t CollisionLayer { 0 };
+		uint32_t CollisionMask { 0xFFFFFFFF };
 
 	private:
 		Bounds m_bounds;

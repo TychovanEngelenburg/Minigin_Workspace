@@ -87,7 +87,7 @@ add_executable(${GAME_TARGET} ${TARGET_PARAM}
     Game/Enemy/EnemyBehaviour.cpp
     Game/Commands/TurnBarrelCommand.cpp
     Game/Tank/Bullet/BulletPool.cpp
-    Game/Tank/TankConfig.cpp
+    "Game/Config/TankConfig.cpp"
     Game/Tank/RotateWithTank.cpp
 )
 

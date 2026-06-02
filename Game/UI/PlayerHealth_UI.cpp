@@ -7,7 +7,7 @@
 #include <cassert>
 #include <string>
 
-void PlayerHealth_UI::OnNotify(PlayerLivesChangedEvent const& eventData)
+void PlayerHealth_UI::OnNotify(PlayerDeath const& eventData)
 {
 	if (!m_pTextComp)
 	{
@@ -15,7 +15,7 @@ void PlayerHealth_UI::OnNotify(PlayerLivesChangedEvent const& eventData)
 		assert(m_pTextComp);
 	}
 
-	m_pTextComp->SetText("# lives:" + std::to_string(eventData.livesLeft));
+	m_pTextComp->SetText("# lives:" + std::to_string(eventData.playerId));
 }
 
 PlayerHealth_UI::PlayerHealth_UI(mg::GameObject& owner)
