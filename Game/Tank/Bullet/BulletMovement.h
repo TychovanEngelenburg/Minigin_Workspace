@@ -9,6 +9,7 @@ namespace mg
 {
 	class GameObject;
 	class BoxCollider2D;
+	class Sprite;
 };
 
 class GameGrid;
@@ -17,28 +18,29 @@ class BulletPool;
 class BulletMovement final : public mg::Component
 {
 public:
+	mg::BoxCollider2D& Collider() const noexcept;
+	mg::Sprite& Sprite() const noexcept;
+
 	void SetPool(BulletPool* pPool);
 
+	void Activate(glm::vec2 const& pos, glm::vec2 const& dir);
 	void Destroy();
 
-	void Shoot(glm::vec2 const& pos, glm::vec2 const& dir);
-
 	void Awake() override;
-	
 	void OnCollisionEnter(mg::CollisionData const& data) override;
-
-
-	void  FixedUpdate() override;
+	void FixedUpdate() override;
 
 	BulletMovement(mg::GameObject& owner, GameGrid& pGrid);
 
 private:
 	BulletPool* m_pPool{};
+	GameGrid* m_pGrid;
 
 	mg::BoxCollider2D* m_pCollider{};
-	GameGrid* m_pGrid;
-	glm::ivec2 m_currentTile{};
+	mg::Sprite* m_pSprite{};
 
+
+	glm::ivec2 m_currentTile{};
 	int m_maxBounces{5};
 	int m_bounceCount{};
 

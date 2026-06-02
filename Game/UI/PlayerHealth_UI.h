@@ -1,9 +1,9 @@
 #ifndef PLAYERHEALTH_UI_H
 #define PLAYERHEALTH_UI_H
 
-#include "IEventListener.h"
 #include "Helper/GameEvents.h"
 
+#include <Minigin/IEventListener.h>
 #include <Minigin/EngineComponents/Component.h>
 
 namespace mg

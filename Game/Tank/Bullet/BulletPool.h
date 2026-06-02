@@ -6,8 +6,8 @@
 #include <glm/vec2.hpp>
 #include <vector>
 #include <stack>
-
 class BulletMovement;
+struct BulletConfig;
 class GameGrid;
 
 class BulletPool final : public mg::Component
@@ -15,7 +15,7 @@ class BulletPool final : public mg::Component
 public:
 
 
-    BulletMovement* SpawnBullet(glm::vec2 const& pos, glm::vec2 const& dir);
+    BulletMovement* SpawnBullet(BulletConfig const& config);
     
     void ReturnBullet(BulletMovement* bullet);
     void Awake() override;
@@ -24,7 +24,6 @@ public:
 
 private:
     void CreateBullets(size_t count);
-    
 
     GameGrid& m_Grid;
     size_t m_initSize;

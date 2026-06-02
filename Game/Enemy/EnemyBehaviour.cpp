@@ -33,16 +33,41 @@ EnemyBehaviour::EnemyBehaviour(mg::GameObject& owner)
 
 TankMovement::Direction EnemyBehaviour::GetRandomDirection()
 {
-    auto dir{ static_cast<TankMovement::Direction>(rand() % static_cast<int>(TankMovement::Direction::End)) };
+    //auto dir{ static_cast<TankMovement::Direction>(rand() % static_cast<int>(TankMovement::Direction::End)) };
 
 
-    if (dir == TankMovement::Direction::None ||
-        !m_pMovement->CanMove(dir) ||
-        TankMovement::IsOppositeDirection(dir, m_pMovement->MovingDirection()))
+    //if (dir == TankMovement::Direction::None ||
+    //    !m_pMovement->CanMove(dir) ||
+    //    TankMovement::IsOppositeDirection(dir, m_pMovement->MovingDirection()))
+    //{
+    //    return GetRandomDirection();
+    //}
+
+
+    std::vector<TankMovement::Direction> validDirections{};
+    TankMovement::Direction oppositeDir{};
+    for (int i = 0;  i < static_cast<int>(TankMovement::Direction::End); ++i)
     {
-        return GetRandomDirection();
+        auto dir = static_cast<TankMovement::Direction>(i);
+        if (TankMovement::IsOppositeDirection(dir, m_pMovement->MovingDirection()))
+        {
+            oppositeDir = dir;
+            continue;
+        }
+
+        if (dir != TankMovement::Direction::None &&
+            m_pMovement->CanMove(dir))
+        {
+            validDirections.push_back(dir);
+        }
     }
 
-    return dir;
+    if (validDirections.empty())
+    {
+        return oppositeDir;
+    }
+
+    return validDirections[rand() % validDirections.size()];
 }
+
 

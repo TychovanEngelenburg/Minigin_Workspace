@@ -5,8 +5,18 @@
 #include <Minigin/Scene/GameObject.h>
 #include <Minigin/DeltaClock.h>
 #include <Minigin/CollisionSystem/BoxCollider2D.h>
-
+#include <Minigin/EngineComponents/Sprite.h>
 #include <cassert>
+
+mg::BoxCollider2D& BulletMovement::Collider() const noexcept
+{
+	return  *m_pCollider;
+}
+
+mg::Sprite& BulletMovement::Sprite() const noexcept
+{
+	return  *m_pSprite;
+}
 
 void BulletMovement::SetPool(BulletPool* pPool)
 {
@@ -26,15 +36,14 @@ void BulletMovement::Destroy()
 	}
 }
 
-void BulletMovement::Shoot(glm::vec2 const& pos, glm::vec2 const& dir)
+void BulletMovement::Activate(glm::vec2 const& pos, glm::vec2 const& dir)
 {
-	Owner()->Transform().SetWorldPosition(pos);
-
+	auto const halfSize{ m_pCollider->LocalBounds().size * 0.5f };
 	m_currentTile = m_pGrid->WorldToGrid(pos);
-	if (m_pGrid->WallAt(m_currentTile)
-		|| m_pGrid->WallAt(m_pGrid->WorldToGrid({ pos.x + m_pCollider->LocalBounds().size.x, pos.y }))
-		|| m_pGrid->WallAt(m_pGrid->WorldToGrid({ pos.x , pos.y + m_pCollider->LocalBounds().size.y }))
-		|| m_pGrid->WallAt(m_pGrid->WorldToGrid({ pos.x + m_pCollider->LocalBounds().size.x, pos.y + m_pCollider->LocalBounds().size.y})) )
+	if (m_pGrid->WallAt(m_pGrid->WorldToGrid({ pos.x - halfSize.x, pos.y - halfSize.y })) ||
+		m_pGrid->WallAt(m_pGrid->WorldToGrid({ pos.x + halfSize.x, pos.y - halfSize.y })) ||
+		m_pGrid->WallAt(m_pGrid->WorldToGrid({ pos.x - halfSize.x, pos.y + halfSize.y })) ||
+		m_pGrid->WallAt(m_pGrid->WorldToGrid({ pos.x + halfSize.x, pos.y + halfSize.y })))
 	{
 		Destroy();
 	}
@@ -48,8 +57,10 @@ void BulletMovement::Shoot(glm::vec2 const& pos, glm::vec2 const& dir)
 void BulletMovement::Awake()
 {
 	m_pCollider = Owner()->GetComponent<mg::BoxCollider2D>();
+	m_pSprite = Owner()->GetComponent<mg::Sprite>();
 
 	assert(m_pCollider && "Bullet gameobject must have a collider!");
+	assert(m_pSprite && "Bullet gameobject must have a sprite!");
 }
 
 void BulletMovement::OnCollisionEnter(mg::CollisionData const&)
@@ -65,14 +76,21 @@ void BulletMovement::FixedUpdate()
 	glm::vec2 displacement = m_direction * m_speed * static_cast<float>(mg::DeltaClock::FixedDeltaTime());
 
 	bool bounced{ false };
-	float xPos{ worldPos.x + displacement.x };
-	if (displacement.x > 0)
+
+	auto const halfSize = m_pCollider->LocalBounds().size * 0.5f;
+	float xPos;
+
+	if (displacement.x > 0.f)
 	{
-		xPos += m_pCollider->LocalBounds().size.x;
+		xPos = worldPos.x + displacement.x + halfSize.x;
+	}
+	else
+	{
+		xPos = worldPos.x + displacement.x - halfSize.x;
 	}
 
-	if (m_pGrid->WallAt(m_pGrid->WorldToGrid({ xPos, worldPos.y })) ||
-		m_pGrid->WallAt(m_pGrid->WorldToGrid({ xPos, worldPos.y + m_pCollider->LocalBounds().size.y })))
+	if (m_pGrid->WallAt(m_pGrid->WorldToGrid({ xPos, worldPos.y - halfSize.y})) ||
+		m_pGrid->WallAt(m_pGrid->WorldToGrid({ xPos, worldPos.y + halfSize.y})))
 	{
 		m_direction.x = -m_direction.x;
 		bounced = true;
@@ -82,14 +100,18 @@ void BulletMovement::FixedUpdate()
 		worldPos.x += displacement.x;
 	}
 
-	float yPos{ worldPos.y + displacement.y };
-	if (displacement.y > 0)
+	float yPos;
+	if (displacement.y > 0.f)
 	{
-		yPos += m_pCollider->LocalBounds().size.x;
+		yPos = worldPos.y + displacement.y + halfSize.y;
+	}
+	else
+	{
+		yPos = worldPos.y + displacement.y - halfSize.y;
 	}
 
-	if (m_pGrid->WallAt(m_pGrid->WorldToGrid({ worldPos.x,                                      yPos })) ||
-		m_pGrid->WallAt(m_pGrid->WorldToGrid({ worldPos.x + m_pCollider->LocalBounds().size.x,  yPos })))
+	if (m_pGrid->WallAt(m_pGrid->WorldToGrid({ worldPos.x - halfSize.x, yPos })) ||
+		m_pGrid->WallAt(m_pGrid->WorldToGrid({ worldPos.x + halfSize.x, yPos })))
 	{
 		m_direction.y = -m_direction.y;
 		bounced = true;

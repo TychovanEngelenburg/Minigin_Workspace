@@ -22,7 +22,7 @@
 
 // Game
 #include "Grid/GameGrid.h"
-#include "TankManager.h"
+#include "Game/Tank/TankManager.h"
 #include "Tank/Bullet/BulletPool.h"
 
 
@@ -36,7 +36,7 @@
 void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 {
 #pragma region Environment
-	auto grid = std::make_unique<mg::GameObject>("Grid", glm::vec3(20, 100.f, 0.f));
+	auto grid = std::make_unique<mg::GameObject>("Grid", glm::vec2(20, 100.f));
 	{
 		grid->AddComponent<GameGrid>("LevelData/01.lvl", 16.f);
 	}
@@ -57,25 +57,25 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 
 	
 
-	auto enemy = std::make_unique<mg::GameObject>("Enemy", glm::vec3(20, 120.f, 0.f));
-	{
-		auto& sprite = enemy->AddComponent<mg::Sprite>("T_SpriteSheet_BattleTanks.png", mg::SpriteSheet{ 4, 5 });
-		enemy->AddComponent<TankVisuals>(glm::ivec2(0, 4));
+	//auto enemy = std::make_unique<mg::GameObject>("Enemy", glm::vec3(20, 120.f, 0.f));
+	//{
+	//	auto& sprite = enemy->AddComponent<mg::Sprite>("T_SpriteSheet_BattleTanks.png", mg::SpriteSheet{ 4, 5 });
+	//	enemy->AddComponent<TankVisuals>(glm::ivec2(0, 4));
 
-		auto& hitBox{ enemy->AddComponent<mg::BoxCollider2D>() };
-		hitBox.SetSize(sprite.Size());
+	//	auto& hitBox{ enemy->AddComponent<mg::BoxCollider2D>() };
+	//	hitBox.SetSize(sprite.Size());
 
-		enemy->AddComponent<TankHealth>();
+	//	enemy->AddComponent<TankHealth>();
 
-		auto& movement{ enemy->AddComponent<TankMovement>(*grid->GetComponent<GameGrid>()) };
-		movement.SetMoveSpeed(50.f);
-	
-		 enemy->AddComponent<EnemyBehaviour>();
+	//	auto& movement{ enemy->AddComponent<TankMovement>(*grid->GetComponent<GameGrid>()) };
+	//	movement.SetMoveSpeed(50.f);
+	//
+	//	 enemy->AddComponent<EnemyBehaviour>();
 
-	}
+	//}
 
 #pragma region UI
-	auto fpsCounterUI = std::make_unique<mg::GameObject>("FPS_Counter", glm::vec3(100.f, 0.f, 0.f));
+	auto fpsCounterUI = std::make_unique<mg::GameObject>("FPS_Counter", glm::vec2(100.f, 0.f));
 	{
 		auto& textComp = fpsCounterUI->AddComponent<mg::TextComponent>("00", "Lingua.otf", 36);
 		textComp.SetColor({ 255, 255, 0, 255 });
@@ -88,7 +88,7 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 	int constexpr textSize{ 18 };
 	float constexpr marginSize{ 5.f };
 
-	auto playerOneInfoUI = std::make_unique<mg::GameObject>("Player1_Controls", glm::vec3(marginSize, yPos, 0.f));
+	auto playerOneInfoUI = std::make_unique<mg::GameObject>("Player1_Controls", glm::vec2(marginSize, yPos));
 	{
 		auto& textComp = playerOneInfoUI->AddComponent<mg::TextComponent>("00", "Lingua.otf", textSize);
 		textComp.SetColor({ 255, 255, 255, 255 });
@@ -96,7 +96,7 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 	}
 
 	yPos += textSize + marginSize;
-	auto playerTwoInfoUI = std::make_unique<mg::GameObject>("Player1_Controls", glm::vec3(marginSize, yPos, 0.f));
+	auto playerTwoInfoUI = std::make_unique<mg::GameObject>("Player1_Controls", glm::vec2(marginSize, yPos));
 	{
 		auto& textComp = playerTwoInfoUI->AddComponent<mg::TextComponent>("00", "Lingua.otf", textSize);
 		textComp.SetColor({ 255, 255, 255, 255 });
@@ -106,7 +106,7 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 	yPos += textSize + marginSize; // White line
 
 	yPos += textSize + marginSize;
-	auto playerOneHealthUI = std::make_unique<mg::GameObject>("Player1_Health", glm::vec3(marginSize, yPos, 0.f));
+	auto playerOneHealthUI = std::make_unique<mg::GameObject>("Player1_Health", glm::vec2(marginSize, yPos));
 	{
 		auto& textComp = playerOneHealthUI->AddComponent<mg::TextComponent>("00", "Lingua.otf", textSize);
 		textComp.SetColor({ 255, 255, 255, 255 });
@@ -120,7 +120,7 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 
 	yPos += textSize + marginSize;
 
-	auto playerTwoHealthUI = std::make_unique<mg::GameObject>("Player2_Health", glm::vec3(marginSize, 120.f, 0.f));
+	auto playerTwoHealthUI = std::make_unique<mg::GameObject>("Player2_Health", glm::vec2(marginSize, 120.f));
 	{
 		auto& textComp = playerTwoHealthUI->AddComponent<mg::TextComponent>("00", "Lingua.otf", textSize);
 		textComp.SetColor({ 255, 255, 255, 255 });
@@ -140,7 +140,7 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 	sceneOut.Add(std::move(grid));
 	sceneOut.Add(std::move(bulletManager));
 	sceneOut.Add(std::move(playerManager));
-	sceneOut.Add(std::move(enemy));
+	//sceneOut.Add(std::move(enemy));
 
 	//sceneOut.Add(std::move(gamepadPlayer));
 	//sceneOut.Add(std::move(keyboardPlayer));
@@ -162,7 +162,7 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 
 void SceneLoading::LoadMainMenuScene(mg::Scene& sceneOut)
 {
-	auto object = std::make_unique<mg::GameObject>("Header_Text", glm::vec3(150.f, 20.f, 0.f));
+	auto object = std::make_unique<mg::GameObject>("Header_Text", glm::vec2(150.f, 20.f));
 	{
 		auto& textComp = object->AddComponent<mg::TextComponent>("Press Gamepad A/ Keyboard K to continue!", "Lingua.otf", 36);
 		textComp.SetColor({ 255, 255, 0, 255 });

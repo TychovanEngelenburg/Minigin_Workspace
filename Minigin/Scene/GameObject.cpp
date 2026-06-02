@@ -12,10 +12,6 @@ mg::Transform2D& mg::GameObject::Transform()
 	return m_transform;
 }
 
-std::string const& mg::GameObject::Name() const noexcept
-{
-	return m_name;
-}
 
 bool mg::GameObject::IsDestroyed() const noexcept
 {
@@ -31,7 +27,6 @@ bool mg::GameObject::IsActive() const noexcept
 {
 	return m_active;
 }
-
 
 void mg::GameObject::SetScene(mg::Scene* pScene)
 {
@@ -139,13 +134,11 @@ void mg::GameObject::LateUpdate()
 }
 #pragma endregion
 
-mg::GameObject::GameObject(std::string_view name, glm::vec3 pos)
-	: m_transform{*this}
-	, m_name{ name }
-	, m_active{ true }
-
+mg::GameObject::GameObject(std::string_view name, glm::vec2 const& pos)
+	: m_transform(*this)
+	, Name(name)
 {
-	m_transform.SetLocalPosition({ pos.x, pos.y });
+	Transform().SetWorldPosition(pos);
 }
 
 mg::GameObject::~GameObject()

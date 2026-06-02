@@ -8,7 +8,7 @@
 #include <memory>
 #include <filesystem>
 
-glm::vec2 const& mg::Sprite::Size()
+glm::vec2 mg::Sprite::Size() const noexcept
 {
 	return glm::vec2(m_sourceRect.w, m_sourceRect.h);
 }
@@ -18,21 +18,24 @@ void mg::Sprite::SetTexture(std::filesystem::path const& filePath)
 	m_pTexture = ResourceManager::Instance().LoadTexture(filePath);
 }
 
-void mg::Sprite::SetSprite(glm::ivec2 sprite, bool flipX, bool flipY)
+void mg::Sprite::SetSprite(glm::ivec2 const& sheetPos, bool flipX, bool flipY)
 {
+	assert(sheetPos.x < m_spriteSheet.cols && sheetPos.y < m_spriteSheet.rows);
 
-	if (sprite.x >= m_spriteSheet.cols)
+	m_currentSheetPos = sheetPos;
+
+	if (sheetPos.x >= m_spriteSheet.cols)
 	{
-		sprite.x = m_spriteSheet.cols - 1;
+		m_currentSheetPos.x = m_spriteSheet.cols - 1;
 	}
 
-	if (sprite.y >= m_spriteSheet.rows)
+	if (sheetPos.y >= m_spriteSheet.rows)
 	{
-		sprite.y = m_spriteSheet.rows - 1;
+		m_currentSheetPos.y = m_spriteSheet.rows - 1;
 	}
 
-	m_sourceRect.x = m_pTexture->Size().x / m_spriteSheet.cols * sprite.x;
-	m_sourceRect.y = m_pTexture->Size().y / m_spriteSheet.rows * sprite.y;
+	m_sourceRect.x = m_pTexture->Size().x / m_spriteSheet.cols * m_currentSheetPos.x;
+	m_sourceRect.y = m_pTexture->Size().y / m_spriteSheet.rows * m_currentSheetPos.y;
 
 	m_sourceRect.w = m_pTexture->Size().x / m_spriteSheet.cols;
 	m_sourceRect.h = m_pTexture->Size().y / m_spriteSheet.rows;
@@ -41,17 +44,32 @@ void mg::Sprite::SetSprite(glm::ivec2 sprite, bool flipX, bool flipY)
 	m_yFlipped = flipY;
 }
 
+void mg::Sprite::SetPivot(glm::vec2 const& pivot)
+{
+	m_pivot = pivot;
+}
+
 #pragma region Game_Loop
 void mg::Sprite::Render() const
 {
-	Renderer::Instance().RenderTexture(*m_pTexture, Owner()->Transform(), m_sourceRect, m_xFlipped, m_yFlipped);
+	Renderer::Instance().RenderTexture(*m_pTexture, Owner()->Transform(), m_pivot, m_sourceRect, m_xFlipped, m_yFlipped);
 }
 #pragma endregion Game_Loop
 
-mg::Sprite::Sprite(GameObject& owner, std::filesystem::path const& filePath, SpriteSheet const& spriteSheetData)
+mg::Sprite::Sprite(GameObject& owner, SpriteSheet const& spriteSheetData)
 	: Component(owner)
-	, m_pTexture{ ResourceManager::Instance().LoadTexture(filePath) }
+	, m_pTexture{ ResourceManager::Instance().LoadTexture(spriteSheetData.filePath) }
 	, m_spriteSheet{ spriteSheetData }
 {
-	SetSprite({ 0, 0 });
+	SetSprite(m_currentSheetPos);
+}
+
+mg::Sprite::Sprite(GameObject& owner, SpriteConfig const& config)
+	: Component(owner)
+	, m_pTexture(ResourceManager::Instance().LoadTexture(config.Sheet.filePath))
+	, m_spriteSheet(config.Sheet)
+	, m_currentSheetPos(config.SheetPos)
+	, m_pivot(config.RenderPivot)
+{
+	SetSprite(config.SheetPos);
 }

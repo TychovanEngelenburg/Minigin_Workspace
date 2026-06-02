@@ -207,7 +207,7 @@ void mg::Transform2D::MarkWorldDirty()
 	}
 }
 
-void mg::Transform2D::SetParent(Transform2D* pParent, bool keepRelativeWorld)
+void mg::Transform2D::SetParent(Transform2D* pParent, bool keepWorldPos)
 {
 
 	if (HasChild(pParent) || pParent == this || m_pParent == pParent)
@@ -224,7 +224,7 @@ void mg::Transform2D::SetParent(Transform2D* pParent, bool keepRelativeWorld)
 	}
 	else
 	{
-		if (keepRelativeWorld)
+		if (keepWorldPos)
 		{
 			glm::mat4 newLocal = glm::inverse(pParent->GetWorldMatrix()) * GetWorldMatrix();
 

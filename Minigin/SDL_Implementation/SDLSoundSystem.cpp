@@ -1,5 +1,5 @@
 #include "SDLSoundSystem.h"
-#include "Minigin/SoundSystem/InternalSSHelper.h"
+#include "Minigin/SoundSystem/AudioEvent.h"
 
 #include <SDL3/SDL.h>
 #include <SDL3_mixer/SDL_mixer.h>

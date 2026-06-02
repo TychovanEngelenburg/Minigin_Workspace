@@ -3,7 +3,7 @@
 #include <Minigin/Scene/GameObject.h>
 #include <Minigin/ResourceManager.h>
 #include <Minigin/Renderer.h>
-
+#include <Minigin/Types/SourceRect.h>
 #include <fstream>
 #include <iostream>
 
@@ -107,12 +107,12 @@ glm::ivec2 GameGrid::IdToGrid(int idx) const
 void GameGrid::Render() const
 {
 	glm::vec2 gridPos{ Owner()->Transform().LocalPosition() };
-	SDL_FRect bgDst{ gridPos.x, gridPos.y, m_tileSize * m_cols, m_tileSize * m_rows };
+	SourceRect bgDst{ gridPos.x, gridPos.y, m_tileSize * m_cols, m_tileSize * m_rows };
 	mg::Renderer::Instance().RenderTexture(*m_pBackgroundTexture, bgDst);
 
 
-	SDL_FRect src{ 0, 0 , m_tileTexSize, m_tileTexSize };
-	SDL_FRect dst{ 0, 0, m_tileSize, m_tileSize };
+	SourceRect src{ 0, 0 , m_tileTexSize, m_tileTexSize };
+	SourceRect dst{ 0, 0, m_tileSize, m_tileSize };
 
 	for (size_t tileId = 0; tileId < m_tiles.size(); tileId++)
 	{

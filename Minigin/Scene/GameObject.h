@@ -8,13 +8,13 @@
 #include <string_view>
 #include <memory>
 #include <concepts>
-#include <glm/fwd.hpp>
 #include <algorithm>
 #include <stdexcept>
 #include <utility>
 #include <vector>
 #include <list>
 #include <unordered_map>
+#include <glm/vec2.hpp>
 
 namespace mg
 {
@@ -24,7 +24,6 @@ namespace mg
 	{
 	public:
 		Transform2D& Transform();
-		std::string const& Name() const noexcept;
 		bool IsActive() const noexcept;
 		bool IsDestroyed() const noexcept;
 		Scene* Scene() const noexcept;
@@ -60,7 +59,7 @@ namespace mg
 		void LateUpdate();
 		void Render() const;
 
-		GameObject(std::string_view name, glm::vec3 pos = { 0.f, 0.f, 0.f });
+		explicit GameObject(std::string_view name = "New GameObject", glm::vec2 const& pos = {0.f, 0.f});
 		~GameObject();
 
 		GameObject(GameObject const& other) = delete;
@@ -69,12 +68,13 @@ namespace mg
 		GameObject& operator=(GameObject const& other) = delete;
 		GameObject& operator=(GameObject&& other) = delete;
 
+		std::string Name;
+
 	private:
 		mg::Scene* m_pScene{};
 
 		Transform2D m_transform;
-		std::string m_name;
-		bool m_active;
+		bool m_active{true};
 		bool m_destroyed{};
 		std::vector< std::unique_ptr<Component>> m_pComponents{};
 
