@@ -28,23 +28,33 @@ bool mg::GameObject::IsActive() const noexcept
 	return m_active;
 }
 
+
 void mg::GameObject::SetScene(mg::Scene* pScene)
 {
 	m_pScene = pScene;
+
+	for (size_t i = 0; i < Transform().ChildCount(); i++)
+	{
+		Transform().GetChildAt(i)->Owner().SetScene(pScene);
+	}
 }
 
 void mg::GameObject::SetActive(bool isActive)
 {
 	m_active = isActive;
+
+	for (size_t i = 0; i < Transform().ChildCount(); i++)
+	{
+		Transform().GetChildAt(i)->Owner().SetActive(isActive);
+	}
 }
 
 void mg::GameObject::Destroy()
 {
 	m_destroyed = true;
-	
-	for (auto& child : m_pChildren)
+	for (size_t i = 0; i < Transform().ChildCount(); i++)
 	{
-		child->Destroy();
+		Transform().GetChildAt(i)->Owner().Destroy();
 	}
 }
 

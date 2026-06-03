@@ -54,5 +54,6 @@ TankHealth::TankHealth(mg::GameObject& owner)
 void TankHealth::OnDeath()
 {
 	// TODO: Play sound
+	Owner()->SetActive(false);
 	m_onDeath.Notify({ m_playerId });
 }
