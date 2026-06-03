@@ -20,6 +20,8 @@ BulletMovement* BulletPool::SpawnBullet(BulletConfig const& config)
 	auto bullet = std::move(m_FreeList.top());
 	m_FreeList.pop();
 
+	bullet->SetBounces(config.Bounces);
+
 	bullet->Sprite().SetSprite(config.Sprite.SheetPos);
 	bullet->Sprite().SetPivot(config.ColliderSize / 2.f);
 	bullet->Collider().SetSize(config.ColliderSize);

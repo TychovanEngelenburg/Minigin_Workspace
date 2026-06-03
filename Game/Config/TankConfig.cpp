@@ -11,7 +11,7 @@ TankConfig TankPresets::Player(int playerId)
 
 	cfg.Sprite.SheetPos = { 0 + playerId, 3 };
 
-	cfg.Stats.MoveSpeed = 75.f;
+	cfg.Stats.MoveSpeed = 60.f;
 	cfg.Stats.MaxHealth = 3;
 	cfg.Stats.CollisionDamage = 1;
 
@@ -27,6 +27,7 @@ TankConfig TankPresets::Player(int playerId)
 
 	barrel.BulletConf.Speed = 180.f;
 	barrel.BulletConf.Damage = 1;
+	barrel.BulletConf.Bounces = 5;
 	barrel.BulletConf.ColliderSize = { 8.f, 8.f };
 	barrel.BulletConf.Sprite.SheetPos = { 1, 1 };
 	barrel.BulletConf.Collisions.Layer = static_cast<uint32_t>(GameCollisionLayer::Bullet);
@@ -49,7 +50,7 @@ TankConfig TankPresets::BasicEnemy()
 
 	cfg.Sprite.SheetPos = { 2, 3 };
 
-	cfg.Stats.MoveSpeed = 45.f;
+	cfg.Stats.MoveSpeed = 60.f;
 	cfg.Stats.MaxHealth = 1;
 	cfg.Stats.CollisionDamage = 1;
 
@@ -82,17 +83,6 @@ TankConfig TankPresets::Recogniser()
 	cfg.Stats.MoveSpeed = 90.f;
 	cfg.Stats.MaxHealth = 2;
 	cfg.Stats.CollisionDamage = 2;
-
-	BarrelConfig barrel{};
-	barrel.AimWithMoveDir = true;
-	barrel.ShootInterval = 0.6f;
-	barrel.Length = 10.f;
-
-	barrel.BulletConf.Speed = 220.f;
-	barrel.BulletConf.Damage = 1;
-	barrel.BulletConf.Collisions.Layer = static_cast<uint32_t>(GameCollisionLayer::Bullet);
-	barrel.BulletConf.Collisions.LayerMask = static_cast<uint32_t>(GameCollisionLayer::Good);
-	cfg.Barrel = barrel;
 
 	return cfg;
 }

@@ -1,73 +1,110 @@
-#include "EnemyBehaviour.h"
+﻿#include "EnemyBehaviour.h"
+#include "Game/Grid/GameGrid.h"
+
 #include <Minigin/Scene/GameObject.h>
 #include <Minigin/DeltaClock.h>
-#include <iostream>
+#include <glm/glm.hpp>
+#include <cstdlib>
+
 
 void EnemyBehaviour::Awake()
 {
+    ChooseNextDirection(CurrentGridPos());
+
     m_pMovement = Owner()->GetComponent<TankMovement>();
     assert(m_pMovement && "EnemyBehaviour requires TankMovement");
 }
 
 void EnemyBehaviour::Update()
 {
-    m_directionTimer -= mg::DeltaClock::DeltaTime();
+    if (!m_pGrid) return;
 
+    //auto& transform = Owner()->Transform();
 
-
-    if (m_directionTimer <= 0.f ||
-        !m_pMovement->CanMove(m_currentDirection))
+    if (IsAtCenterOfTile())
     {
-        m_currentDirection = GetRandomDirection();
-
-        m_directionTimer = 1.f;// +static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (3.f - 1.f)));
+        if (!m_hasChosenThisTile)
+        {
+            ChooseNextDirection(CurrentGridPos());
+            m_hasChosenThisTile = true;
+        }
+    }
+    else
+    {
+        m_hasChosenThisTile = false;
     }
 
-    m_pMovement->QueueMovement(m_currentDirection);
+    if (m_currentDir == TankMovement::Direction::None)
+        return;
+
+    //glm::vec2 dirVec = glm::vec2(TankMovement::DirectionToGridVector(m_currentDir));
+
+    //glm::vec2 delta =
+    //    dirVec * m_speed *
+    //    static_cast<float>(mg::DeltaClock::DeltaTime());
+
+    //transform.SetLocalPosition(transform.LocalPosition() + delta);
+
+    m_pMovement->RequestMovement(m_currentDir);
 }
 
-EnemyBehaviour::EnemyBehaviour(mg::GameObject& owner)
+EnemyBehaviour::EnemyBehaviour(mg::GameObject& owner, GameGrid& grid)
     : Component(owner)
+    , m_pGrid(&grid)
+
 {
 }
-
-TankMovement::Direction EnemyBehaviour::GetRandomDirection()
+void EnemyBehaviour::ChooseNextDirection(glm::ivec2 const& gridPos)
 {
-    //auto dir{ static_cast<TankMovement::Direction>(rand() % static_cast<int>(TankMovement::Direction::End)) };
+    auto valid = GetValidDirections(gridPos);
 
-
-    //if (dir == TankMovement::Direction::None ||
-    //    !m_pMovement->CanMove(dir) ||
-    //    TankMovement::IsOppositeDirection(dir, m_pMovement->MovingDirection()))
-    //{
-    //    return GetRandomDirection();
-    //}
-
-
-    std::vector<TankMovement::Direction> validDirections{};
-    TankMovement::Direction oppositeDir{};
-    for (int i = 0;  i < static_cast<int>(TankMovement::Direction::End); ++i)
+    if (valid.empty())
     {
-        auto dir = static_cast<TankMovement::Direction>(i);
-        if (TankMovement::IsOppositeDirection(dir, m_pMovement->MovingDirection()))
-        {
-            oppositeDir = dir;
-            continue;
-        }
-
-        if (dir != TankMovement::Direction::None &&
-            m_pMovement->CanMove(dir))
-        {
-            validDirections.push_back(dir);
-        }
+        m_currentDir = TankMovement::GetOpposite(m_currentDir);
+        return;
     }
 
-    if (validDirections.empty())
+    TankMovement::Direction reverse = TankMovement::GetOpposite(m_currentDir);
+
+    std::vector<TankMovement::Direction> forward;
+
+    for (auto d : valid)
     {
-        return oppositeDir;
+        if (d != reverse)
+            forward.push_back(d);
     }
 
-    return validDirections[rand() % validDirections.size()];
+    if (!forward.empty())
+    {
+        m_currentDir = forward[std::rand() % forward.size()];
+        return;
+    }
+
+    m_currentDir = reverse;
 }
 
+std::vector<TankMovement::Direction> EnemyBehaviour::GetValidDirections(glm::ivec2 const& p) const
+{
+    std::vector<TankMovement::Direction> dirs;
 
+    if (m_pGrid->IsPath({ p.x, p.y - 1 })) dirs.push_back(TankMovement::Direction::Up);
+    if (m_pGrid->IsPath({ p.x, p.y + 1 })) dirs.push_back(TankMovement::Direction::Down);
+    if (m_pGrid->IsPath({ p.x - 1, p.y })) dirs.push_back(TankMovement::Direction::Left);
+    if (m_pGrid->IsPath({ p.x + 1, p.y })) dirs.push_back(TankMovement::Direction::Right);
+
+    return dirs;
+}
+
+bool EnemyBehaviour::IsAtCenterOfTile() const
+{
+    glm::vec2 world = Owner()->Transform().LocalPosition();
+    glm::ivec2 grid = m_pGrid->WorldToGrid(world);
+    glm::vec2 center = m_pGrid->GridToWorld(grid);
+
+    return glm::distance(world, center) < 1.0f;
+}
+
+glm::ivec2 EnemyBehaviour::CurrentGridPos() const
+{
+    return m_pGrid->WorldToGrid(Owner()->Transform().LocalPosition());
+}

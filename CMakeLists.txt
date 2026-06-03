@@ -89,7 +89,7 @@ add_executable(${GAME_TARGET} ${TARGET_PARAM}
     Game/Tank/Bullet/BulletPool.cpp
     "Game/Config/TankConfig.cpp"
     Game/Tank/RotateWithTank.cpp
-)
+ "Game/Enemy/AutoShooting.cpp")
 
 # enable c++20 features
 target_compile_features(${GAME_TARGET} PUBLIC cxx_std_20)

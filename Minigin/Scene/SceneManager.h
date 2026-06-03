@@ -2,13 +2,13 @@
 #define SCENEMANAGER_H
 
 #include <Minigin/Singleton.h>
-#include <Minigin/Scene/Scene.h>
 
 #include <memory>
 #include <vector>
 
 namespace mg
 {
+	class Scene;
 	class SceneManager final : public Singleton<SceneManager>
 	{
 	public:
@@ -26,7 +26,7 @@ namespace mg
 		void LateUpdate();
 
 		SceneManager();
-		virtual ~SceneManager() = default;
+		virtual ~SceneManager();
 		SceneManager(SceneManager const& other) = delete;
 		SceneManager(SceneManager&& other) = delete;
 		SceneManager& operator=(SceneManager const& other) = delete;

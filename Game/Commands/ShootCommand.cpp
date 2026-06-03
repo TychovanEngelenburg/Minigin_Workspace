@@ -6,7 +6,10 @@
 
 void ShootCommand::Execute()
 {
-	m_pBarrel->Shoot();
+	if (!m_pBarrel->OnCooldown())
+	{
+		m_pBarrel->Shoot();
+	}
 }
 
 ShootCommand::ShootCommand(mg::GameObject& object)

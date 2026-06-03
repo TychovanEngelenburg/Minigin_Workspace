@@ -22,6 +22,7 @@ public:
 	mg::Sprite& Sprite() const noexcept;
 
 	void SetPool(BulletPool* pPool);
+	void SetBounces(int bounces);
 
 	void Activate(glm::vec2 const& pos, glm::vec2 const& dir);
 	void Destroy();

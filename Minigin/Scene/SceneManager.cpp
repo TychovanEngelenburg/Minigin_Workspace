@@ -1,11 +1,6 @@
-#include "Minigin/Scene/SceneManager.h"
-
-// .h includes
+#include "SceneManager.h"
 #include "Minigin/Scene/Scene.h"
-
-#include <memory>
-#include <vector>
-
+#include <cassert>
 
 mg::Scene* mg::SceneManager::GetScene(size_t sceneId)
 {
@@ -93,5 +88,8 @@ mg::SceneManager::SceneManager()
 	, m_activeScene{ 0 }
 {
 }
+
+mg::SceneManager::~SceneManager() = default;
+
 #pragma endregion Game_Loop
 

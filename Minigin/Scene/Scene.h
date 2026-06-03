@@ -3,13 +3,13 @@
 
 #include <memory>
 #include <vector>
-#include "Minigin/Scene/GameObject.h"
-#include "Minigin/InputHandling/SceneInput.h"
-#include "Minigin/CollisionSystem/CollisionSystem.h"
 #include <string_view>
 
 namespace mg
 {
+	class SceneInput;
+	class SceneCollisions;
+	class GameObject;
 	class Scene final
 	{
 	public:
@@ -36,7 +36,7 @@ namespace mg
 
 		Scene();
 
-		~Scene() = default;
+		~Scene();
 		Scene(Scene const& other) = delete;
 		Scene(Scene&& other) = delete;
 		Scene& operator=(Scene const& other) = delete;

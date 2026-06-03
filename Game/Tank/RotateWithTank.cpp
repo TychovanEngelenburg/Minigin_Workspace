@@ -25,7 +25,7 @@ RotateWithTank::RotateWithTank(mg::GameObject& owner)
 
 void RotateWithTank::CheckDirection()
 {
-	auto dir = m_pMovement->MovingDirection();
+	auto dir = m_pMovement->CurrentDirection();
 	if (dir != m_currentDirection)
 	{
 		m_currentDirection = dir;

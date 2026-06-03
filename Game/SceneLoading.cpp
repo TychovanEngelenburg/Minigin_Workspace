@@ -12,6 +12,7 @@
 // Input
 #include <Minigin/InputHandling/InputBinding.h>
 #include <Minigin/InputHandling/InputCodes.h>
+#include <Minigin/InputHandling/SceneInput.h>
 
 // Commands
 #include "Commands/StartGameCommand.h"
@@ -25,13 +26,6 @@
 #include "Game/Tank/TankManager.h"
 #include "Tank/Bullet/BulletPool.h"
 
-
-// temp
-#include "Tank/TankHealth.h"
-#include "Tank/TankMovement.h"
-#include "Tank/TankVisuals.h"
-#include "Tank/TankBarrel.h"
-#include "Enemy/EnemyBehaviour.h"
 
 void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 {
@@ -70,7 +64,7 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 	//	auto& movement{ enemy->AddComponent<TankMovement>(*grid->GetComponent<GameGrid>()) };
 	//	movement.SetMoveSpeed(50.f);
 	//
-	//	 enemy->AddComponent<EnemyBehaviour>();
+	//	 enemy->AddComponent<MovementAI>();
 
 	//}
 

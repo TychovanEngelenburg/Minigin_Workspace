@@ -4,50 +4,55 @@
 #include "Minigin/EngineComponents/Component.h"
 
 #include <glm/vec2.hpp>
-
+#include <vector>
 class GameGrid;
 class TankMovement final : public mg::Component
 {
 public:
-    enum class Direction
-    {
-        None,
-        Up,
-        Down,
-        Left,
-        Right,
-        End
-    };
+	enum class Direction
+	{
+		None,
+		Up,
+		Down,
+		Left,
+		Right,
+		End
+	};
 
-    static glm::ivec2 DirectionToGridVector(Direction dir);
-    static bool IsOppositeDirection(Direction dirOne, Direction dirTwo);
 
-    bool CanMove(Direction dir) const;
-    Direction const& MovingDirection() const noexcept;
+	static glm::ivec2 DirectionToGridVector(Direction dir);
+	static bool IsOppositeDirection(Direction dirOne, Direction dirTwo);
+	static Direction GetOpposite(Direction dir);
 
-    void SetMoveSpeed(float speed);
+	bool CanMove(Direction dir) const;
+	Direction const& CurrentDirection() const noexcept;
+	glm::ivec2 const& CurrentTile() const noexcept;
+	glm::ivec2 const& TargetTile() const noexcept;
+	GameGrid& Grid() const noexcept;
 
-    void FixedUpdate() override;
-    void QueueMovement(Direction dir);
 
-    void Awake() override;
+	void RequestMovement(Direction dir);
+	void SetMoveSpeed(float speed);
 
-    TankMovement( mg::GameObject& owner, GameGrid& pGrid);
+	void Awake() override;
+	void FixedUpdate() override;
+
+	TankMovement(mg::GameObject& owner, GameGrid& pGrid);
 
 private:
 
-    void MoveToTarget(float elapsedSec);
-    
-    GameGrid* m_pGrid;
+	void Move(float elapsedSec);
 
-    Direction m_currentDirection{};
-    Direction m_queuedDirection{};
+	GameGrid* m_pGrid;
 
-    glm::ivec2 m_currentTile{};
-    glm::ivec2 m_targetTile{};
+	Direction m_currentDirection{ Direction::None };
+	Direction m_requestedDirection{ Direction::None };
 
-    bool m_shouldMove{};
-    float m_moveSpeed{100.f};
+	glm::ivec2 m_currentTile{};
+	glm::ivec2 m_targetTile{};
+
+	float m_moveSpeed{ 100.f };
+	bool m_movementRequested{};
 };
 
 #endif

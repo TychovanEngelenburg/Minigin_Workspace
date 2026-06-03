@@ -6,17 +6,17 @@
 void TankVisuals::Awake()
 {
 	m_pMovement = Owner()->GetComponent<TankMovement>();
-	assert(m_pMovement && "EnemyBehaviour requires TankMovement");
+	assert(m_pMovement && "MovementAI requires TankMovement");
 
 	m_pSprite = Owner()->GetComponent<mg::Sprite>();
-	assert(m_pMovement && "EnemyBehaviour requires Sprite");
-	//m_currentDirection = m_pMovement->MovingDirection();
+	assert(m_pMovement && "MovementAI requires Sprite");
+	//m_currentDirection = m_pMovement->CurrentDirection();
 	SetSprite();
 }
 
 void TankVisuals::Update()
 {
-	auto dir = m_pMovement->MovingDirection();
+	auto dir = m_pMovement->CurrentDirection();
 	if (dir != m_currentDirection)
 	{
 		m_currentDirection = dir;

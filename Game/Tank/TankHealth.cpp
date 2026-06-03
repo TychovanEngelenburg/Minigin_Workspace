@@ -45,9 +45,8 @@ void TankHealth::AddListener(mg::IEventListener<PlayerDeath>* listener)
 	m_onDeath.AddListener(listener);
 }
 
-TankHealth::TankHealth(mg::GameObject& owner, int playerId)
+TankHealth::TankHealth(mg::GameObject& owner)
 	: Component(owner)
-	, m_playerId(playerId)
 {
 
 }

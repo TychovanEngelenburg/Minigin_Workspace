@@ -5,6 +5,45 @@
 #include <glm/geometric.hpp>
 #include <cassert>
 #include <algorithm>
+
+
+ mg::RaycastHit mg::SceneCollisions::Raycast(glm::vec2 const& origin, glm::vec2 const& direction, float maxDistance, uint32_t layerMask)
+{
+	mg::RaycastHit result;
+
+	glm::vec2 normalizedDir = glm::normalize(direction);
+	glm::vec2 rayEnd = origin + normalizedDir * maxDistance;
+
+	float distance = maxDistance;
+
+	for (auto* collider : m_pColliders)
+	{
+		if (!collider ||
+			collider->CollisionMask == 0 ||
+			!LineIntersectsOBB(origin, rayEnd, collider->GetOBB()) ||
+			!(layerMask & collider->CollisionLayer))
+		{
+			continue;
+		}
+
+
+		glm::vec2 center = collider->GetOBB().center;
+		float hitDist = glm::length(center - origin);
+
+		if (hitDist < distance)
+		{
+			distance = hitDist;
+
+			result.Hit = true;
+			result.Collider = collider;
+			result.Distance = hitDist;
+			result.Point = origin + normalizedDir * hitDist;
+		}
+	}
+
+	return result;
+}
+
 void mg::SceneCollisions::Register(BoxCollider2D* pCollider)
 {
 	assert(pCollider != nullptr);
@@ -93,40 +132,87 @@ bool mg::SceneCollisions::CanCollide(BoxCollider2D const& a, BoxCollider2D const
 }
 
 
-//#include <iostream>
 bool mg::SceneCollisions::CheckOverlap(BoxCollider2D const& A, BoxCollider2D const& B)
 {
 	OBB obbA{ A.GetOBB() };
 	OBB obbB{ B.GetOBB() };
 
-	int overlapping{};
 
 	if (!OverlapOnAxis(obbA, obbB, obbA.axisX))
 	{
-		//++overlapping;
 		return false;
 	}
+
 	if (!OverlapOnAxis(obbA, obbB, obbA.axisY))
 	{
-		//++overlapping;
 		return false;
 	}
+
 	if (!OverlapOnAxis(obbA, obbB, obbB.axisX))
 	{
-		++overlapping;
 		return false;
 	}
+
 	if (!OverlapOnAxis(obbA, obbB, obbB.axisY))
 	{
-		//++overlapping;
 		return false;
 	}
-	//if (overlapping >= 4)
-	//{
-	//std::cout << "Overlapping on " << overlapping << "axis.\n";
 
 	return true;
-	//}
-	//return false;
 }
 
+bool mg::SceneCollisions::OverLap(float minA, float maxA, float minB, float maxB)
+{
+	return (minB <=  maxA && minA <=  maxB);
+}
+
+void  mg::SceneCollisions::ProjectSegment(glm::vec2 a, glm::vec2 b, glm::vec2 const& axis, float& min, float& max)
+{
+	float pointA = glm::dot(a, axis);
+	float pointB = glm::dot(b, axis);
+
+	min = std::min(pointA, pointB);
+	max = std::max(pointA, pointB);
+}
+
+void  mg::SceneCollisions::ProjectOBB(mg::OBB const& obb, glm::vec2 const& axis, float& min, float& max)
+{
+	float projectedCenter{ glm::dot(obb.center, axis) };
+
+	float projectedRadius{
+		obb.halfExtends.x * std::abs(glm::dot(obb.axisX, axis)) +
+		obb.halfExtends.y * std::abs(glm::dot(obb.axisY, axis))
+	};
+
+	min = projectedCenter - projectedRadius;
+	max = projectedCenter + projectedRadius;
+}
+
+bool  mg::SceneCollisions::LineIntersectsOBB(glm::vec2 a, glm::vec2 b, mg::OBB const& obb)
+{
+	glm::vec2 segmentDir = glm::normalize(b - a);
+	glm::vec2 perpendicular  { glm::vec2(-segmentDir.y, segmentDir.x) };
+
+	glm::vec2 axes[3] =
+	{
+		obb.axisX,
+		obb.axisY,
+		perpendicular
+	};
+
+	for (glm::vec2 axis : axes)
+	{
+		float minA, maxA;
+		float minB, maxB;
+
+		ProjectSegment(a, b, axis, minA, maxA);
+		ProjectOBB(obb, axis, minB, maxB);
+
+		if (!OverLap(minA, maxA, minB, maxB))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}

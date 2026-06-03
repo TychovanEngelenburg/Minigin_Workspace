@@ -13,6 +13,7 @@
 #include "Game/Grid/GameGrid.h"
 
 #include "Game/Enemy/EnemyBehaviour.h"
+#include "Game/Enemy/AutoShooting.h"
 
 #include "Game/Config/TankConfig.h"
 
@@ -22,6 +23,7 @@
 #include <Minigin/EngineComponents/Sprite.h>
 #include <Minigin/CollisionSystem/BoxCollider2D.h>
 #include <Minigin/Scene/Scene.h>
+#include <Minigin/InputHandling/SceneInput.h>
 
 TankManager::TankManager(mg::GameObject& owner, GameGrid& grid)
 	: Component(owner)
@@ -75,7 +77,7 @@ TankManager::TankManager(mg::GameObject& owner, GameGrid& grid)
 ///			Set EnemyTank movespeed
 ///		- TankHealth
 ///			Set EnemyTank health
-///		- EnemyBehaviour (unless player bound to tank) (Handles movement direction)
+///		- MovementAI (unless player bound to tank) (Handles movement direction)
 /// 
 /// 
 /// Barrel (parented to base)
@@ -102,10 +104,9 @@ TankManager::TankManager(mg::GameObject& owner, GameGrid& grid)
 ///			Set double EnemyTank movespeed
 ///		- TankHealth
 ///			Set Recogniser health
-///		- EnemyBehaviour (Handles movement direction)
+///		- MovementAI (Handles movement direction)
 /// 
 /// </summary>
-
 mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig const& tankConfig, std::optional<PlayerInputConfig> inputConfig)
 {
 
@@ -162,9 +163,16 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 		barrel.SetBulletPool(m_pBulletPool);
 		barrel.SetBarrelLength(tankConfig.Barrel->Length);
 		barrel.SetBulletConfig(tankConfig.Barrel->BulletConf);
+		barrel.SetCooldown(tankConfig.Barrel->ShootInterval);
 
 		barrelObj->Transform().SetParent(&tankObj->Transform());
 		barrelObj->Transform().SetLocalPosition(spriteSize / 2.f);
+
+		if (tankConfig.Barrel->AimWithMoveDir)
+		{
+			auto& barrelRotation = barrelObj->AddComponent<RotateWithTank>();
+			barrelRotation.SetTank(&tankMovement);
+		}
 
 		if (tankConfig.Barrel->Sprite.has_value())
 		{
@@ -173,12 +181,6 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 			auto& barrelSprite = barrelVisualsObj->AddComponent<mg::Sprite>(tankConfig.Barrel->Sprite->Sheet);
 			barrelSprite.SetSprite(tankConfig.Barrel->Sprite->SheetPos);
 			barrelSprite.SetPivot(tankConfig.Barrel->Sprite->RenderPivot);
-
-			if (tankConfig.Barrel->AimWithMoveDir)
-			{
-				auto& barrelRotation = barrelVisualsObj->AddComponent<RotateWithTank>();
-				barrelRotation.SetTank(&tankMovement);
-			}
 
 			barrelVisualsObj->Transform().SetParent(&barrelObj->Transform());
 		}
@@ -198,8 +200,8 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 	}
 	else
 	{
-		// Enemy AI component here later
-		tankObj->AddComponent<EnemyBehaviour>();
+		tankObj->AddComponent<EnemyBehaviour>(*m_pGrid);
+		barrelObj->AddComponent<AutoShooting>(*this, *m_pGrid);
 	}
 
 	auto result = tankObj.get();

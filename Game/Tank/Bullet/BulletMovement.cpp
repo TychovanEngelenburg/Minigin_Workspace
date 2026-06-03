@@ -23,6 +23,11 @@ void BulletMovement::SetPool(BulletPool* pPool)
 	m_pPool = pPool;
 }
 
+void BulletMovement::SetBounces(int bounces)
+{
+	m_maxBounces = bounces;
+}
+
 void BulletMovement::Destroy()
 {
 	if (m_pPool)
@@ -89,8 +94,8 @@ void BulletMovement::FixedUpdate()
 		xPos = worldPos.x + displacement.x - halfSize.x;
 	}
 
-	if (m_pGrid->WallAt(m_pGrid->WorldToGrid({ xPos, worldPos.y - halfSize.y})) ||
-		m_pGrid->WallAt(m_pGrid->WorldToGrid({ xPos, worldPos.y + halfSize.y})))
+	if (m_pGrid->WallAt(m_pGrid->WorldToGrid({ xPos, worldPos.y - halfSize.y })) ||
+		m_pGrid->WallAt(m_pGrid->WorldToGrid({ xPos, worldPos.y + halfSize.y })))
 	{
 		m_direction.x = -m_direction.x;
 		bounced = true;
@@ -126,7 +131,7 @@ void BulletMovement::FixedUpdate()
 	{
 		++m_bounceCount;
 
-		if (m_bounceCount >= m_maxBounces)
+		if (m_bounceCount > m_maxBounces)
 		{
 			Destroy();
 		}
@@ -139,7 +144,7 @@ void BulletMovement::FixedUpdate()
 
 BulletMovement::BulletMovement(mg::GameObject& owner, GameGrid& pGrid)
 	: mg::Component(owner)
-	, m_pGrid{ &pGrid }
+	, m_pGrid(&pGrid)
 {
 
 }

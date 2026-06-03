@@ -1,13 +1,12 @@
 #include "Minigin/Scene/Scene.h"
 
 #include "Minigin/Scene/GameObject.h"
+#include "Minigin/InputHandling/SceneInput.h"
+#include "Minigin/CollisionSystem/CollisionSystem.h"
 
 #include <algorithm>
 #include <cassert>
-#include <memory>
-#include <string_view>
 #include <utility>
-#include <vector>
 
 
 mg::SceneInput& mg::Scene::InputSystem() const noexcept
@@ -124,3 +123,5 @@ mg::Scene::Scene()
 	, m_pCollisionSystem{std::make_unique<SceneCollisions>()}
 {
 }
+
+mg::Scene::~Scene() = default;

@@ -1,8 +1,9 @@
-#include "Minigin/CollisionSystem/BoxCollider2D.h"
+#include "BoxCollider2D.h"
+
 #include "Minigin/Scene/GameObject.h"
 #include "Minigin/Scene/Scene.h"
-
-#include <Minigin/Renderer.h>
+#include "Minigin/Renderer.h"
+#include "Minigin/CollisionSystem/CollisionSystem.h"
 
 void mg::BoxCollider2D::SetCenter(glm::vec2 center)
 {

@@ -23,11 +23,11 @@ public:
 	void ResetHealth();
 	void AddListener(mg::IEventListener<PlayerDeath>* listener);
 
-	explicit TankHealth(mg::GameObject& owner, int playerId);
+	explicit TankHealth(mg::GameObject& owner);
 	int maxHealth{1};
 
 private:
-	int m_playerId;
+	int m_playerId{};
 	int m_Health{1};
 
 

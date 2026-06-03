@@ -1,6 +1,7 @@
 ﻿#include "Minigin/Renderer.h"
 #include "Minigin/Scene/SceneManager.h"
 #include "Minigin/SDL_Implementation/SDLTexture2D.h"
+#include "Minigin/Transform2D.h"
 
 #include <SDL3/SDL_video.h>
 #include <stdexcept>
