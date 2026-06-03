@@ -1,8 +1,8 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
-#include "Minigin/EngineComponents/Component.h"
-#include "Minigin/Transform2D.h"
+#include "Minigin/Components/Component.h"
+#include "Minigin/Core/Transform2D.h"
 
 #include <string>
 #include <string_view>

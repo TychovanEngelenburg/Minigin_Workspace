@@ -1,8 +1,8 @@
-#include "Minigin/Scene/Scene.h"
+#include "Scene.h"
 
 #include "Minigin/Scene/GameObject.h"
-#include "Minigin/InputHandling/SceneInput.h"
-#include "Minigin/CollisionSystem/CollisionSystem.h"
+#include "Minigin/Input/SceneInput.h"
+#include "Minigin/Collisions/CollisionSystem.h"
 
 #include <algorithm>
 #include <cassert>

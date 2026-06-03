@@ -1,4 +1,5 @@
-#include "Minigin/Scene/GameObject.h"
+#include "GameObject.h"
+
 #include "Minigin/Scene/Scene.h"
 
 #include <string_view>

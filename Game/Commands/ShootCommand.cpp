@@ -1,6 +1,6 @@
 #include "ShootCommand.h"
 
-#include "Game/Tank/TankBarrel.h"
+#include "Game/Components/Tank/TankBarrel.h"
 
 #include <Minigin/Scene/GameObject.h>
 

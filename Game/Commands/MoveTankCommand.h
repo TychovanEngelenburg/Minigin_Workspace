@@ -1,9 +1,9 @@
 #ifndef MOVETANKCOMMAND_H
 #define MOVETANKCOMMAND_H
 
-#include "Tank/TankMovement.h"
+#include "Components/Tank/TankMovement.h"
 
-#include <Minigin/InputHandling/GameObjectCommand.h>
+#include <Minigin/Input/GameObjectCommand.h>
 
 namespace mg
 {

@@ -1,6 +1,7 @@
 #include "TurnBarrelCommand.h"
+
 #include <Minigin/Scene/GameObject.h>
-#include <Minigin/DeltaClock.h>
+#include <Minigin/Core/DeltaClock.h>
 void TurnBarrelCommand::Execute()
 {
 	GetGameObject()->Transform().Rotate(m_degreesPerSec * static_cast<float>(mg::DeltaClock::DeltaTime()));

@@ -1,7 +1,7 @@
 #ifndef TURN_BARREL_COMMAND_H
 #define TURN_BARREL_COMMAND_H
 
-#include <Minigin/InputHandling/GameObjectCommand.h>
+#include <Minigin/Input/GameObjectCommand.h>
 
 class TurnBarrelCommand final : public mg::GameObjectCommand
 {

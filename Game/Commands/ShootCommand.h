@@ -1,7 +1,8 @@
 #ifndef SHOOT_COMMAND_H
 #define SHOOT_COMMAND_H
 
-#include <Minigin/InputHandling/GameObjectCommand.h>
+#include <Minigin/Input/GameObjectCommand.h>
+
 class TankBarrel;
 
 class ShootCommand final : public mg::GameObjectCommand

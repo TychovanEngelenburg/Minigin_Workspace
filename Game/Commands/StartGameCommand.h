@@ -1,7 +1,7 @@
 #ifndef START_GAME_COMMAND_H
 #define START_GAME_COMMAND_H
 
-#include <Minigin/InputHandling/ICommand.h>
+#include <Minigin/Input/ICommand.h>
 
 namespace mg
 {

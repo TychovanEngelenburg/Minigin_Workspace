@@ -1,5 +1,6 @@
 #include "StartGameCommand.h"
-#include "GameContext.h"
+
+#include "Game/Core/GameContext.h"
 
 void StartGameCommand::Execute()
 {

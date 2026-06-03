@@ -20,41 +20,41 @@ endif()
 set(LIBRARY_TARGET minigin_engine)
 
 add_library(${LIBRARY_TARGET} STATIC
-    Minigin/Minigin.cpp
-    Minigin/Renderer.cpp
-    Minigin/ResourceManager.cpp
-    Minigin/DeltaClock.cpp
-    Minigin/Transform2D.cpp
-
-    Minigin/Scene/GameObject.cpp  
-    Minigin/Scene/Scene.cpp
-    Minigin/Scene/SceneManager.cpp
+    "Minigin/Audio/SDLSoundSystem.cpp"
+    "Minigin/Audio/SoundServiceLocator.cpp"
     
-    Minigin/EngineComponents/TextComponent.cpp
-    Minigin/EngineComponents/Sprite.cpp
-    Minigin/EngineComponents/Component.cpp 
-        
-    Minigin/InputHandling/Gamepad.cpp
-    Minigin/InputHandling/InputBinding.cpp
-    Minigin/SDL_Implementation/SDL_Keyboard.cpp
-    Minigin/InputHandling/GameObjectCommand.cpp 
-    Minigin/InputHandling/SceneInput.cpp 
-    Minigin/InputHandling/InputManager.cpp
-
-    Minigin/SDL_Implementation/SDLFont.cpp
-    Minigin/SDL_Implementation/SDLTexture2D.cpp
-    Minigin/SDL_Implementation/SDLSoundSystem.cpp
-    Minigin/SDL_Implementation/SDL_GamePad.cpp
-
-    Minigin/SoundSystem/SoundServiceLocator.cpp
+    "Minigin/Collisions/CollisionSystem.cpp"
+    "Minigin/Collisions/BoxCollider2D.cpp"
     
-    Minigin/CollisionSystem/CollisionSystem.cpp
-    Minigin/CollisionSystem/BoxCollider2D.cpp
-    Minigin/InputSystem/AbstractInputSystem.cpp
-    Minigin/InputSystem/InputServiceLocator.cpp
-    Minigin/SDL_Implementation/SDL_InputSystem.cpp
-    Minigin/Helpers/Random.cpp
-    Game/Commands/ShootCommand.cpp)
+    "Minigin/Components/Component.cpp"
+    "Minigin/Components/Sprite.cpp"
+    "Minigin/Components/TextComponent.cpp"
+    
+    "Minigin/Core/Minigin.cpp"
+    "Minigin/Core/DeltaClock.cpp"
+    "Minigin/Core/Transform2D.cpp"
+
+    "Minigin/Input/AbstractInputSystem.cpp"
+    "Minigin/Input/InputServiceLocator.cpp"
+    "Minigin/Input/Gamepad.cpp"
+    "Minigin/Input/InputBinding.cpp"
+    "Minigin/Input/GameObjectCommand.cpp"
+    "Minigin/Input/SceneInput.cpp"
+    
+   
+    "Minigin/Platform/SDL_GamePad.cpp"
+    "Minigin/Platform/SDL_InputSystem.cpp"
+    "Minigin/Platform/SDL_Keyboard.cpp"
+
+    "Minigin/Rendering/Renderer.cpp"
+    "Minigin/Rendering/ResourceManager.cpp"
+    "Minigin/Rendering/SDLFont.cpp"
+    "Minigin/Rendering/SDLTexture2D.cpp"
+
+    "Minigin/Scene/GameObject.cpp"
+    "Minigin/Scene/Scene.cpp"
+    "Minigin/Scene/SceneManager.cpp"
+    )
 target_include_directories(minigin_engine PUBLIC
   ${CMAKE_SOURCE_DIR}
 )
@@ -62,34 +62,37 @@ target_compile_features(minigin_engine PUBLIC cxx_std_20)
 
 # list source files here
 add_executable(${GAME_TARGET} ${TARGET_PARAM}
-    Game/Main.cpp
-    Game/GameStates.cpp 
-    Game/GameContext.cpp
-    Game/DamageOnCollision.cpp
-    Game/SceneLoading.cpp
+    "Game/Commands/MoveTankCommand.cpp"
+    "Game/Commands/StartGameCommand.cpp"
+    "Game/Commands/ShootCommand.cpp"
+    "Game/Commands/TurnBarrelCommand.cpp"
     
-    Game/Commands/MoveTankCommand.cpp
-    Game/Commands/StartGameCommand.cpp
-
-    Game/Grid/GameGrid.cpp
+    "Game/Components/Bullet/BulletMovement.cpp"
     
-    Game/Tank/TankHealth.cpp
+    "Game/Components/Enemy/AIMovement.cpp"
+    "Game/Components/Enemy/AutoShooting.cpp"
     
-    Game/UI/FPS_UI.cpp
-    Game/UI/PlayerHealth_UI.cpp
-      
-
-    Game/Tank/TankMovement.cpp
-    Game/Tank/TankVisuals.cpp
-    Game/Tank/Bullet/BulletMovement.cpp 
-    Game/Tank/TankBarrel.cpp 
-    Game/Tank/TankManager.cpp
-    Game/Enemy/EnemyBehaviour.cpp
-    Game/Commands/TurnBarrelCommand.cpp
-    Game/Tank/Bullet/BulletPool.cpp
+    "Game/Components/System/GameGrid.cpp"
+    "Game/Components/System/BulletPool.cpp"
+    "Game/Components/System/TankManager.cpp"
+    
+    "Game/Components/Tank/TankHealth.cpp"
+    "Game/Components/Tank/TankMovement.cpp"
+    "Game/Components/Tank/TankBarrel.cpp"
+    "Game/Components/Tank/RotateWithTank.cpp"
+    
+    "Game/Components/UI/FPS_UI.cpp"
+    "Game/Components/UI/PlayerHealth_UI.cpp"
+    
+    "Game/Components/DamageOnCollision.cpp"
+    
     "Game/Config/TankConfig.cpp"
-    Game/Tank/RotateWithTank.cpp
- "Game/Enemy/AutoShooting.cpp")
+
+    "Game/Core/Main.cpp"
+    "Game/Core/GameStates.cpp"
+    "Game/Core/GameContext.cpp"
+    "Game/Core/SceneLoading.cpp"
+)
 
 # enable c++20 features
 target_compile_features(${GAME_TARGET} PUBLIC cxx_std_20)

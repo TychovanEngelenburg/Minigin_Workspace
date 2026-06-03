@@ -1,7 +1,7 @@
 #ifndef SCENEMANAGER_H
 #define SCENEMANAGER_H
 
-#include <Minigin/Singleton.h>
+#include <Minigin/Core/Singleton.h>
 
 #include <memory>
 #include <vector>

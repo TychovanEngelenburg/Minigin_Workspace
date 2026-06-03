@@ -3,7 +3,7 @@
 
 #include "Game/Config/CollisionConfig.h"
 
-#include <Minigin/Config/SpriteConfig.h>
+#include <Minigin/Rendering/SpriteConfig.h>
 #include <glm/vec2.hpp>
 
 inline const mg::SpriteSheet BulletSpriteSheet{ "T_SpriteSheet_BattleTanks.png" , 4, 4 };

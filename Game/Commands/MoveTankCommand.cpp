@@ -1,4 +1,4 @@
-#include "Commands/MoveTankCommand.h"
+#include "MoveTankCommand.h"
 
 #include <Minigin/Scene/GameObject.h>
 

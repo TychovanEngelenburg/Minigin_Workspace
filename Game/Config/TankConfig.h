@@ -3,7 +3,7 @@
 #include "Game/Config/BulletConfig.h"
 #include "Game/Config/PlayerInputConfig.h"
 #include "Game/Config/CollisionConfig.h"
-#include <Minigin/Config/SpriteConfig.h>
+#include <Minigin/Rendering/SpriteConfig.h>
 
 
 #include <optional>
