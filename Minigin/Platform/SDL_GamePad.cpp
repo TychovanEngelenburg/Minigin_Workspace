@@ -61,10 +61,8 @@ public:
 	}
 
 	GamepadImpl(int index)
-	: m_gamepad{ nullptr }
-		, m_deviceIndex{ index }
-		, m_current{}
-		, m_previous{}
+	: m_gamepad( nullptr )
+		, m_deviceIndex( index )
 	{
 	}
 
@@ -83,10 +81,10 @@ public:
 
 private:
 	SDL_Gamepad* m_gamepad{};
-	int m_deviceIndex;
+	int m_deviceIndex{};
 
-	std::array<bool, static_cast<int>(Keycodes::GamepadButton::ButtonCount)> m_current;
-	std::array<bool, static_cast<int>(Keycodes::GamepadButton::ButtonCount)> m_previous;
+	std::array<bool, static_cast<int>(Keycodes::GamepadButton::ButtonCount)> m_current{};
+	std::array<bool, static_cast<int>(Keycodes::GamepadButton::ButtonCount)> m_previous{};
 
 	SDL_GamepadButton ButtonToSDL(Keycodes::GamepadButton button) const
 	{
@@ -139,7 +137,7 @@ void mg::SDLGamepad::Update()
 }
 
 mg::SDLGamepad::SDLGamepad(int index)
-	: m_pImpl{ std::make_unique<GamepadImpl>(index) }
+	: m_pImpl( std::make_unique<GamepadImpl>(index) )
 {
 }
 

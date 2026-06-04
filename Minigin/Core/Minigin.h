@@ -16,15 +16,17 @@ namespace mg
 		void RunOneFrame();
 
 		explicit Minigin(std::filesystem::path const& dataPath);
+
 		~Minigin();
 		Minigin(Minigin const& other) = delete;
 		Minigin(Minigin&& other) = delete;
 		Minigin& operator=(Minigin const& other) = delete;
 		Minigin& operator=(Minigin&& other) = delete;
+
 	private:
 		std::unique_ptr<DeltaClock> m_pDeltaClock;
-		double m_lag;
-		bool m_quit;
+		double m_lag{};
+		bool m_quit{ false };
 	};
 }
 #endif // !MINIGIN_H

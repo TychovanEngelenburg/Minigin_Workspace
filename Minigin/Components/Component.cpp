@@ -40,6 +40,6 @@ void mg::Component::LateUpdate() {}
 
 mg::Component::Component(mg::GameObject& owner)
 	: m_pGameObject{ &owner }
-	, m_active{ true }
+	, m_active( true )
 {
 }

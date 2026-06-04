@@ -55,16 +55,17 @@ private:
 	void LoadFromFile(std::filesystem::path const& filePath);
 
 	glm::vec2 m_gridPos;
-	int m_rows;
-	int m_cols;
+	int m_rows{};
+	int m_cols{};
 	float m_tileSize;
 
 	std::vector<glm::ivec2> m_playerSpawns;
 	std::vector<glm::ivec2> m_enemySpawns;
-	std::vector<Tile> m_tiles;
+	std::vector<Tile> m_tiles{};
 
-	std::shared_ptr<mg::Texture2D> m_pTileSheet;
-	std::shared_ptr<mg::Texture2D> m_pBackgroundTexture;
+	std::shared_ptr<mg::Texture2D> m_pTileSheet{};
+	std::shared_ptr<mg::Texture2D> m_pBackgroundTexture{};
+
 	static float constexpr m_tileTexSize{16.f};
 	static int constexpr m_walkableTileY{0};
 };

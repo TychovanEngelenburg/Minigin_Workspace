@@ -7,7 +7,7 @@
 
 void mg::SceneInput::ProcessInput()
 {
-	auto& inputService{ InputServiceLocator::Fetch()};
+	auto& inputService = InputServiceLocator::Fetch();
 
 	for (auto& binding : m_pBindings)
 	{

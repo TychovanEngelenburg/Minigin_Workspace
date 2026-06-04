@@ -119,8 +119,8 @@ void mg::Scene::LateUpdate()
 #pragma endregion Game_Loop
 
 mg::Scene::Scene()
-	: m_pInputSystem{std::make_unique<SceneInput>()}
-	, m_pCollisionSystem{std::make_unique<SceneCollisions>()}
+	: m_pInputSystem(std::make_unique<SceneInput>())
+	, m_pCollisionSystem(std::make_unique<SceneCollisions>())
 {
 }
 

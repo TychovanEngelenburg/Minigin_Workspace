@@ -20,6 +20,7 @@ namespace mg
 {
 	struct CollisionData;
 	class Scene;
+
 	class GameObject final
 	{
 	public:
@@ -102,7 +103,6 @@ namespace mg
 	template<typename T>
 	inline T* GameObject::GetComponent() const
 	{
-
 		// Opted for dynamic cast over component.h having a GetType() option,
 		// since working with std::type_index is (as far as I can tell) slower than dynamic_cast.
 

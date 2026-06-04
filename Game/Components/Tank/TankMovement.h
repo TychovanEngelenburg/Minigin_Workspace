@@ -40,12 +40,6 @@ public:
 
 	TankMovement(mg::GameObject& owner, GameGrid& pGrid);
 
-	virtual ~TankMovement() = default;
-	TankMovement(TankMovement const& other) = delete;
-	TankMovement(TankMovement&& other) = delete;
-	TankMovement& operator=(TankMovement const& other) = delete;
-	TankMovement& operator=(TankMovement&& other) = delete;
-
 private:
 
 	void Move(float elapsedSec);

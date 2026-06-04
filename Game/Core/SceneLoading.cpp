@@ -47,26 +47,6 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 		manegerComp.SetBulletPool(bulletManager->GetComponent<BulletPool>());
 	}
 
-
-	
-
-	//auto enemy = std::make_unique<mg::GameObject>("Enemy", glm::vec3(20, 120.f, 0.f));
-	//{
-	//	auto& sprite = enemy->AddComponent<mg::Sprite>("T_SpriteSheet_BattleTanks.png", mg::SpriteSheet{ 4, 5 });
-	//	enemy->AddComponent<TankVisuals>(glm::ivec2(0, 4));
-
-	//	auto& hitBox{ enemy->AddComponent<mg::BoxCollider2D>() };
-	//	hitBox.SetSize(sprite.Size());
-
-	//	enemy->AddComponent<TankHealth>();
-
-	//	auto& movement{ enemy->AddComponent<TankMovement>(*grid->GetComponent<GameGrid>()) };
-	//	movement.SetMoveSpeed(50.f);
-	//
-	//	 enemy->AddComponent<MovementAI>();
-
-	//}
-
 #pragma region UI
 	auto fpsCounterUI = std::make_unique<mg::GameObject>("FPS_Counter", glm::vec2(100.f, 0.f));
 	{
@@ -133,11 +113,6 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 	sceneOut.Add(std::move(grid));
 	sceneOut.Add(std::move(bulletManager));
 	sceneOut.Add(std::move(playerManager));
-	//sceneOut.Add(std::move(enemy));
-
-	//sceneOut.Add(std::move(gamepadPlayer));
-	//sceneOut.Add(std::move(keyboardPlayer));
-	//sceneOut.Add(std::move(bullet));
 
 	sceneOut.Add(std::move(fpsCounterUI));
 	sceneOut.Add(std::move(playerOneInfoUI));

@@ -27,7 +27,7 @@
 
 TankManager::TankManager(mg::GameObject& owner, GameGrid& grid)
 	: Component(owner)
-	, m_pGrid{ &grid }
+	, m_pGrid(&grid)
 {
 
 }
@@ -190,7 +190,7 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 	if (inputConfig.has_value())
 	{
 		bool playerBarrelTurning{ hasBarrel ? !tankConfig.Barrel->AimWithMoveDir : false };
-		
+
 		BindGamepad(*tankObj.get(), barrelObj.get(), inputConfig->PlayerIndex, playerBarrelTurning);
 
 		if (inputConfig->PlayerIndex == 0)
@@ -242,7 +242,7 @@ void TankManager::Awake()
 {
 	auto& playerSpawns{ m_pGrid->PlayerSpawnpoints() };
 
-	for (size_t i = 0; i < playerSpawns.size(); i++)
+	for (size_t i{ 0 }; i < playerSpawns.size(); i++)
 	{
 		SpawnTank(playerSpawns[i], TankPresets::Player(static_cast<int>(i)), PlayerInputConfig(static_cast<int>(i)));
 	}

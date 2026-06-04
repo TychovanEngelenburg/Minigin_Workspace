@@ -58,7 +58,7 @@ glm::ivec2 TankMovement::DirectionToGridVector(Direction dir)
 }
 
 
-bool TankMovement::IsOppositeDirection(Direction dirA, Direction dirB) 
+bool TankMovement::IsOppositeDirection(Direction dirA, Direction dirB)
 {
 	return DirectionToGridVector(dirA) == -DirectionToGridVector(dirB);
 }
@@ -108,7 +108,7 @@ void TankMovement::SetMoveSpeed(float speed)
 
 void TankMovement::Awake()
 {
-	auto worldPos{ Owner()->Transform().WorldPosition() };
+	auto worldPos = Owner()->Transform().WorldPosition();
 	m_currentTile = m_pGrid->WorldToGrid({ worldPos.x, worldPos.y });
 	m_targetTile = m_currentTile;
 }
@@ -132,16 +132,16 @@ TankMovement::TankMovement(mg::GameObject& owner, GameGrid& pGrid)
 
 void TankMovement::Move(float elapsedSec)
 {
-	auto distToMove{ m_moveSpeed * elapsedSec };
+	auto distToMove = m_moveSpeed * elapsedSec;
 
-	auto newPos{ Owner()->Transform().WorldPosition() };
+	auto newPos = Owner()->Transform().WorldPosition();
 
-	auto targetPos{ m_pGrid->GridToWorld(m_targetTile) };
+	auto targetPos = m_pGrid->GridToWorld(m_targetTile);
 
 	while (distToMove > 0.f)
 	{
 		glm::vec2 vecToTarget{ targetPos - newPos };
-		auto distToTarget{ glm::length(vecToTarget) };
+		auto distToTarget = glm::length(vecToTarget);
 
 		if (distToMove >= distToTarget)
 		{

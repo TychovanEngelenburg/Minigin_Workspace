@@ -59,8 +59,8 @@ void mg::Sprite::Render() const
 
 mg::Sprite::Sprite(GameObject& owner, SpriteSheet const& spriteSheetData)
 	: Component(owner)
-	, m_pTexture{ ResourceManager::Instance().LoadTexture(spriteSheetData.filePath) }
-	, m_spriteSheet{ spriteSheetData }
+	, m_pTexture( ResourceManager::Instance().LoadTexture(spriteSheetData.filePath) )
+	, m_spriteSheet( spriteSheetData )
 {
 	SetSprite(m_currentSheetPos);
 }

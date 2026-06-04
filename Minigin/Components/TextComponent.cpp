@@ -52,7 +52,7 @@ void mg::TextComponent::Update()
 		}
 
 		SDL_DestroySurface(surf);
-		m_pTextTexture = std::make_shared<Texture2D>(texture);
+		m_pTextTexture = std::make_shared<Texture2D>(*texture);
 		m_needsUpdate = false;
 	}
 }
@@ -68,6 +68,7 @@ std::string_view mg::TextComponent::GetText() const noexcept
 {
 	return m_text;
 }
+
 glm::vec2 mg::TextComponent::Size() const
 {
 	if (m_pTextTexture)
@@ -84,11 +85,9 @@ glm::vec2 mg::TextComponent::Size() const
 
 mg::TextComponent::TextComponent(mg::GameObject& owner, std::string_view text, std::filesystem::path const& fontFile, uint8_t size, SDL_Color const& color)
 	: Component(owner)
-	, m_needsUpdate(true)
 	, m_text(text)
 	, m_color(color)
 	, m_pFont(mg::ResourceManager::Instance().LoadFont(fontFile, size))
-	, m_pTextTexture(nullptr)
 {
 
 }

@@ -4,6 +4,7 @@
 #include "Game/Components/System/TankManager.h"
 #include "Game/Components/Tank/TankBarrel.h"
 
+#include <glm/trigonometric.hpp>
 #include <Minigin/Scene/Scene.h>
 #include <Minigin/Scene/GameObject.h>
 #include <Minigin/Collisions/CollisionSystem.h>

@@ -50,10 +50,9 @@ mg::Texture2D::Texture2D(std::filesystem::path const& filePath)
 	}
 }
 
-mg::Texture2D::Texture2D(SDL_Texture* texture) 
-	: m_pTexture{ texture }
+mg::Texture2D::Texture2D(SDL_Texture& texture)
+	: m_pTexture(&texture)
 {
-	assert(m_pTexture != nullptr);
 }
 
 

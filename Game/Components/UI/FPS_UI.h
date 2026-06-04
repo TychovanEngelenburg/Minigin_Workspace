@@ -17,17 +17,11 @@ public:
 
 	explicit FPS_UI(mg::GameObject& owner);
 
-	virtual ~FPS_UI() = default;
-	FPS_UI(FPS_UI const& other) = delete;
-	FPS_UI(FPS_UI&& other) = delete;
-	FPS_UI& operator=(FPS_UI const& other) = delete;
-	FPS_UI& operator=(FPS_UI&& other) = delete;
-
 private:
-	mg::TextComponent* m_pTextComp;
-	double m_accuTime;
-	double m_frameCount;
-	double m_averageFPS;
+	mg::TextComponent* m_pTextComp{};
+	double m_accuTime{};
+	double m_frameCount{};
+	double m_averageFPS{};
 
 	void UpdateDisplay();
 };

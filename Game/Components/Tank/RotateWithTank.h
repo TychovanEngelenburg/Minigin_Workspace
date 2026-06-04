@@ -17,7 +17,8 @@ public:
 	void SetTank(TankMovement* tank);
 	void Update() override;
 
-	RotateWithTank(mg::GameObject& owner);
+	explicit RotateWithTank(mg::GameObject& owner);
+
 private:
 	void CheckDirection();
 	void SetRotation();

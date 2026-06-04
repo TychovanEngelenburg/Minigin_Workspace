@@ -35,7 +35,8 @@ namespace mg
 
 		void Awake() override;
 		void Render() const override;
-		explicit BoxCollider2D(mg::GameObject& owner, glm::vec2 size = { 1.f, 1.f }, glm::vec2 offset = {});
+
+		explicit BoxCollider2D(mg::GameObject& owner);
 
 		~BoxCollider2D();
 		BoxCollider2D(BoxCollider2D const& other) = delete;
@@ -47,7 +48,7 @@ namespace mg
 		uint32_t CollisionMask { 0xFFFFFFFF };
 
 	private:
-		Bounds m_bounds;
+		Bounds m_bounds{};
 	};
 };
 

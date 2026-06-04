@@ -25,12 +25,6 @@ public:
 
 	explicit TankHealth(mg::GameObject& owner);
 
-	~TankHealth() = default;
-	TankHealth(TankHealth const& other) = delete;
-	TankHealth(TankHealth&& other) = delete;
-	TankHealth& operator=(TankHealth const& other) = delete;
-	TankHealth& operator=(TankHealth&& other) = delete;
-
 	int maxHealth{1};
 
 private:

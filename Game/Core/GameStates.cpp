@@ -19,8 +19,11 @@ std::unique_ptr<IGameState> MainMenuState::HandleEvent(GameEvent const& event)
 			GameContext::Instance().StartGame();
 			return std::make_unique<PlayingState>();
 		}
+
 		default:
+		{
 			return nullptr;
+		}
 	}
 }
 #pragma endregion
@@ -83,7 +86,9 @@ std::unique_ptr<IGameState> GameOverState::HandleEvent(GameEvent const& event)
 		}
 
 		default:
+		{
 			return nullptr;
+		}
 	}
 }
 #pragma endregion

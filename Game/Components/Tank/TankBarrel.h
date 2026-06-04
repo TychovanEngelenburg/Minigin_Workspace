@@ -25,12 +25,6 @@ public:
 
 	TankBarrel(mg::GameObject& owner, GameGrid& grid);
 
-	~TankBarrel() = default;
-	TankBarrel(TankBarrel const& other) = delete;
-	TankBarrel(TankBarrel&& other) = delete;
-	TankBarrel& operator=(TankBarrel const& other) = delete;
-	TankBarrel& operator=(TankBarrel&& other) = delete;
-
 private:
 	BulletPool* m_pBulletPool{};
 	GameGrid* m_pGrid{};

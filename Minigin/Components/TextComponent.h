@@ -24,7 +24,7 @@ namespace mg
 
 		void SetText(std::string_view text);
 		void SetColor(SDL_Color const& color);
-	
+
 		void Update() override;
 		void Render() const override;
 
@@ -37,13 +37,13 @@ namespace mg
 		TextComponent& operator=(TextComponent&& other) = delete;
 
 	private:
-		bool m_needsUpdate;
+		bool m_needsUpdate{ true };
 		std::string m_text;
-		
+
 		SDL_Color m_color;
 
 		std::shared_ptr<Font> m_pFont;
-		std::shared_ptr<Texture2D> m_pTextTexture;
+		std::shared_ptr<Texture2D> m_pTextTexture{ nullptr };
 	};
 }
 #endif // !TEXTUREOBJECT_H

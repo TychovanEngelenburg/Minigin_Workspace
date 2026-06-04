@@ -116,8 +116,6 @@ void mg::Minigin::RunOneFrame()
 
 mg::Minigin::Minigin(std::filesystem::path const& dataPath)
 	: m_pDeltaClock{ std::make_unique<DeltaClock>() }
-	, m_lag{}
-	, m_quit{ false }
 {
 	PrintSDLVersion();
 

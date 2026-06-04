@@ -17,13 +17,6 @@ namespace mg
             static_assert(std::derived_from<SoundSystem, ISoundSystem>, "SoundSystem must derive from ISoundSystem");
         }
 
-        ~LoggingSoundSystem() override = default;
-
-        LoggingSoundSystem(const LoggingSoundSystem&) = delete;
-        LoggingSoundSystem& operator=(const LoggingSoundSystem&) = delete;
-        LoggingSoundSystem(LoggingSoundSystem&&) noexcept = delete;
-        LoggingSoundSystem& operator=(LoggingSoundSystem&&) noexcept = delete;
-
         void PreLoadSFX(AudioClip const& clip) override
         {
             std::cout << "Requested load of audioclip: '" << clip.name << "' path: '" << clip.filePath << "'.\n";

@@ -77,13 +77,3 @@ void GameContext::HandleEvent(GameEvent const& event)
 	}
 }
 
-GameContext::GameContext()
-	: m_mode{Mode::Singleplayer}
-	, m_currentLevelScene {}
-	, m_menuScene{}
-	, m_levelScene{}
-	, m_scoreboardScene{}
-	, m_state{}
-{
-}
-

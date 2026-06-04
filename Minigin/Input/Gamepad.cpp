@@ -38,22 +38,18 @@ public:
 	}
 
 	GamepadImpl(int index)
-		: m_deviceIndex{ index }
-		, m_previousState{}
-		, m_currentState{}
-		, m_buttonsPressedThisFrame{}
-		, m_buttonsReleasedThisFrame{}
+		: m_deviceIndex(index)
 	{
 	}
 
 private:
 	int m_deviceIndex;
 
-	XINPUT_STATE m_previousState;
-	XINPUT_STATE m_currentState;
+	XINPUT_STATE m_previousState{};
+	XINPUT_STATE m_currentState{};
 
-	WORD m_buttonsPressedThisFrame;
-	WORD m_buttonsReleasedThisFrame;
+	WORD m_buttonsPressedThisFrame{};
+	WORD m_buttonsReleasedThisFrame{};
 
 	unsigned int ButtonToXInput(mg::Keycodes::GamepadButton button) const
 	{
@@ -106,7 +102,7 @@ void mg::XInput_Gamepad::Update()
 }
 
 mg::XInput_Gamepad::XInput_Gamepad(int index)
-	: m_pImpl{ std::make_unique<GamepadImpl>(index) }
+	: m_pImpl(std::make_unique<GamepadImpl>(index))
 {
 }
 

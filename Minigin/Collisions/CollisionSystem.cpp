@@ -8,7 +8,7 @@
 #include <algorithm>
 
 
- mg::RaycastHit mg::SceneCollisions::Raycast(glm::vec2 const& origin, glm::vec2 const& direction, float maxDistance, uint32_t layerMask)
+mg::RaycastHit mg::SceneCollisions::Raycast(glm::vec2 const& origin, glm::vec2 const& direction, float maxDistance, uint32_t layerMask)
 {
 	mg::RaycastHit result;
 
@@ -28,8 +28,8 @@
 		}
 
 
-		glm::vec2 center = collider->GetOBB().center;
-		float hitDist = glm::length(center - origin);
+		glm::vec2 center{ collider->GetOBB().center };
+		float hitDist{ glm::length(center - origin) };
 
 		if (hitDist < distance)
 		{
@@ -112,8 +112,8 @@ void mg::SceneCollisions::Update()
 
 bool OverlapOnAxis(mg::OBB const& a, mg::OBB const& b, glm::vec2 const& axis)
 {
-	glm::vec2 distVec = b.center - a.center;
-	float distance = std::abs(glm::dot(distVec, axis));
+	glm::vec2 distVec{ b.center - a.center };
+	float distance{ std::abs(glm::dot(distVec, axis)) };
 
 	float aProjection{
 		a.halfExtends.x * std::abs(glm::dot(a.axisX, axis)) +
@@ -164,13 +164,13 @@ bool mg::SceneCollisions::CheckOverlap(BoxCollider2D const& A, BoxCollider2D con
 
 bool mg::SceneCollisions::OverLap(float minA, float maxA, float minB, float maxB)
 {
-	return (minB <=  maxA && minA <=  maxB);
+	return (minB <= maxA && minA <= maxB);
 }
 
 void  mg::SceneCollisions::ProjectSegment(glm::vec2 a, glm::vec2 b, glm::vec2 const& axis, float& min, float& max)
 {
-	float pointA = glm::dot(a, axis);
-	float pointB = glm::dot(b, axis);
+	float pointA{ glm::dot(a, axis) };
+	float pointB{ glm::dot(b, axis) };
 
 	min = std::min(pointA, pointB);
 	max = std::max(pointA, pointB);
@@ -192,7 +192,7 @@ void  mg::SceneCollisions::ProjectOBB(mg::OBB const& obb, glm::vec2 const& axis,
 bool  mg::SceneCollisions::LineIntersectsOBB(glm::vec2 a, glm::vec2 b, mg::OBB const& obb)
 {
 	glm::vec2 segmentDir = glm::normalize(b - a);
-	glm::vec2 perpendicular  { glm::vec2(-segmentDir.y, segmentDir.x) };
+	glm::vec2 perpendicular{ glm::vec2(-segmentDir.y, segmentDir.x) };
 
 	glm::vec2 axes[3] =
 	{
@@ -203,8 +203,10 @@ bool  mg::SceneCollisions::LineIntersectsOBB(glm::vec2 a, glm::vec2 b, mg::OBB c
 
 	for (glm::vec2 axis : axes)
 	{
-		float minA, maxA;
-		float minB, maxB;
+		float minA{};
+		float maxA{};
+		float minB{};
+		float maxB{};
 
 		ProjectSegment(a, b, axis, minA, maxA);
 		ProjectOBB(obb, axis, minB, maxB);

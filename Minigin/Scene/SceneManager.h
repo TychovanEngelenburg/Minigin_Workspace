@@ -35,9 +35,9 @@ namespace mg
 	private:
 		friend class Singleton<SceneManager>;
 
-		std::vector<std::unique_ptr<Scene>> m_pScenes;
+		std::vector<std::unique_ptr<Scene>> m_pScenes{};
 
-		size_t m_activeScene;
+		size_t m_activeScene{0};
 	};
 }
 #endif // !SCENEMANAGER_H

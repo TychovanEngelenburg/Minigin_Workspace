@@ -4,9 +4,10 @@
 #include "Game/Components/System/BulletPool.h"
 #include "Game/Components/System/GameGrid.h"
 
-
 #include <Minigin/Scene/GameObject.h>
 #include <Minigin/Core/DeltaClock.h>
+
+#include <glm/trigonometric.hpp>
 
 bool TankBarrel::OnCooldown() const noexcept
 {
@@ -35,7 +36,7 @@ void TankBarrel::Shoot()
 
 	if (m_pBulletPool)
 	{
-		auto bullet = m_pBulletPool->SpawnBullet(m_config);
+		auto* bullet = m_pBulletPool->SpawnBullet(m_config);
 		
 		if (!bullet)
 		{

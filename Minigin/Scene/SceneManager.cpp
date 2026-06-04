@@ -84,12 +84,7 @@ void mg::SceneManager::LateUpdate()
 
 }
 
-mg::SceneManager::SceneManager()
-	: m_pScenes{}
-	, m_activeScene{ 0 }
-{
-}
-
+mg::SceneManager::SceneManager() = default;
 mg::SceneManager::~SceneManager() = default;
 
 #pragma endregion Game_Loop

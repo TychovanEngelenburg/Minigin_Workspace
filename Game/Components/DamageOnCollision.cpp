@@ -15,6 +15,6 @@ void DamageOnCollision::OnCollisionEnter(mg::CollisionData const& data)
 
 DamageOnCollision::DamageOnCollision(mg::GameObject& owner, int damageAmount)
 	: Component(owner)
-	, m_damageAmount{damageAmount}
+	, m_damageAmount(damageAmount)
 {
 }

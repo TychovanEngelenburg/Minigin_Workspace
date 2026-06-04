@@ -20,6 +20,5 @@ void PlayerHealth_UI::OnNotify(PlayerDeath const& eventData)
 
 PlayerHealth_UI::PlayerHealth_UI(mg::GameObject& owner)
 	: Component(owner)
-	, m_pTextComp{}
 {
 }

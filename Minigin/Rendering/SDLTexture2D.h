@@ -3,8 +3,7 @@
 
 #include <filesystem>
 
-#include <glm/ext/vector_float2.hpp>
-#include <glm/fwd.hpp>
+#include <glm/vec2.hpp>
 
 // TODO: Apply pointer implementation for texture usage.
 
@@ -20,7 +19,7 @@ namespace mg
 		SDL_Texture* GetSDLTexture() const noexcept;
 		glm::vec2 Size() const;
 
-		explicit Texture2D(SDL_Texture* texture);
+		explicit Texture2D(SDL_Texture& texture);
 		explicit Texture2D(std::filesystem::path const& fullPath);
 
 		~Texture2D();

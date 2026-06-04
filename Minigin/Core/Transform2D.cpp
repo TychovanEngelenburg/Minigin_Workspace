@@ -3,7 +3,7 @@
 #include "Minigin/Scene/GameObject.h"
 #include <cassert>
 
-mg::GameObject & mg::Transform2D::Owner() noexcept
+mg::GameObject& mg::Transform2D::Owner() noexcept
 {
 	return *m_pGameObject;
 }
@@ -16,11 +16,6 @@ glm::vec2 mg::Transform2D::WorldPosition() const noexcept
 float mg::Transform2D::WorldRotationZ() const noexcept
 {
 	auto const& worldMat = GetWorldMatrix();
-	//glm::vec3 xAxis = glm::normalize(glm::vec3(worldMat[0]));
-
-	//return glm::degrees(
-	//	std::atan2(xAxis.y, xAxis.x)
-	//);
 	return glm::degrees(std::atan2(-worldMat[1][0], worldMat[0][0]));
 }
 
@@ -240,7 +235,7 @@ void mg::Transform2D::SetParent(Transform2D* pParent, bool keepWorldPos)
 			rotMat[1] = glm::vec3(newLocal[1]) / scale.y;
 			rotMat[2] = glm::vec3(0, 0, 1);
 			m_localRotation = std::atan2(rotMat[0][1], rotMat[0][0]);
-			
+
 			MarkDirty();
 		}
 		else
@@ -250,7 +245,7 @@ void mg::Transform2D::SetParent(Transform2D* pParent, bool keepWorldPos)
 	}
 	if (m_pParent)
 	{
-		m_pParent->RemoveChild(this); 
+		m_pParent->RemoveChild(this);
 	}
 
 	m_pParent = pParent;
@@ -262,15 +257,7 @@ void mg::Transform2D::SetParent(Transform2D* pParent, bool keepWorldPos)
 }
 
 mg::Transform2D::Transform2D(GameObject& owner)
-	: m_pGameObject{ &owner }
-	, m_pParent{}
-	, m_localPosition{}
-	, m_localRotation{}
-	, m_localScale{ 1.f, 1.f }
-	, m_localMatrix{}
-	, m_worldMatrix{}
-	, m_localDirty{ true }
-	, m_worldDirty{ true }
+	: m_pGameObject(&owner)
 {
 }
 

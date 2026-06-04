@@ -11,12 +11,7 @@
 
 GameGrid::GameGrid(mg::GameObject& owner, std::filesystem::path const& filePath, float tileSize)
 	: Component(owner)
-	, m_rows{}
-	, m_cols{}
-	, m_tiles{}
-	, m_tileSize{ tileSize }
-	, m_pTileSheet{}
-	, m_pBackgroundTexture{}
+	, m_tileSize( tileSize )
 {
 	LoadFromFile(mg::ResourceManager::Instance().DataPath() / filePath);
 	m_pTileSheet = mg::ResourceManager::Instance().LoadTexture("T_TileSheet_Tron_BattleTanks.png");
@@ -166,11 +161,12 @@ void GameGrid::ComputeConnections()
 		for (int y = 0; y < m_rows; y++)
 		{
 
-			Tile const* left = GetTile({ x - 1, y });
-			Tile const* up = GetTile({ x, y - 1 });
+			auto const* left = GetTile({ x - 1, y });
+			auto const* up = GetTile({ x, y - 1 });
 
-			bool hor = left && left->Walkable;
-			bool vert = up && up->Walkable;
+			bool hor{ left && left->Walkable };
+			bool vert {up && up->Walkable
+		};
 
 			if (hor && vert)
 			{
@@ -207,7 +203,7 @@ void GameGrid::ProcessLine(std::string const& line)
 
 	for (size_t col = 0; col < line.length(); ++col)
 	{
-		const char tile = line[col];
+		char const tile = line[col];
 
 		glm::ivec2 gridPos
 		{

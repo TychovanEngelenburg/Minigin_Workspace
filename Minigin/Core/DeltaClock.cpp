@@ -18,6 +18,6 @@ void mg::DeltaClock::Update()
 }
 
 mg::DeltaClock::DeltaClock()
-	: m_lastTime{ std::chrono::high_resolution_clock::now() }
+	: m_lastTime( std::chrono::high_resolution_clock::now() )
 {
 }

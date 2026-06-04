@@ -27,19 +27,17 @@ public:
 	void SetState(std::unique_ptr<IGameState> newState);
 	void HandleEvent(GameEvent const& event);
 
-	GameContext();
-
 private:
 	friend class Singleton<GameContext>;
 
-	Mode m_mode;
-	size_t m_currentLevelScene;
+	Mode m_mode{ Mode::Singleplayer };
+	size_t m_currentLevelScene{};
 
-	size_t m_menuScene;
-	size_t m_levelScene;
-	size_t m_scoreboardScene;
+	size_t m_menuScene{};
+	size_t m_levelScene{};
+	size_t m_scoreboardScene{};
 
-	std::unique_ptr<IGameState> m_state;
+	std::unique_ptr<IGameState> m_state{};
 
 	// TODo: Level pre-caching
 	// size_t m_cachedScene;

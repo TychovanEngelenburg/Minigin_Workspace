@@ -37,20 +37,17 @@ public:
 				{
 					m_current[keyIdx] = sdlState[stateIdxKey];
 				}
-				//m_current[keyIdx] = sdlState[stateIdxKey];
 			}
 		}
 	}
 
 	KeyboardImpl()
-		: m_current{}
-		, m_previous{}
 	{
 	}
 
 private:
-	std::array<bool, static_cast<int>(Keycodes::KeyboardKey::KeyCount)> m_current;
-	std::array<bool, static_cast<int>(Keycodes::KeyboardKey::KeyCount)> m_previous;
+	std::array<bool, static_cast<int>(Keycodes::KeyboardKey::KeyCount)> m_current{};
+	std::array<bool, static_cast<int>(Keycodes::KeyboardKey::KeyCount)> m_previous{};
 
 	SDL_Scancode KeyToSDL(Keycodes::KeyboardKey key) const
 	{
@@ -152,7 +149,7 @@ bool mg::SDL_Keyboard::GetButtonUp(int button) const
 }
 
 mg::SDL_Keyboard::SDL_Keyboard()
-	: m_pImpl{ std::make_unique<KeyboardImpl>() }
+	: m_pImpl(std::make_unique<KeyboardImpl>())
 {
 }
 

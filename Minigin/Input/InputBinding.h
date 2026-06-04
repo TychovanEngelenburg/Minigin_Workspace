@@ -8,6 +8,7 @@ namespace mg
 	class InputBinding final
 	{
     public:
+        // TODO: Add BindingConfig (name TBD) struct? Do this in seperate .h file.
         enum class DeviceType
         {
             Keyboard,
@@ -31,12 +32,6 @@ namespace mg
         TriggerType GetTrigger() const noexcept;
         
         InputBinding(int deviceIdx, int inputIdx, DeviceType deviceType, std::unique_ptr<ICommand> command,  TriggerType trigger = TriggerType::Pressed);
-
-        ~InputBinding() = default;
-        InputBinding(InputBinding const& other) = delete;
-        InputBinding(InputBinding&& other) = delete;
-        InputBinding& operator=(InputBinding const& other) = delete;
-        InputBinding& operator=(InputBinding&& other) = delete;
 
     private:
         int m_deviceIndex;

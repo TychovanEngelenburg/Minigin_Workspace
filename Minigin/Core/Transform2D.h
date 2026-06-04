@@ -1,10 +1,9 @@
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
 
-#include <glm/glm.hpp>
+#include <glm/Vec2.hpp>
 #include <vector>
-#include <glm/fwd.hpp>
-
+#include <glm/mat4x4.hpp>
 namespace mg
 {
 	class GameObject;
@@ -57,18 +56,18 @@ namespace mg
 
 	private:
 		GameObject* m_pGameObject;
-		Transform2D* m_pParent;
+		Transform2D* m_pParent{ nullptr };
 		std::vector<Transform2D*> m_pChildren;
 
-		glm::vec2 m_localPosition;
-		float m_localRotation;
-		glm::vec2 m_localScale;
+		glm::vec2 m_localPosition{};
+		float m_localRotation{};
+		glm::vec2 m_localScale{ 1.f, 1.f };
 
-		mutable glm::mat4 m_localMatrix;
-		mutable glm::mat4 m_worldMatrix;
+		mutable glm::mat4 m_localMatrix{};
+		mutable glm::mat4 m_worldMatrix{};
 
-		mutable bool m_localDirty;
-		mutable bool m_worldDirty;
+		mutable bool m_localDirty{ true };
+		mutable bool m_worldDirty{ true };
 
 		void RecalculateLocal() const;
 		void RecalculateWorld() const;

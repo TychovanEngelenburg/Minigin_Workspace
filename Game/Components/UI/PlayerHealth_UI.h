@@ -20,13 +20,8 @@ public:
 
 	explicit PlayerHealth_UI(mg::GameObject& owner);
 
-	virtual ~PlayerHealth_UI() = default;
-	PlayerHealth_UI(PlayerHealth_UI const& other) = delete;
-	PlayerHealth_UI(PlayerHealth_UI&& other) = delete;
-	PlayerHealth_UI& operator=(PlayerHealth_UI const& other) = delete;
-	PlayerHealth_UI& operator=(PlayerHealth_UI&& other) = delete;
 private:
-	mg::TextComponent* m_pTextComp;
+	mg::TextComponent* m_pTextComp{};
 };
 #endif // !PLAYERHEALTH_UI_H
 				 

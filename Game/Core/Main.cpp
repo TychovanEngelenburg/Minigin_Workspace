@@ -81,9 +81,9 @@ int main(int, char* [])
 #endif 
 
 #if __EMSCRIPTEN__
-	std::filesystem::path data_location = "";
+	std::filesystem::path data_location{ "" };
 #else
-	std::filesystem::path data_location = "./Data/";
+	std::filesystem::path data_location{ "./Data/" };
 	if (!std::filesystem::exists(data_location))
 	{
 		data_location = "../Data/";

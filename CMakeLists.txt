@@ -54,7 +54,7 @@ add_library(${LIBRARY_TARGET} STATIC
     "Minigin/Scene/GameObject.cpp"
     "Minigin/Scene/Scene.cpp"
     "Minigin/Scene/SceneManager.cpp"
-    )
+     )
 target_include_directories(minigin_engine PUBLIC
   ${CMAKE_SOURCE_DIR}
 )
@@ -201,7 +201,6 @@ if(NOT SDL3_mixer_FOUND)
 endif()
 
 
-# ONLY REAL CHANGE (ENGINE LINK)
 target_link_libraries(minigin_engine PUBLIC 
   SDL3::SDL3 
   SDL3_ttf::SDL3_ttf

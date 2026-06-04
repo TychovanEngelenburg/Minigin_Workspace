@@ -47,9 +47,5 @@ void FPS_UI::UpdateDisplay()
 
 FPS_UI::FPS_UI(mg::GameObject& owner)
 	: mg::Component(owner)
-	, m_pTextComp{}
-	, m_accuTime{}
-	, m_frameCount{}
-	, m_averageFPS{}
 {
 }

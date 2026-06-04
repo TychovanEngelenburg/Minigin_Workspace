@@ -76,9 +76,8 @@ void mg::BoxCollider2D::Render() const
 		});
 }
 
-mg::BoxCollider2D::BoxCollider2D(mg::GameObject& owner, glm::vec2 size, glm::vec2 offset)
+mg::BoxCollider2D::BoxCollider2D(mg::GameObject& owner)
 	: Component(owner)
-	, m_bounds{ offset, size }
 {
 }
 

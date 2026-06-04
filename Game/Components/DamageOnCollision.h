@@ -15,12 +15,6 @@ public:
 
 	DamageOnCollision(mg::GameObject& owner, int damageAmount);
 
-	virtual ~DamageOnCollision() = default;
-	DamageOnCollision(DamageOnCollision const& other) = delete;
-	DamageOnCollision(DamageOnCollision&& other) = delete;
-	DamageOnCollision& operator=(DamageOnCollision const& other) = delete;
-	DamageOnCollision& operator=(DamageOnCollision&& other) = delete;
-
 private:
 	int m_damageAmount;
 };
