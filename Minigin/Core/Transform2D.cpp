@@ -8,6 +8,16 @@ mg::GameObject& mg::Transform2D::Owner() noexcept
 	return *m_pGameObject;
 }
 
+glm::vec2 mg::Transform2D::Forward() const noexcept
+{
+	return glm::vec2(std::cos(m_localRotation), std::sin(m_localRotation));
+}
+
+glm::vec2 mg::Transform2D::Right() const noexcept
+{
+	return glm::vec2(std::sin(m_localRotation), std::cos(m_localRotation));
+}
+
 glm::vec2 mg::Transform2D::WorldPosition() const noexcept
 {
 	return glm::vec2(GetWorldMatrix()[3]);
@@ -38,7 +48,7 @@ glm::vec2 const& mg::Transform2D::LocalPosition() const noexcept
 
 float mg::Transform2D::LocalRotation() const noexcept
 {
-	return m_localRotation;
+	return glm::degrees(m_localRotation);
 }
 
 glm::vec2 const& mg::Transform2D::LocalScale() const noexcept
@@ -74,6 +84,8 @@ size_t mg::Transform2D::ChildCount() const noexcept
 
 mg::Transform2D* mg::Transform2D::GetChildAt(size_t idx) const noexcept
 {
+	assert(idx >= m_pChildren.size() && "Index must be in range of children!");
+
 	if (idx >= m_pChildren.size())
 	{
 		return nullptr;
@@ -91,16 +103,16 @@ bool mg::Transform2D::HasChild(Transform2D* pChild)
 	return false;
 }
 
-bool mg::Transform2D::IsChildOf(Transform2D* pChild)
+bool mg::Transform2D::IsInHierarchyOf(Transform2D* pAncestor)
 {
 	if (m_pParent != nullptr)
 	{
-		if (m_pParent == pChild)
+		if (m_pParent == pAncestor)
 		{
 			return true;
 		}
 
-		return m_pParent->IsChildOf(pChild);
+		return m_pParent->IsInHierarchyOf(pAncestor);
 	}
 
 	return false;
@@ -176,6 +188,14 @@ void mg::Transform2D::SetLocalScale(glm::vec2 const& scale)
 
 void mg::Transform2D::Translate(glm::vec2 const& delta)
 {
+	auto forward = Forward();
+
+	glm::vec2 rotatedDelta =
+	{
+		delta.x * forward.x - delta.y * forward.y,
+		delta.x * forward.y + delta.y * forward.x
+	};
+
 	m_localPosition += delta;
 	MarkDirty();
 }
@@ -205,7 +225,7 @@ void mg::Transform2D::MarkWorldDirty()
 void mg::Transform2D::SetParent(Transform2D* pParent, bool keepWorldPos)
 {
 
-	if (HasChild(pParent) || pParent == this || m_pParent == pParent)
+	if (HasChild(pParent) || pParent == this || IsInHierarchyOf(pParent))
 	{
 		//assert(!pParent == this && (!m_pParent == pParent));
 		return;
@@ -254,6 +274,8 @@ void mg::Transform2D::SetParent(Transform2D* pParent, bool keepWorldPos)
 	{
 		m_pParent->AddChild(this);
 	}
+
+	m_pGameObject->MarkActiveDirty();
 }
 
 mg::Transform2D::Transform2D(GameObject& owner)

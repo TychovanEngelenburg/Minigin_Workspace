@@ -25,7 +25,6 @@ namespace mg
 
 	private:
 		std::unique_ptr<DeltaClock> m_pDeltaClock;
-		double m_lag{};
 		bool m_quit{ false };
 	};
 }

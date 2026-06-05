@@ -7,13 +7,10 @@
 #include <string>
 #include <string_view>
 #include <memory>
-#include <concepts>
 #include <algorithm>
 #include <stdexcept>
 #include <utility>
 #include <vector>
-#include <list>
-#include <unordered_map>
 #include <glm/vec2.hpp>
 
 namespace mg
@@ -25,12 +22,16 @@ namespace mg
 	{
 	public:
 		Transform2D& Transform();
-		bool IsActive() const noexcept;
+		bool ActiveInHieriarchy() const;
+		bool ActiveSelf() const noexcept;
 		bool IsDestroyed() const noexcept;
 		Scene* Scene() const noexcept;
 
+		void MarkActiveDirty();
 		void SetScene(mg::Scene* pScene);
-		void SetActive(bool isActive);
+		void OnEnable();
+		void OnDisable();
+		void SetActive(bool active);
 		void Destroy();
 
 		template<typename T, typename... Args>
@@ -45,12 +46,7 @@ namespace mg
 		/// Called when object is added to the scene.
 		/// </summary>
 		void Awake();
-
-		/// <summary>
-		/// Called when scene fully loaded.
-		/// </summary>
 		void Start();
-
 		void OnCollisionEnter(CollisionData const& data);
 		void OnCollisionStay(CollisionData const& data);
 		void OnCollisionExit(CollisionData const& data);
@@ -59,13 +55,13 @@ namespace mg
 		void FixedUpdate();
 		void LateUpdate();
 		void Render() const;
+		void Cleanup();
 
-		explicit GameObject(std::string_view name = "New GameObject", glm::vec2 const& pos = {0.f, 0.f});
-		~GameObject();
+		explicit GameObject(std::string_view name = "New GameObject", glm::vec2 const& pos = { 0.f, 0.f });
 
+		~GameObject() = default;
 		GameObject(GameObject const& other) = delete;
 		GameObject(GameObject&& other) = delete;
-
 		GameObject& operator=(GameObject const& other) = delete;
 		GameObject& operator=(GameObject&& other) = delete;
 
@@ -75,12 +71,14 @@ namespace mg
 		mg::Scene* m_pScene{};
 
 		Transform2D m_transform;
-		bool m_active{true};
+		bool m_active{ true };
+		mutable bool m_activeInHieriarchy{ true };
+		mutable bool m_activeDirty{ true };
+		bool m_awakened{ false };
+		bool m_started{ false };
 		bool m_destroyed{};
 		std::vector< std::unique_ptr<Component>> m_pComponents{};
-
-		GameObject* m_pParent{};
-		std::vector<GameObject*> m_pChildren{};
+		std::vector<Component*> m_pPendingRemoval{};
 	};
 
 
@@ -94,8 +92,23 @@ namespace mg
 			throw std::runtime_error("Attempted to add duplicate entry to component list!");
 		}
 
-		auto component{ std::make_unique<T>(*this, std::forward<Args>(args)...) };
-		auto& returnRef{ *component };
+		auto component = std::make_unique<T>(*this, std::forward<Args>(args)...);
+
+		if (m_awakened)
+		{
+			component->Awake();
+		}
+
+		if (component->ActiveAndEnabled())
+		{
+			if (m_started)
+			{
+				component->Start();
+			}
+			component->OnEnable();
+		}
+
+		auto& returnRef = *component;
 		m_pComponents.emplace_back(std::move(component));
 		return returnRef;
 	}
@@ -108,7 +121,7 @@ namespace mg
 
 		for (auto& component : m_pComponents)
 		{
-			if (auto compPtr{ dynamic_cast<T*>(component.get()) })
+			if (auto compPtr = dynamic_cast<T*>(component.get()))
 			{
 				return compPtr;
 			}
@@ -120,10 +133,20 @@ namespace mg
 	template<typename T>
 	inline void GameObject::RemoveComponent()
 	{
-		std::erase_if(m_pComponents, [](std::unique_ptr<Component> const& component)
+		for (auto& component : m_pComponents)
+		{
+			if (dynamic_cast<T*>(component.get()))
 			{
-				return dynamic_cast<T*>(component.get());
-			});
+				component->SetEnabled(false);
+				m_pPendingRemoval.push_back(component.get());
+			}
+		}
+
+		//std::erase_if(m_pComponents, 
+		//	[](std::unique_ptr<Component> const& component)
+		//	{
+		//		return dynamic_cast<T*>(component.get());
+		//	});
 	}
 }
 #endif // !GAMEOBJECT_H

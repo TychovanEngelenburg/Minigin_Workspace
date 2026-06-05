@@ -12,6 +12,9 @@ namespace mg
 	public:
 		GameObject& Owner() noexcept;
 
+		glm::vec2 Forward() const noexcept;
+		glm::vec2 Right() const noexcept;
+
 		glm::vec2 WorldPosition() const noexcept;
 		float WorldRotationZ() const noexcept;
 		glm::vec2 WorldScale() const noexcept;
@@ -27,7 +30,7 @@ namespace mg
 		size_t ChildCount() const noexcept;
 		Transform2D* GetChildAt(size_t idx) const noexcept;
 		bool HasChild(Transform2D* pChild);
-		bool IsChildOf(Transform2D* pChild);
+		bool IsInHierarchyOf(Transform2D* pAncestor);
 
 		void SetWorldPosition(glm::vec2 const& newPos);
 		void SetWorldRotation(float newDegr);

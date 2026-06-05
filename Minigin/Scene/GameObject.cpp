@@ -7,6 +7,7 @@
 #include <glm/fwd.hpp>
 #include <string>
 #include <vector>
+#include <ranges>
 
 mg::Transform2D& mg::GameObject::Transform()
 {
@@ -24,47 +25,164 @@ mg::Scene* mg::GameObject::Scene() const noexcept
 	return m_pScene;
 }
 
-bool mg::GameObject::IsActive() const noexcept
+bool mg::GameObject::ActiveSelf() const noexcept
 {
-	return m_active;
+	return m_active && !m_destroyed;
+}
+
+bool mg::GameObject::ActiveInHieriarchy() const
+{
+	if (!m_activeDirty)
+	{
+		return m_activeInHieriarchy;
+	}
+
+	bool active{ ActiveSelf()};
+	
+
+	if (auto parent = m_transform.Parent())
+	{
+		active = active && parent->Owner().ActiveInHieriarchy();
+	}
+
+	m_activeInHieriarchy = active;
+	m_activeDirty = false;
+	return active;
 }
 
 
-void mg::GameObject::SetScene(mg::Scene* pScene)
+void mg::GameObject::MarkActiveDirty()
 {
-	m_pScene = pScene;
-
+	m_activeDirty = true;
 	for (size_t i = 0; i < Transform().ChildCount(); i++)
 	{
-		Transform().GetChildAt(i)->Owner().SetScene(pScene);
+		m_transform.GetChildAt(i)->Owner().MarkActiveDirty();
 	}
 }
 
-void mg::GameObject::SetActive(bool isActive)
+/// <summary>
+/// Set the scene pointer of this gameobject. This is only allowed to be used by Scene itself!
+/// </summary>
+/// <param name="pScene"></param>
+void mg::GameObject::SetScene(mg::Scene* pScene)
 {
-	m_active = isActive;
+	m_pScene = pScene;
+}
+
+
+void mg::GameObject::OnEnable()
+{
+	if (!m_awakened)
+	{
+		return;
+	}
+
+	if (!m_started)
+	{
+		Start();
+	}
 
 	for (size_t i = 0; i < Transform().ChildCount(); i++)
 	{
-		Transform().GetChildAt(i)->Owner().SetActive(isActive);
+		auto& child = m_transform.GetChildAt(i)->Owner();
+
+		if (child.ActiveSelf())
+		{
+			child.OnEnable();
+		}
+	}
+
+	for (auto& component : m_pComponents)
+	{
+		if (component->EnabledSelf())
+		{
+			component->OnEnable();
+		}
+	}
+}
+
+void mg::GameObject::OnDisable()
+{
+	if (!m_awakened)
+	{
+		return;
+	}
+
+	for (size_t i = 0; i < Transform().ChildCount(); i++)
+	{
+		auto& child = m_transform.GetChildAt(i)->Owner();
+
+		if (child.ActiveSelf())
+		{
+			child.OnDisable();
+		}
+	}
+
+	for (auto& component : m_pComponents)
+	{
+		if (!component->EnabledSelf())
+		{
+			continue;
+		}
+
+		component->OnDisable();
+	}
+}
+
+void mg::GameObject::SetActive(bool active)
+{
+	if (m_active == active)
+	{
+		return;
+	}
+
+
+	bool wasActive{ ActiveInHieriarchy() };
+	
+	m_active = active;
+	MarkActiveDirty();
+
+	bool isActive{ ActiveInHieriarchy() };
+
+	if (!wasActive && isActive)
+	{
+		OnEnable();
+	}
+	else if (wasActive && !isActive)
+	{
+		OnDisable();
 	}
 }
 
 void mg::GameObject::Destroy()
 {
-	m_destroyed = true;
-	for (size_t i = 0; i < Transform().ChildCount(); i++)
+	if (m_destroyed)
 	{
-		Transform().GetChildAt(i)->Owner().Destroy();
+		return;
 	}
+
+	for (size_t i = 0; i < m_transform.ChildCount(); i++)
+	{
+		m_transform.GetChildAt(i)->Owner().Destroy();
+	}
+
+	SetActive(false);
+	m_destroyed = true;
 }
 
 #pragma region Game_Loop
 void mg::GameObject::Awake()
 {
+	m_awakened = true;
+
 	for (auto& component : m_pComponents)
 	{
 		component->Awake();
+
+		if (component->ActiveAndEnabled())
+		{
+			component->OnEnable();
+		}
 	}
 }
 
@@ -74,6 +192,7 @@ void mg::GameObject::Start()
 	{
 		component->Start();
 	}
+	m_started = true;
 }
 
 void mg::GameObject::OnCollisionEnter(mg::CollisionData const& data)
@@ -100,33 +219,34 @@ void mg::GameObject::OnCollisionExit(mg::CollisionData const& data)
 	}
 }
 
-void mg::GameObject::Update()
-{
-	for (auto& component : m_pComponents)
-	{
-		if (component->IsActive())
-		{
-			component->Update();
-		}
-	}
-}
-
 void mg::GameObject::FixedUpdate()
 {
 	for (auto& component : m_pComponents)
 	{
-		if (component->IsActive())
+		if (component->ActiveAndEnabled())
 		{
 			component->FixedUpdate();
 		}
 	}
 }
 
+void mg::GameObject::Update()
+{
+	for (auto& component : m_pComponents)
+	{
+		if (component->ActiveAndEnabled())
+		{
+			component->Update();
+		}
+	}
+}
+
+
 void mg::GameObject::Render() const
 {
 	for (auto& component : m_pComponents)
 	{
-		if (component->IsActive())
+		if (component->ActiveAndEnabled())
 		{
 			component->Render();
 		}
@@ -137,11 +257,23 @@ void mg::GameObject::LateUpdate()
 {
 	for (auto& component : m_pComponents)
 	{
-		if (component->IsActive())
+		if (component->ActiveAndEnabled())
 		{
 			component->LateUpdate();
 		}
 	}
+}
+
+void mg::GameObject::Cleanup()
+{
+	std::erase_if(m_pComponents,
+		[&](auto const& component)
+		{
+			return std::ranges::find( m_pPendingRemoval, component.get()) != m_pPendingRemoval.end();
+		});
+
+
+	m_pPendingRemoval.clear();
 }
 #pragma endregion
 
@@ -149,10 +281,5 @@ mg::GameObject::GameObject(std::string_view name, glm::vec2 const& pos)
 	: m_transform(*this)
 	, Name(name)
 {
-	Transform().SetWorldPosition(pos);
-}
-
-mg::GameObject::~GameObject()
-{
-	m_pComponents.clear();
+	m_transform.SetWorldPosition(pos);
 }

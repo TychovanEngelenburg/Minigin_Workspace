@@ -18,12 +18,8 @@ namespace mg
 		Scene const& CreateSceneAt(size_t sceneId);
 		Scene* SetActiveScene(size_t sceneId);
 
-		void Start();
-		void FixedUpdate();
-		void HandleInput();
-		void Update();
+		void Tick();
 		void Render() const;
-		void LateUpdate();
 
 		SceneManager();
 		virtual ~SceneManager();
@@ -35,9 +31,11 @@ namespace mg
 	private:
 		friend class Singleton<SceneManager>;
 
+		Scene* m_pActiveScene{};
 		std::vector<std::unique_ptr<Scene>> m_pScenes{};
+		size_t m_activeSceneID{0};
 
-		size_t m_activeScene{0};
+		double m_lag{};
 	};
 }
 #endif // !SCENEMANAGER_H

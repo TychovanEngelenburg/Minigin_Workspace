@@ -23,16 +23,14 @@ namespace mg
 		/// </summary>
 		GameObject* GetObjectByName(std::string_view objName);
 
-		// TODO: Look if it would be better to implement similar to addcomponent.
 		void Add(std::unique_ptr<GameObject> object);
-		void Remove(GameObject const& object);
 
-		void Start();
-		void ProcessInput();
 		void FixedUpdate();
+		void ProcessInput();
 		void Update();
-		void Render() const;
 		void LateUpdate();
+		void Render() const;
+		void Cleanup();
 
 		Scene();
 

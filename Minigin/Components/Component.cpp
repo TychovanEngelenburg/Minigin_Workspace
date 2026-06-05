@@ -8,18 +8,44 @@ mg::GameObject* mg::Component::Owner() const noexcept
 	return m_pGameObject;
 }
 
-bool mg::Component::IsActive() const noexcept
+bool mg::Component::ActiveAndEnabled() const noexcept
 {
-	return m_active;
+	return m_enabled && Owner()->ActiveInHieriarchy();
 }
 
-void mg::Component::SetActive(bool isActive)
+bool mg::Component::EnabledSelf() const noexcept
 {
-	m_active = isActive;
+	return m_enabled;
+}
+
+void mg::Component::SetEnabled(bool enabled)
+{
+	if (m_enabled == enabled)
+	{
+		return;
+	}
+
+	m_enabled = enabled;
+
+	if (Owner()->ActiveInHieriarchy())
+	{
+		if (enabled)
+		{
+			OnEnable();
+		}
+		else
+		{
+			OnDisable();
+		}
+	}
 }
 
 #pragma region Game_Loop
 void mg::Component::Awake() {}
+
+void mg::Component::OnEnable() {}
+
+void mg::Component::OnDisable() {}
 
 void mg::Component::Start() {}
 
@@ -33,13 +59,13 @@ void mg::Component::FixedUpdate() {}
 
 void mg::Component::Update() {}
 
-void mg::Component::Render() const {}
-
 void mg::Component::LateUpdate() {}
+
+void mg::Component::Render() const {}
 #pragma endregion Game_Loop
 
 mg::Component::Component(mg::GameObject& owner)
 	: m_pGameObject{ &owner }
-	, m_active( true )
+	, m_enabled(true)
 {
 }

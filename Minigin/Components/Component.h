@@ -10,11 +10,15 @@ namespace mg
 	{
 	public:
 		mg::GameObject* Owner() const noexcept;
-		bool IsActive() const noexcept;
+		bool ActiveAndEnabled() const noexcept;
+		bool EnabledSelf() const noexcept;
 
-		void SetActive(bool isActive);
+		void SetEnabled(bool isActive);
 
 		virtual void Awake();
+
+		virtual void OnEnable();
+		virtual void OnDisable();
 		virtual void Start();
 
 		virtual void OnCollisionEnter(CollisionData const& data);
@@ -25,7 +29,7 @@ namespace mg
 		virtual void Update();
 		virtual void LateUpdate();
 		virtual void Render() const;
-		
+
 		virtual ~Component() = default;
 		Component(Component const& other) = delete;
 		Component(Component&& other) = delete;
@@ -37,7 +41,7 @@ namespace mg
 
 	private:
 		mg::GameObject* m_pGameObject;
-		bool m_active;
+		bool m_enabled{ true };
 	};
 }
 #endif // !COMPONENT_H

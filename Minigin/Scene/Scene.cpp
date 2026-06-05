@@ -21,12 +21,20 @@ mg::SceneCollisions& mg::Scene::CollisionSystem() const noexcept
 
 mg::GameObject* mg::Scene::GetObjectByName(std::string_view objName)
 {
-	return std::find_if(m_pObjects.begin(), m_pObjects.end(), [&objName](auto const& ptr)
+	auto it = std::find_if(m_pObjects.begin(), m_pObjects.end(),
+		[&objName](auto const& ptr)
 		{
 			return ptr->Name == objName;
-		})->get();
+		});
+
+
+	if (it != m_pObjects.end())
+	{
+		return it->get();
+	}
+	return nullptr;
 }
- 
+
 void mg::Scene::Add(std::unique_ptr<GameObject> object)
 {
 	assert(object != nullptr && "Cannot add a null GameObject to the scene.");
@@ -35,26 +43,16 @@ void mg::Scene::Add(std::unique_ptr<GameObject> object)
 	m_pObjects.emplace_back(std::move(object));
 }
 
-void mg::Scene::Remove(GameObject const& object)
-{
-	m_pObjects.erase(
-		std::remove_if(
-			m_pObjects.begin(),
-			m_pObjects.end(),
-			[&object](auto const& ptr) { return ptr.get() == &object; }
-		),
-		m_pObjects.end()
-	);
-}
-
 #pragma region Game_Loop
-void mg::Scene::Start()
+void mg::Scene::FixedUpdate()
 {
+	m_pCollisionSystem->Update();
+
 	for (auto& object : m_pObjects)
 	{
-		if (object->IsActive())
+		if (object->ActiveInHieriarchy())
 		{
-			object->Start();
+			object->FixedUpdate();
 		}
 	}
 }
@@ -64,37 +62,13 @@ void mg::Scene::ProcessInput()
 	m_pInputSystem->ProcessInput();
 }
 
-void mg::Scene::FixedUpdate()
-{
-	m_pCollisionSystem->Update();
-
-	for (auto& object : m_pObjects)
-	{
-		if (object->IsActive())
-		{
-			object->FixedUpdate();
-		}
-	}
-}
-
 void mg::Scene::Update()
 {
 	for (auto& object : m_pObjects)
 	{
-		if (object->IsActive())
+		if (object->ActiveInHieriarchy())
 		{
 			object->Update();
-		}
-	}
-}
-
-void mg::Scene::Render() const
-{
-	for (auto const& object : m_pObjects)
-	{
-		if (object->IsActive())
-		{
-			object->Render();
 		}
 	}
 }
@@ -104,17 +78,34 @@ void mg::Scene::LateUpdate()
 
 	for (auto const& object : m_pObjects)
 	{
-		if (object->IsActive())
+		if (object->ActiveInHieriarchy())
 		{
 			object->LateUpdate();
 		}
-
-
-		std::erase_if(m_pObjects, [](std::unique_ptr<GameObject> const& object)
-			{
-				return object->IsDestroyed();
-			});
 	}
+}
+
+void mg::Scene::Render() const
+{
+	for (auto const& object : m_pObjects)
+	{
+		if (object->ActiveInHieriarchy())
+		{
+			object->Render();
+		}
+	}
+}
+void mg::Scene::Cleanup()
+{
+	for (auto const& object : m_pObjects)
+	{
+		object->Cleanup();
+	}
+
+	std::erase_if(m_pObjects, [](auto const& object)
+		{
+			return object->IsDestroyed();
+		});
 }
 #pragma endregion Game_Loop
 

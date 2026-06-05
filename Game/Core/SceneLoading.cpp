@@ -124,8 +124,6 @@ void SceneLoading::LoadTestScene(mg::Scene& sceneOut)
 	auto& audioSystem = mg::SoundServiceLocator::Fetch();
 	audioSystem.PlayMusic({ "./Data/Audio_Tron1982/03_IO_Tower.wav", "music", -1 });
 	audioSystem.SetMusicVolume(.5f);
-
-	sceneOut.Start();
 }
 
 void SceneLoading::LoadMainMenuScene(mg::Scene& sceneOut)
@@ -148,6 +146,4 @@ void SceneLoading::LoadMainMenuScene(mg::Scene& sceneOut)
 		std::make_unique<StartGameCommand>(), mg::InputBinding::TriggerType::Released
 	);
 	sceneOut.InputSystem().AddBinding(std::move(startGameInput));
-
-	sceneOut.Start();
 }

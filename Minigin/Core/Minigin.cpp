@@ -96,21 +96,9 @@ void mg::Minigin::RunOneFrame()
 		}
 	}
 
-
-	m_lag += DeltaClock::DeltaTime();
-	while (m_lag >= DeltaClock::FixedDeltaTime())
-	{
-		SceneManager::Instance().FixedUpdate();
-		m_lag -= DeltaClock::FixedDeltaTime();
-	}
 	InputServiceLocator::Fetch().ProcessInput();
-	SceneManager::Instance().HandleInput();
-
-	SceneManager::Instance().Update();
-
+	SceneManager::Instance().Tick();
 	Renderer::Instance().Render();
-
-	SceneManager::Instance().LateUpdate();
 	ResourceManager::Instance().UnloadUnusedResources();
 }
 
@@ -155,10 +143,5 @@ mg::Minigin::~Minigin()
 
 	SDL_DestroyWindow(g_window);
 	g_window = nullptr;
-
-//#if !defined(_WIN32)
-//	SDL_QuitSubSystem(SDL_INIT_GAMEPAD);
-//#endif
-
 	SDL_Quit();
 }
