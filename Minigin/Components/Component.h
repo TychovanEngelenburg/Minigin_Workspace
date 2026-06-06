@@ -9,7 +9,7 @@ namespace mg
 	class Component
 	{
 	public:
-		mg::GameObject* Owner() const noexcept;
+		mg::GameObject* Object() const noexcept;
 		bool ActiveAndEnabled() const noexcept;
 		bool EnabledSelf() const noexcept;
 

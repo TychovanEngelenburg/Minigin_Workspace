@@ -11,6 +11,8 @@
 
 mg::SceneInput& mg::Scene::InputSystem() const noexcept
 {
+	assert(this); // Currently fails
+	assert(m_pInputSystem);
 	return *m_pInputSystem;
 }
 

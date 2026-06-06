@@ -84,13 +84,13 @@ void mg::SceneCollisions::Update()
 
 				if (std::find(m_pCollidingPairs.begin(), m_pCollidingPairs.end(), pair) == m_pCollidingPairs.end())
 				{
-					pair.first->Owner()->OnCollisionEnter({ pair.second });
-					pair.second->Owner()->OnCollisionEnter({ pair.first });
+					pair.first->Object()->OnCollisionEnter({ pair.second });
+					pair.second->Object()->OnCollisionEnter({ pair.first });
 				}
 				else
 				{
-					pair.first->Owner()->OnCollisionStay({ pair.second });
-					pair.second->Owner()->OnCollisionStay({ pair.first });
+					pair.first->Object()->OnCollisionStay({ pair.second });
+					pair.second->Object()->OnCollisionStay({ pair.first });
 				}
 
 				collidingPairs.push_back(pair);
@@ -102,8 +102,8 @@ void mg::SceneCollisions::Update()
 	{
 		if (std::find(collidingPairs.begin(), collidingPairs.end(), pair) == collidingPairs.end())
 		{
-			pair.first->Owner()->OnCollisionExit({ pair.second });
-			pair.second->Owner()->OnCollisionExit({ pair.first });
+			pair.first->Object()->OnCollisionExit({ pair.second });
+			pair.second->Object()->OnCollisionExit({ pair.first });
 		}
 	}
 

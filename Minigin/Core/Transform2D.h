@@ -10,7 +10,7 @@ namespace mg
 	class Transform2D final
 	{
 	public:
-		GameObject& Owner() noexcept;
+		GameObject& Object() noexcept;
 
 		glm::vec2 Forward() const noexcept;
 		glm::vec2 Right() const noexcept;

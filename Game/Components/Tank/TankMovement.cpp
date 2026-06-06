@@ -108,7 +108,7 @@ void TankMovement::SetMoveSpeed(float speed)
 
 void TankMovement::Awake()
 {
-	auto worldPos = Owner()->Transform().WorldPosition();
+	auto worldPos = Object()->Transform().WorldPosition();
 	m_currentTile = m_pGrid->WorldToGrid({ worldPos.x, worldPos.y });
 	m_targetTile = m_currentTile;
 }
@@ -134,7 +134,7 @@ void TankMovement::Move(float elapsedSec)
 {
 	auto distToMove = m_moveSpeed * elapsedSec;
 
-	auto newPos = Owner()->Transform().WorldPosition();
+	auto newPos = Object()->Transform().WorldPosition();
 
 	auto targetPos = m_pGrid->GridToWorld(m_targetTile);
 
@@ -174,5 +174,5 @@ void TankMovement::Move(float elapsedSec)
 		}
 	}
 
-	Owner()->Transform().SetWorldPosition(newPos);
+	Object()->Transform().SetWorldPosition(newPos);
 }

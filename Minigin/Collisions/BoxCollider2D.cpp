@@ -36,15 +36,16 @@ mg::BoxCollider2D::Bounds const& mg::BoxCollider2D::LocalBounds() const
 mg::OBB mg::BoxCollider2D::GetOBB() const
 {
 	OBB newOBB{};
-	auto const& worldPos{ Owner()->Transform().WorldPosition() };
-	auto const& worldRot{ Owner()->Transform().WorldRotationZ() };
+	auto const& worldPos{ Object()->Transform().WorldPosition() };
+	auto const& worldRot{ Object()->Transform().WorldRotationZ() };
 
 	glm::vec2 centerPos{ m_bounds.offset + m_bounds.size * .5f };
 
-	glm::vec2 rotatedOffset = glm::vec2(
-		cos(worldRot) * centerPos.x - sin(worldRot) * centerPos.y,
-		sin(worldRot) * centerPos.x + cos(worldRot) * centerPos.y
-	);
+	auto forwardDir = Object()->Transform().Forward();
+	glm::vec2 rotatedOffset{
+		forwardDir.x * centerPos.x - forwardDir.y * centerPos.y,
+		forwardDir.y * centerPos.x + forwardDir.x * centerPos.y
+	};
 
 	newOBB.center = worldPos + rotatedOffset;
 
@@ -57,15 +58,18 @@ mg::OBB mg::BoxCollider2D::GetOBB() const
 	return newOBB;
 }
 
-void mg::BoxCollider2D::Awake()
+void mg::BoxCollider2D::OnEnable()
 {
-	Owner()->Scene()->CollisionSystem().Register(this);
+	Object()->Scene()->CollisionSystem().Register(this);
+}
+
+void mg::BoxCollider2D::OnDisable()
+{
+	Object()->Scene()->CollisionSystem().Unregister(this);
 }
 
 void mg::BoxCollider2D::Render() const
 {
-
-
 	const auto& obb{ GetOBB() };
 
 	Renderer::Instance().DrawRect({
@@ -79,9 +83,4 @@ void mg::BoxCollider2D::Render() const
 mg::BoxCollider2D::BoxCollider2D(mg::GameObject& owner)
 	: Component(owner)
 {
-}
-
-mg::BoxCollider2D::~BoxCollider2D()
-{
-	Owner()->Scene()->CollisionSystem().Unregister(this);
 }

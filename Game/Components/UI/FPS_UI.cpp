@@ -12,7 +12,7 @@
 #pragma region Game_Loop
 void FPS_UI::Awake()
 {
-	m_pTextComp = Owner()->GetComponent<mg::TextComponent>();
+	m_pTextComp = Object()->GetComponent<mg::TextComponent>();
 	assert(m_pTextComp && "FPS_UI requires a TextComponent on it's GameObject!");
 }
 

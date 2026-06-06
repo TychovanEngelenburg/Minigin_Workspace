@@ -40,26 +40,26 @@ void RotateWithTank::SetRotation()
 
 		case TankMovement::Direction::Up:
 		{
-			Owner()->Transform().SetWorldRotation(-90.f);
+			Object()->Transform().SetWorldRotation(-90.f);
 			break;
 		}
 
 		case TankMovement::Direction::Down:
 		{
-			Owner()->Transform().SetWorldRotation(90.f);
+			Object()->Transform().SetWorldRotation(90.f);
 			break;
 		}
 
 		case TankMovement::Direction::Left:
 		{
-			Owner()->Transform().SetWorldRotation(180.f);
+			Object()->Transform().SetWorldRotation(180.f);
 			break;
 		}
 
 		default:
 		case TankMovement::Direction::Right:
 		{
-			Owner()->Transform().SetWorldRotation(0.f);
+			Object()->Transform().SetWorldRotation(0.f);
 			break;
 		}
 	}

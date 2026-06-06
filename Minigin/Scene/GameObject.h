@@ -97,15 +97,15 @@ namespace mg
 		if (m_awakened)
 		{
 			component->Awake();
-		}
 
-		if (component->ActiveAndEnabled())
-		{
-			if (m_started)
+			if (component->ActiveAndEnabled())
 			{
-				component->Start();
+				if (m_started)
+				{
+					component->Start();
+				}
+				component->OnEnable();
 			}
-			component->OnEnable();
 		}
 
 		auto& returnRef = *component;

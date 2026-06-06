@@ -42,7 +42,7 @@ bool mg::GameObject::ActiveInHieriarchy() const
 
 	if (auto parent = m_transform.Parent())
 	{
-		active = active && parent->Owner().ActiveInHieriarchy();
+		active = active && parent->Object().ActiveInHieriarchy();
 	}
 
 	m_activeInHieriarchy = active;
@@ -56,7 +56,7 @@ void mg::GameObject::MarkActiveDirty()
 	m_activeDirty = true;
 	for (size_t i = 0; i < Transform().ChildCount(); i++)
 	{
-		m_transform.GetChildAt(i)->Owner().MarkActiveDirty();
+		m_transform.GetChildAt(i)->Object().MarkActiveDirty();
 	}
 }
 
@@ -84,7 +84,7 @@ void mg::GameObject::OnEnable()
 
 	for (size_t i = 0; i < Transform().ChildCount(); i++)
 	{
-		auto& child = m_transform.GetChildAt(i)->Owner();
+		auto& child = m_transform.GetChildAt(i)->Object();
 
 		if (child.ActiveSelf())
 		{
@@ -110,7 +110,7 @@ void mg::GameObject::OnDisable()
 
 	for (size_t i = 0; i < Transform().ChildCount(); i++)
 	{
-		auto& child = m_transform.GetChildAt(i)->Owner();
+		auto& child = m_transform.GetChildAt(i)->Object();
 
 		if (child.ActiveSelf())
 		{
@@ -163,7 +163,7 @@ void mg::GameObject::Destroy()
 
 	for (size_t i = 0; i < m_transform.ChildCount(); i++)
 	{
-		m_transform.GetChildAt(i)->Owner().Destroy();
+		m_transform.GetChildAt(i)->Object().Destroy();
 	}
 
 	SetActive(false);
@@ -179,10 +179,15 @@ void mg::GameObject::Awake()
 	{
 		component->Awake();
 
-		if (component->ActiveAndEnabled())
-		{
-			component->OnEnable();
-		}
+		//if (component->ActiveAndEnabled())
+		//{
+		//	component->OnEnable();
+		//}
+	}
+
+	if (ActiveInHieriarchy())
+	{
+		OnEnable();
 	}
 }
 

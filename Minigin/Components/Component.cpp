@@ -3,14 +3,14 @@
 #include "Minigin/Scene/GameObject.h"
 #include "Minigin/Collisions/CollisionSystem.h"
 
-mg::GameObject* mg::Component::Owner() const noexcept
+mg::GameObject* mg::Component::Object() const noexcept
 {
 	return m_pGameObject;
 }
 
 bool mg::Component::ActiveAndEnabled() const noexcept
 {
-	return m_enabled && Owner()->ActiveInHieriarchy();
+	return m_enabled && Object()->ActiveInHieriarchy();
 }
 
 bool mg::Component::EnabledSelf() const noexcept
@@ -27,7 +27,7 @@ void mg::Component::SetEnabled(bool enabled)
 
 	m_enabled = enabled;
 
-	if (Owner()->ActiveInHieriarchy())
+	if (Object()->ActiveInHieriarchy())
 	{
 		if (enabled)
 		{

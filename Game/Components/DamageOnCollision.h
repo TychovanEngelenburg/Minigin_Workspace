@@ -11,12 +11,16 @@ namespace mg
 class DamageOnCollision final : public mg::Component
 {
 public:
-	void OnCollisionEnter(mg::CollisionData const& data) override;
+	void SetKillerId(int id);
 
-	DamageOnCollision(mg::GameObject& owner, int damageAmount);
+	void OnCollisionEnter(mg::CollisionData const& data) override;
+	void SetDamageAmount(int amount);
+
+	DamageOnCollision(mg::GameObject& owner);
 
 private:
-	int m_damageAmount;
+	int m_damageAmount{1};
+	int m_killerId{ -1 };
 };
 
 #endif // !DAMAGE_ON_COLLISION_H

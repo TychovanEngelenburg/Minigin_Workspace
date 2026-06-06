@@ -53,7 +53,7 @@ void mg::Sprite::SetPivot(glm::vec2 const& pivot)
 #pragma region Game_Loop
 void mg::Sprite::Render() const
 {
-	Renderer::Instance().RenderTexture(*m_pTexture, Owner()->Transform(), m_pivot, m_sourceRect, m_xFlipped, m_yFlipped);
+	Renderer::Instance().RenderTexture(*m_pTexture, Object()->Transform(), m_pivot, m_sourceRect, m_xFlipped, m_yFlipped);
 }
 #pragma endregion Game_Loop
 

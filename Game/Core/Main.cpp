@@ -50,7 +50,7 @@ static void load()
 	//audioSystem.PlayMusic({ "./Data/Audio_Tron1982/11 - Sounds (Derezzed).wav", "derezzed", -1});
 
 
-	GameContext::Instance().SetState(std::make_unique<MainMenuState>());
+	GameContext::Instance().Init();
 
 	//SceneLoading::LoadTestScene(scene);
 

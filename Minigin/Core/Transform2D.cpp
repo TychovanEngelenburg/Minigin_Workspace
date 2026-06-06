@@ -3,7 +3,7 @@
 #include "Minigin/Scene/GameObject.h"
 #include <cassert>
 
-mg::GameObject& mg::Transform2D::Owner() noexcept
+mg::GameObject& mg::Transform2D::Object() noexcept
 {
 	return *m_pGameObject;
 }
@@ -84,7 +84,7 @@ size_t mg::Transform2D::ChildCount() const noexcept
 
 mg::Transform2D* mg::Transform2D::GetChildAt(size_t idx) const noexcept
 {
-	assert(idx >= m_pChildren.size() && "Index must be in range of children!");
+	assert(idx < m_pChildren.size() && "Index must be in range of children!");
 
 	if (idx >= m_pChildren.size())
 	{

@@ -1,48 +1,54 @@
 #ifndef GAME_STATES_H
 #define GAME_STATES_H
 
+#include "Game/Events/GameEvents.h"
+
 #include <memory>
 
-enum class GameEvent
-{
-	PlayerDied,
-	AllEnemiesDead,
-
-	QuitToMenu,
-	StartPlaying,
-	PlayAgain
-};
-
-class IGameState
+class GameState
 {
 public:
 	virtual void OnEnter() {}
 	virtual void OnExit() {}
 
-	virtual std::unique_ptr<IGameState> HandleEvent(GameEvent const& event) = 0;
+	[[nodiscard]] virtual std::unique_ptr<GameState> HandleGameEvent(GameEvent const& event) = 0;
+	
+	GameState() = default;
 
-	virtual ~IGameState() = default;
+	virtual ~GameState() = default;
+	GameState(GameState const& other) = delete;
+	GameState(GameState&& other) = delete;
+	GameState& operator=(GameState const& other) = delete;
+	GameState& operator=(GameState&& other) = delete;
 };
 
-class MainMenuState final : public IGameState
+class MainMenuState final : public GameState
 {
 public:
 	void OnEnter() override;
-	std::unique_ptr<IGameState> HandleEvent(GameEvent const& event) override;
+	std::unique_ptr<GameState> HandleGameEvent(GameEvent const& event) override;
 };
 
-class PlayingState final : public IGameState
+class PlayingState final : public GameState
 {
 public:
-	std::unique_ptr<IGameState> HandleEvent(GameEvent const& event) override;
+	void OnEnter() override;
+	[[nodiscard]] std::unique_ptr<GameState> HandleGameEvent(GameEvent const& event) override;
+
+	bool IsWin() const;
+	bool IsGameOver() const;
+
+private:
+	int m_playersAlive{ 0 };
+	int m_enemiesAlive{ 0 };
 };
 
 
-class GameOverState final : public IGameState
+class GameOverState final : public GameState
 {
 public:
 	void OnEnter() override;
 
-	std::unique_ptr<IGameState> HandleEvent(GameEvent const& event) override;
+	[[nodiscard]] std::unique_ptr<GameState> HandleGameEvent(GameEvent const& event) override;
 };
 #endif // GAME_STATES_H

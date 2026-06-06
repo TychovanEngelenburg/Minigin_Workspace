@@ -10,7 +10,7 @@
 #include <Minigin/Collisions/BoxCollider2D.h>
 #include <Minigin/Components/Sprite.h>
 
-BulletMovement* BulletPool::SpawnBullet(BulletConfig const& config)
+BulletMovement* BulletPool::SpawnBullet(BulletConfig const& config, int killerId)
 {
 	if (m_FreeList.empty())
 	{
@@ -21,6 +21,7 @@ BulletMovement* BulletPool::SpawnBullet(BulletConfig const& config)
 	m_FreeList.pop();
 
 	bullet->SetBounces(config.Bounces);
+	bullet->SetSpeed(config.Speed);
 
 	bullet->Sprite().SetSprite(config.Sprite.SheetPos);
 	bullet->Sprite().SetPivot(config.ColliderSize / 2.f);
@@ -30,6 +31,8 @@ BulletMovement* BulletPool::SpawnBullet(BulletConfig const& config)
 	bullet->Collider().CollisionLayer = config.Collisions.Layer;
 	bullet->Collider().CollisionMask  = config.Collisions.LayerMask;
 
+	bullet->CollissionDamage().SetKillerId(killerId);
+	bullet->CollissionDamage().SetDamageAmount(config.Damage);
 	return bullet;
 }
 
@@ -62,13 +65,13 @@ void BulletPool::CreateBullets(size_t count)
 		auto& movementComp = bulletObj->AddComponent<BulletMovement>(m_Grid);
 		movementComp.SetPool(this);
 
-		bulletObj->AddComponent<DamageOnCollision>(1);
+		bulletObj->AddComponent<DamageOnCollision>();
 		bulletObj->AddComponent<mg::Sprite>(BulletSpriteSheet);
 		bulletObj->AddComponent<mg::BoxCollider2D>();
 
 		bulletObj->SetActive(false);
 
 		m_FreeList.push(&movementComp);
-		Owner()->Scene()->Add(std::move(bulletObj));
+		Object()->Scene()->Add(std::move(bulletObj));
 	}
 }

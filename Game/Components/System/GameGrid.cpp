@@ -11,7 +11,7 @@
 
 GameGrid::GameGrid(mg::GameObject& owner, std::filesystem::path const& filePath, float tileSize)
 	: Component(owner)
-	, m_tileSize( tileSize )
+	, m_tileSize(tileSize)
 {
 	LoadFromFile(mg::ResourceManager::Instance().DataPath() / filePath);
 	m_pTileSheet = mg::ResourceManager::Instance().LoadTexture("T_TileSheet_Tron_BattleTanks.png");
@@ -81,14 +81,14 @@ bool GameGrid::IsPath(glm::ivec2 const& gridPos) const
 glm::ivec2 GameGrid::WorldToGrid(glm::vec2 const& worldPos) const
 {
 	return glm::ivec2(
-		floor((worldPos.x - Owner()->Transform().WorldPosition().x) / m_tileSize),
-		floor((worldPos.y - Owner()->Transform().WorldPosition().y) / m_tileSize)
+		floor((worldPos.x - Object()->Transform().WorldPosition().x) / m_tileSize),
+		floor((worldPos.y - Object()->Transform().WorldPosition().y) / m_tileSize)
 	);
 }
 
 glm::vec2 GameGrid::GridToWorld(glm::ivec2 const& gridPos) const
 {
-	return glm::vec2(Owner()->Transform().WorldPosition() + static_cast<glm::vec2>(gridPos) * m_tileSize);
+	return glm::vec2(Object()->Transform().WorldPosition() + static_cast<glm::vec2>(gridPos) * m_tileSize);
 }
 
 
@@ -103,7 +103,7 @@ glm::ivec2 GameGrid::IdToGrid(int idx) const
 
 void GameGrid::Render() const
 {
-	glm::vec2 gridPos{ Owner()->Transform().LocalPosition() };
+	glm::vec2 gridPos{ Object()->Transform().LocalPosition() };
 	SourceRect bgDst{ gridPos.x, gridPos.y, m_tileSize * m_cols, m_tileSize * m_rows };
 	mg::Renderer::Instance().RenderTexture(*m_pBackgroundTexture, bgDst);
 
@@ -165,8 +165,8 @@ void GameGrid::ComputeConnections()
 			auto const* up = GetTile({ x, y - 1 });
 
 			bool hor{ left && left->Walkable };
-			bool vert {up && up->Walkable
-		};
+			bool vert{ up && up->Walkable
+			};
 
 			if (hor && vert)
 			{
@@ -219,10 +219,26 @@ void GameGrid::ProcessLine(std::string const& line)
 				break;
 			}
 
-			case 'P':
+			case '0':
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9':
 			{
 				m_tiles.push_back(Tile{ false, false });
-				m_playerSpawns.push_back(gridPos);
+
+				auto digit = static_cast<int>(tile - '0');
+				if ( m_playerSpawns.size() <= digit)
+				{
+					m_playerSpawns.resize(digit + 1);
+				}
+				m_playerSpawns[digit] = gridPos;
+				//m_playerSpawns.push_back(gridPos);
 				break;
 			}
 
@@ -242,7 +258,6 @@ void GameGrid::ProcessLine(std::string const& line)
 	}
 
 	++m_rows;
-
 }
 
 void GameGrid::LoadFromFile(std::filesystem::path const& filePath)
@@ -263,7 +278,6 @@ void GameGrid::LoadFromFile(std::filesystem::path const& filePath)
 
 	std::string line;
 	char ch{};
-
 	while (file.get(ch))
 	{
 		if (ch == '\n' || ch == '\r')
@@ -281,12 +295,12 @@ void GameGrid::LoadFromFile(std::filesystem::path const& filePath)
 	ComputeWalkables();
 	ComputeConnections();
 
-	for (int y = 0; y < m_rows; y++)
-	{
-		for (int x = 0; x < m_cols; x++)
-		{
-			std::cout << (GetTile({ x, y })->Walkable ? "." : (GetTile({ x, y })->IsWall ? "#" : " "));
-		}
-		std::cout << '\n';
-	}
+	//for (int y = 0; y < m_rows; y++)
+	//{
+	//	for (int x = 0; x < m_cols; x++)
+	//	{
+	//		std::cout << (GetTile({ x, y })->Walkable ? "." : (GetTile({ x, y })->IsWall ? "#" : " "));
+	//	}
+	//	std::cout << '\n';
+	//}
 }

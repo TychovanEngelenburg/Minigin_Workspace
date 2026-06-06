@@ -12,9 +12,7 @@ class GameGrid;
 class BulletPool final : public mg::Component
 {
 public:
-
-
-    BulletMovement* SpawnBullet(BulletConfig const& config);
+    BulletMovement* SpawnBullet(BulletConfig const& config, int killerId = -1);
     
     void ReturnBullet(BulletMovement* bullet);
     void Awake() override;

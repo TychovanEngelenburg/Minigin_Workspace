@@ -21,33 +21,31 @@ BulletConfig const& TankBarrel::Config() const noexcept
 
 void TankBarrel::Shoot()
 {
-	auto& transform = Owner()->Transform();
-	auto angle = glm::radians(transform.WorldRotationZ());
-
-
-	glm::vec2 forwardDir
-	{
-		cos(angle),
-		sin(angle)
-	};
+	auto& transform = Object()->Transform();
+	auto forwardDir = Object()->Transform().Forward();
 
 	glm::vec2 spawnPos{ transform.WorldPosition() +  forwardDir * m_barrelLenght};
 	spawnPos -= glm::vec2{ m_config.ColliderSize.x * 0.5f, m_config.ColliderSize.y * 0.5f };
 
 	if (m_pBulletPool)
 	{
-		auto* bullet = m_pBulletPool->SpawnBullet(m_config);
+		auto* bullet = m_pBulletPool->SpawnBullet(m_config, m_killerId);
 		
 		if (!bullet)
 		{
 			return;
 		}
 
-		bullet->Owner()->Transform().SetWorldPosition(spawnPos);
+		bullet->Object()->Transform().SetWorldPosition(spawnPos);
 		bullet->Activate(spawnPos + forwardDir, forwardDir);
 	}
 
 	m_currentCooldown = m_cooldownDuration;
+}
+
+void TankBarrel::SetKillerId(int id)
+{
+	m_killerId = id;
 }
 
 void TankBarrel::SetBulletPool(BulletPool* pool)

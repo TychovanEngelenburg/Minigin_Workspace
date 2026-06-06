@@ -1,46 +1,61 @@
 #ifndef GAME_CONTEXT_H
 #define GAME_CONTEXT_H
 
-#include "GameStates.h"
+#include "Game/Core/GameStates.h"
+#include "Game/Core/PlayerSession.h"
+#include "Game/Events/GameEvents.h"
 
 #include <Minigin/Core/Singleton.h>
 
 #include <memory>
+#include <array>
+#include <vector>
+#include <filesystem>
 
 class GameContext final : public mg::Singleton<GameContext>
 {
 public:
-	enum class Mode
+	enum class GameMode
 	{
 		Singleplayer,
 		Coop,
-		Versus
+		Versus,
+		end
 	};
 
-	Mode const& GetMode() const noexcept;
+	struct LevelDefinition
+	{
+		std::filesystem::path File;
+	};
 
-	void LoadMainMenu();
-	void StartGame(/*Mode mode*/);
-	void NextLevel();
-	void LoadScoreboard();
+	GameMode const& Mode() const noexcept;
+	std::vector<LevelDefinition> const& Levels() const;
+	size_t const& CurrentLevel() const noexcept;
 
-	void SetState(std::unique_ptr<IGameState> newState);
-	void HandleEvent(GameEvent const& event);
+	size_t ActivePlayerCount() const;
+	PlayerSession& GetPlayer(size_t index);
+
+	void AdvanceLevel();
+
+	void SetupGame(GameMode const& mode);
+	void Init();
+	void ToggleGamemode();
+
+	void HandleGameEvent(GameEvent const& event);
+	void FlushEvents();
 
 private:
 	friend class Singleton<GameContext>;
 
-	Mode m_mode{ Mode::Singleplayer };
-	size_t m_currentLevelScene{};
+	void TransitionTo(std::unique_ptr<GameState> state);
 
-	size_t m_menuScene{};
-	size_t m_levelScene{};
-	size_t m_scoreboardScene{};
+	std::unique_ptr<GameState> m_state{};
+	std::vector <GameEvent> m_eventQueue{};
 
-	std::unique_ptr<IGameState> m_state{};
 
-	// TODo: Level pre-caching
-	// size_t m_cachedScene;
-
+	std::vector<LevelDefinition> m_levels;
+	std::array<PlayerSession, 2> m_players{};
+	size_t m_currentLevel{};
+	GameMode m_mode{ GameMode::Singleplayer };
 };
 #endif //GAME_CONTEXT_H

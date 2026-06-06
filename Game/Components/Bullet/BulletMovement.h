@@ -12,6 +12,7 @@ namespace mg
 	class Sprite;
 };
 
+class DamageOnCollision;
 class GameGrid;
 class BulletPool;
 
@@ -20,9 +21,11 @@ class BulletMovement final : public mg::Component
 public:
 	mg::BoxCollider2D& Collider() const noexcept;
 	mg::Sprite& Sprite() const noexcept;
+	DamageOnCollision& CollissionDamage() const noexcept;
 
 	void SetPool(BulletPool* pPool);
 	void SetBounces(int bounces);
+	void SetSpeed(float speed);
 
 	void Activate(glm::vec2 const& pos, glm::vec2 const& dir);
 	void Destroy();
@@ -37,6 +40,7 @@ private:
 	BulletPool* m_pPool{};
 	GameGrid* m_pGrid;
 
+	DamageOnCollision* m_pCollisionDamage{};
 	mg::BoxCollider2D* m_pCollider{};
 	mg::Sprite* m_pSprite{};
 
@@ -46,7 +50,7 @@ private:
 	int m_bounceCount{};
 
 	glm::vec2 m_direction{1.f, 1.f};
-	glm::vec2 m_speed{100.f};
+	float m_speed{100.f};
 };
 
 #endif // !PLAYER_BULLET_H

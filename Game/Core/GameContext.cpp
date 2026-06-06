@@ -1,79 +1,133 @@
-#include "Game/Core/GameContext.h"
+#include "GameContext.h"
 
-#include "SceneLoading.h"
+#include "Game/Core/SceneLoading.h"
 
 #include <Minigin/Scene/SceneManager.h>
 
-GameContext::Mode const& GameContext::GetMode() const noexcept
+#include <cassert>
+
+
+GameContext::GameMode const& GameContext::Mode() const noexcept
 {
 	return m_mode;
 }
 
-void GameContext::LoadMainMenu()
+std::vector<GameContext::LevelDefinition> const& GameContext::Levels() const
 {
-	if (m_menuScene == m_currentLevelScene
-		|| m_currentLevelScene == m_scoreboardScene
-		|| !mg::SceneManager::Instance().GetScene(m_menuScene))
+	return m_levels;
+}
+
+size_t const& GameContext::CurrentLevel() const noexcept
+{
+	return m_currentLevel;
+}
+
+/// <summary>
+/// Return the amount of players whom are playing on the "player" team.
+/// </summary>
+/// <returns></returns>
+size_t GameContext::ActivePlayerCount() const
+{
+	if (m_mode == GameMode::Versus)
 	{
-		m_menuScene = mg::SceneManager::Instance().CreateScene();
-		SceneLoading::LoadMainMenuScene(*mg::SceneManager::Instance().GetScene(m_menuScene));
+		return 1;
 	}
 
-	mg::SceneManager::Instance().SetActiveScene(m_menuScene);
+	return m_players.size();
 }
 
-void GameContext::StartGame(/*Mode mode*/)
+PlayerSession& GameContext::GetPlayer(size_t index)
 {
-	//TODO: actually implement this function with gamemodes.
+	assert(index < m_players.size());
+	return m_players[index];
+}
 
-	if (m_currentLevelScene == m_menuScene
-		|| m_currentLevelScene == m_scoreboardScene
-		|| !mg::SceneManager::Instance().GetScene(m_currentLevelScene))
+
+void GameContext::AdvanceLevel()
+{
+	assert(!m_levels.empty());
+	m_currentLevel = ++m_currentLevel % m_levels.size();
+}
+
+void GameContext::SetupGame(GameMode const& mode)
+{
+	m_mode = mode;
+	m_currentLevel = 0;
+
+	for (size_t i = 0; i < m_players.size(); ++i)
 	{
-		m_currentLevelScene = mg::SceneManager::Instance().CreateScene();
+		m_players[i] = PlayerSession{ static_cast<int>(i), 4 };
 	}
-	else
+
+
+	switch (mode)
 	{
-		mg::SceneManager::Instance().CreateSceneAt(m_currentLevelScene);
+		case GameMode::Singleplayer:
+		case GameMode::Coop:
+		case GameMode::Versus:
+		default:
+		{
+			m_levels =
+			{
+				{ "LevelData/01.lvl" }//,
+				//{ "LevelData/02.lvl" },
+				//{ "LevelData/03.lvl" }
+			};
+			break;
+		}
 	}
-	SceneLoading::LoadTestScene(*mg::SceneManager::Instance().GetScene(m_currentLevelScene));
-
-	mg::SceneManager::Instance().SetActiveScene(m_currentLevelScene);
 }
 
-void GameContext::NextLevel()
+void GameContext::Init()
 {
-	// TODO: Actually implement this
-
-	//m_currentLevel += m_currentLevel % m_levels.size();
+	TransitionTo(std::make_unique<MainMenuState>());
 }
 
-void GameContext::LoadScoreboard()
+void GameContext::ToggleGamemode()
 {
-	// TODO: Actually implement this.
+	int modeId = static_cast<int>(m_mode);
+	modeId = ++modeId % static_cast<int>(GameMode::end);
+
+	m_mode = static_cast<GameMode>(modeId);
 }
 
-void GameContext::SetState(std::unique_ptr<IGameState> newState)
+void GameContext::HandleGameEvent(GameEvent const& event)
+{
+	m_eventQueue.push_back(event);
+
+}
+
+void GameContext::FlushEvents()
+{
+	std::vector<GameEvent> currentEvents{};
+	std::swap(m_eventQueue, currentEvents);
+
+	if (!m_state)
+	{
+		return;
+	}
+	for (auto& event : currentEvents)
+	{
+		if (auto newState = m_state->HandleGameEvent(event))
+		{
+			TransitionTo(std::move(newState));
+			//m_pendingState = std::move(newState);
+		}
+	}
+}
+
+
+void GameContext::TransitionTo(std::unique_ptr<GameState> state)
 {
 	if (m_state)
 	{
 		m_state->OnExit();
 	}
 
-	m_state = std::move(newState);
-	m_state->OnEnter();
-}
+	m_state = std::move(state);
 
-void GameContext::HandleEvent(GameEvent const& event)
-{
-	if (!m_state) 
+	if (m_state)
 	{
-		return;
-	}
-
-	if (auto newState = m_state->HandleEvent(event))
-	{
-		SetState(std::move(newState));
+		m_state->OnEnter();
 	}
 }
-

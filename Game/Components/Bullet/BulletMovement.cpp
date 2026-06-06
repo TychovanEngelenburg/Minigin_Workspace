@@ -2,6 +2,7 @@
 
 #include "Game/Components/System/GameGrid.h"
 #include "Game/Components/System/BulletPool.h"
+#include "Game/Components/DamageOnCollision.h"
 
 #include <Minigin/Scene/GameObject.h>
 #include <Minigin/Core/DeltaClock.h>
@@ -20,6 +21,11 @@ mg::Sprite& BulletMovement::Sprite() const noexcept
 	return  *m_pSprite;
 }
 
+DamageOnCollision& BulletMovement::CollissionDamage() const noexcept
+{
+	return *m_pCollisionDamage;
+}
+
 void BulletMovement::SetPool(BulletPool* pPool)
 {
 	m_pPool = pPool;
@@ -30,16 +36,21 @@ void BulletMovement::SetBounces(int bounces)
 	m_maxBounces = bounces;
 }
 
+void BulletMovement::SetSpeed(float speed)
+{
+	m_speed = speed;
+}
+
 void BulletMovement::Destroy()
 {
 	if (m_pPool)
 	{
-		Owner()->SetActive(false);
+		Object()->SetActive(false);
 		m_pPool->ReturnBullet(this);
 	}
 	else
 	{
-		Owner()->Destroy();
+		Object()->Destroy();
 	}
 }
 
@@ -58,16 +69,18 @@ void BulletMovement::Activate(glm::vec2 const& pos, glm::vec2 const& dir)
 	m_direction = dir;
 	m_bounceCount = 0;
 
-	Owner()->SetActive(true);
+	Object()->SetActive(true);
 }
 
 void BulletMovement::Awake()
 {
-	m_pCollider = Owner()->GetComponent<mg::BoxCollider2D>();
-	m_pSprite = Owner()->GetComponent<mg::Sprite>();
+	m_pCollider = Object()->GetComponent<mg::BoxCollider2D>();
+	m_pSprite = Object()->GetComponent<mg::Sprite>();
+	m_pCollisionDamage = Object()->GetComponent<DamageOnCollision>();
 
 	assert(m_pCollider && "Bullet gameobject must have a collider!");
 	assert(m_pSprite && "Bullet gameobject must have a sprite!");
+	assert(m_pCollisionDamage && "Bullet gameobject must have a collision damage component!");
 }
 
 void BulletMovement::OnCollisionEnter(mg::CollisionData const&)
@@ -78,7 +91,7 @@ void BulletMovement::OnCollisionEnter(mg::CollisionData const&)
 
 void BulletMovement::FixedUpdate()
 {
-	auto worldPos = Owner()->Transform().WorldPosition();
+	auto worldPos = Object()->Transform().WorldPosition();
 
 	glm::vec2 displacement = m_direction * m_speed * static_cast<float>(mg::DeltaClock::FixedDeltaTime());
 
@@ -139,7 +152,7 @@ void BulletMovement::FixedUpdate()
 		}
 	}
 
-	Owner()->Transform().SetWorldPosition(worldPos);
+	Object()->Transform().SetWorldPosition(worldPos);
 
 	m_currentTile = m_pGrid->WorldToGrid(worldPos);
 }

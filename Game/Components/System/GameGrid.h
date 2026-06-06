@@ -31,6 +31,32 @@ struct Tile
 class GameGrid final : public mg::Component
 {
 public:
+	// Unused, possible example
+	struct PlayerSpawnPoint
+	{
+		glm::ivec2 Position{};
+		int PlayerId{};
+	};
+
+	enum EnemyType
+	{
+		Basic,
+		Recogniser
+	};
+	struct EnemySpawnPoint
+	{
+		glm::ivec2 Position{};
+		EnemyType Type{};
+	};
+	// Other example
+	//#include "Game/Config/TankConfig.h"
+	//struct SpawnPoint
+	//{
+	//	glm::ivec2 Position{};
+	//	TankConfig Config{};
+	//};
+	// End of example
+
 	std::vector<glm::ivec2> const& PlayerSpawnpoints() const noexcept;
 	std::vector<glm::ivec2> const& EnemySpawnpoints() const noexcept;
 

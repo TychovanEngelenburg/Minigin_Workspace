@@ -13,7 +13,7 @@ void EnemyBehaviour::Awake()
 {
     ChooseNextDirection(CurrentGridPos());
 
-    m_pMovement = Owner()->GetComponent<TankMovement>();
+    m_pMovement = Object()->GetComponent<TankMovement>();
     assert(m_pMovement && "EnemyBehaviour requires TankMovement");
 }
 
@@ -21,7 +21,7 @@ void EnemyBehaviour::Update()
 {
     if (!m_pGrid) return;
 
-    //auto& transform = Owner()->Transform();
+    //auto& transform = Object()->Transform();
 
     if (IsAtCenterOfTile())
     {
@@ -99,7 +99,7 @@ std::vector<TankMovement::Direction> EnemyBehaviour::GetValidDirections(glm::ive
 
 bool EnemyBehaviour::IsAtCenterOfTile() const
 {
-    glm::vec2 world = Owner()->Transform().LocalPosition();
+    glm::vec2 world = Object()->Transform().LocalPosition();
     glm::ivec2 grid = m_pGrid->WorldToGrid(world);
     glm::vec2 center = m_pGrid->GridToWorld(grid);
 
@@ -108,5 +108,5 @@ bool EnemyBehaviour::IsAtCenterOfTile() const
 
 glm::ivec2 EnemyBehaviour::CurrentGridPos() const
 {
-    return m_pGrid->WorldToGrid(Owner()->Transform().LocalPosition());
+    return m_pGrid->WorldToGrid(Object()->Transform().LocalPosition());
 }

@@ -4,6 +4,8 @@
 #include "Game/Commands/TurnBarrelCommand.h"
 #include "Game/Commands/ShootCommand.h"
 
+#include "Game/Components/DamageOnCollision.h"
+
 #include "Game/Components/Tank/TankHealth.h"
 #include "Game/Components/Tank/TankMovement.h"
 #include "Game/Components/Tank/TankBarrel.h"
@@ -25,12 +27,10 @@
 #include <Minigin/Scene/Scene.h>
 #include <Minigin/Input/SceneInput.h>
 
-TankManager::TankManager(mg::GameObject& owner, GameGrid& grid)
-	: Component(owner)
-	, m_pGrid(&grid)
-{
+#include "Game/Core/GameContext.h"
+#include <Events/GameEvents.h>
+#include <cassert>
 
-}
 
 
 /// <summary>
@@ -109,28 +109,26 @@ TankManager::TankManager(mg::GameObject& owner, GameGrid& grid)
 /// </summary>
 mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig const& tankConfig, std::optional<PlayerInputConfig> inputConfig)
 {
+	assert(Object()->Scene() && "TankManager::SpawnTank called before object was added to a scene.");
 
-	auto& scene = *m_pGrid->Owner()->Scene();
+	auto& scene = *Object()->Scene();
 
 	glm::vec2 spriteSize{};
 
 
 	// Base Tank
 	auto tankObj = std::make_unique<mg::GameObject>(tankConfig.Name);
+
 	auto& tankMovement = tankObj->AddComponent<TankMovement>(*m_pGrid);
 	tankMovement.SetMoveSpeed(tankConfig.Stats.MoveSpeed);
-	{
-		if (inputConfig)
-		{
-			tankObj->Name += "_Player" + std::to_string(inputConfig->PlayerIndex);
-		}
 
-		/*auto& health = */ tankObj->AddComponent<TankHealth>();
-		//health.SetMaxHealth(tankConfig.Stats.MaxHealth);
+	auto& tankHealth = tankObj->AddComponent<TankHealth>();
+	tankHealth.maxHealth = tankConfig.Stats.MaxHealth;
+	tankHealth.SetScoreValue(tankConfig.Stats.KillScore);
 
-		tankObj->Transform().SetWorldPosition(m_pGrid->GridToWorld(gridPos));
-	}
+	tankObj->Transform().SetWorldPosition(m_pGrid->GridToWorld(gridPos));
 
+	// Tank visual
 	auto tankVisualsObj = std::make_unique<mg::GameObject>("TankVisuals");
 	{
 		auto& tankSprite = tankVisualsObj->AddComponent<mg::Sprite>(tankConfig.Sprite.Sheet);
@@ -150,7 +148,16 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 	collider.CollisionLayer = tankConfig.Collisions.Layer;
 	collider.CollisionMask = tankConfig.Collisions.LayerMask;
 
-	// Barrel
+	auto& collisionDamage = tankObj->AddComponent<DamageOnCollision>();
+	collisionDamage.SetDamageAmount(tankConfig.Stats.CollisionDamage);
+
+	if (inputConfig.has_value())
+	{
+		tankObj->Name += "_Player" + std::to_string(inputConfig->PlayerIndex);
+		collisionDamage.SetKillerId(inputConfig->PlayerIndex);
+	}
+
+	// Barrel (optional)
 	std::unique_ptr<mg::GameObject> barrelObj{};
 	std::unique_ptr<mg::GameObject> barrelVisualsObj{};
 
@@ -165,6 +172,11 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 		barrel.SetBulletConfig(tankConfig.Barrel->BulletConf);
 		barrel.SetCooldown(tankConfig.Barrel->ShootInterval);
 
+		if (inputConfig.has_value())
+		{
+			barrel.SetKillerId(inputConfig->PlayerIndex);
+		}
+
 		barrelObj->Transform().SetParent(&tankObj->Transform());
 		barrelObj->Transform().SetLocalPosition(spriteSize / 2.f);
 
@@ -174,6 +186,7 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 			barrelRotation.SetTank(&tankMovement);
 		}
 
+		// Barrel visual (optional)
 		if (tankConfig.Barrel->Sprite.has_value())
 		{
 			barrelVisualsObj = std::make_unique<mg::GameObject>("BarrelVisual");
@@ -198,15 +211,16 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 			BindKeyboard(*tankObj.get(), barrelObj.get(), playerBarrelTurning);
 		}
 	}
-	else
+	else // AI Controlling
 	{
 		tankObj->AddComponent<EnemyBehaviour>(*m_pGrid);
 		barrelObj->AddComponent<AutoShooting>(*this, *m_pGrid);
 	}
 
-	auto result = tankObj.get();
+	// Scene adding
+	auto tankBase = tankObj.get();
 
-	m_pTanks.push_back(result);
+	m_pTanks.push_back(tankBase);
 
 	scene.Add(std::move(tankObj));
 	scene.Add(std::move(tankVisualsObj));
@@ -220,7 +234,7 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 		}
 	}
 
-	return result;
+	return tankBase;
 }
 
 
@@ -231,33 +245,80 @@ void TankManager::SetBulletPool(BulletPool* pool)
 
 	for (auto* tank : m_pTanks)
 	{
-		if (auto* barrel = tank->Transform().GetChildAt(0)->Owner().GetComponent<TankBarrel>())
+		// TODO: This is very heavy code, try to handle it another way.
+		for (size_t i = 0; i < tank->Transform().ChildCount(); i++)
 		{
-			barrel->SetBulletPool(pool);
+			if (auto* barrel = tank->Transform().GetChildAt(i)->Object().GetComponent<TankBarrel>())
+			{
+				barrel->SetBulletPool(pool);
+				break;
+			}
 		}
 	}
 }
 
-void TankManager::Awake()
+
+TankManager::SpawnCounts TankManager::Initialize(GameContext::GameMode const& mode)
 {
-	auto& playerSpawns{ m_pGrid->PlayerSpawnpoints() };
+	TankManager::SpawnCounts counts{};
 
-	for (size_t i{ 0 }; i < playerSpawns.size(); i++)
+	auto& players = m_pGrid->PlayerSpawnpoints();
+	auto& enemies = m_pGrid->EnemySpawnpoints();
+
+	assert(!players.empty() && "Level has no player spawn points.");
+	SpawnTank(players[0], TankPresets::Player(0), PlayerInputConfig(0));
+	++counts.Players;
+
+
+	switch (mode)
 	{
-		SpawnTank(playerSpawns[i], TankPresets::Player(static_cast<int>(i)), PlayerInputConfig(static_cast<int>(i)));
+		case GameContext::GameMode::Singleplayer:
+		case GameContext::GameMode::Coop:
+		{
+			for (int i{ 1 }; i < players.size(); i++)
+			{
+				SpawnTank(players[i], TankPresets::Player(i), PlayerInputConfig(i));
+				++counts.Players;
+			}
+			break;
+		}
+
+		case GameContext::GameMode::Versus:
+		{
+			for (int i{ 1 }; i < players.size(); i++)
+			{
+				SpawnTank(players[i], TankPresets::BasicEnemy(), PlayerInputConfig(i));
+				++counts.Enemies;
+			}
+			break;
+		}
+
+		default:
+		{
+			break;
+		}
 	}
 
-	auto& enemySpawns{ m_pGrid->EnemySpawnpoints() };
 
-	for (size_t i = 0; i < enemySpawns.size(); i++)
+	for (auto const& enemySpawn : enemies)
 	{
-		SpawnTank(enemySpawns[i], TankPresets::BasicEnemy());
+		SpawnTank(enemySpawn, TankPresets::BasicEnemy());
+		++counts.Enemies;
 	}
+
+	return counts;
+}
+
+TankManager::TankManager(mg::GameObject& owner, GameGrid& grid)
+	: Component(owner)
+	, m_pGrid(&grid)
+{
+
 }
 
 void TankManager::BindKeyboard(mg::GameObject& playerObj, mg::GameObject* barrelObj, bool canTurnBarrel)
 {
-	auto& sceneInput{ Owner()->Scene()->InputSystem() };
+	auto& sceneInput{ m_pGrid->Object()->Scene()->InputSystem() };
 
 	auto moveLeft = std::make_unique<mg::InputBinding>(
 		0, static_cast<int>(mg::Keycodes::KeyboardKey::Left), mg::InputBinding::DeviceType::Keyboard,
@@ -315,7 +376,7 @@ void TankManager::BindGamepad(mg::GameObject& playerObj, mg::GameObject* barrelO
 {
 	assert(playerId < 4);
 
-	auto& sceneInput{ m_pGrid->Owner()->Scene()->InputSystem() };
+	auto& sceneInput{ m_pGrid->Object()->Scene()->InputSystem() };
 
 	auto moveLeft = std::make_unique<mg::InputBinding>(
 		playerId, static_cast<int>(mg::Keycodes::GamepadButton::DPadLeft), mg::InputBinding::DeviceType::Gamepad,
@@ -344,7 +405,7 @@ void TankManager::BindGamepad(mg::GameObject& playerObj, mg::GameObject* barrelO
 	if (barrelObj)
 	{
 		auto shoot = std::make_unique<mg::InputBinding>(
-			0, static_cast<int>(mg::Keycodes::GamepadButton::X), mg::InputBinding::DeviceType::Gamepad,
+			playerId, static_cast<int>(mg::Keycodes::GamepadButton::X), mg::InputBinding::DeviceType::Gamepad,
 			std::make_unique<ShootCommand>(*barrelObj), mg::InputBinding::TriggerType::Released
 		);
 		sceneInput.AddBinding(std::move(shoot));
@@ -353,13 +414,13 @@ void TankManager::BindGamepad(mg::GameObject& playerObj, mg::GameObject* barrelO
 		if (canTurnBarrel)
 		{
 			auto turnLeft = std::make_unique<mg::InputBinding>(
-				0, static_cast<int>(mg::Keycodes::GamepadButton::A), mg::InputBinding::DeviceType::Gamepad,
+				playerId, static_cast<int>(mg::Keycodes::GamepadButton::A), mg::InputBinding::DeviceType::Gamepad,
 				std::make_unique<TurnBarrelCommand>(*barrelObj, -90.f), mg::InputBinding::TriggerType::Held
 			);
 			sceneInput.AddBinding(std::move(turnLeft));
 
 			auto turnRight = std::make_unique<mg::InputBinding>(
-				0, static_cast<int>(mg::Keycodes::GamepadButton::B), mg::InputBinding::DeviceType::Gamepad,
+				playerId, static_cast<int>(mg::Keycodes::GamepadButton::B), mg::InputBinding::DeviceType::Gamepad,
 				std::make_unique<TurnBarrelCommand>(*barrelObj, 90.f), mg::InputBinding::TriggerType::Held
 			);
 			sceneInput.AddBinding(std::move(turnRight));

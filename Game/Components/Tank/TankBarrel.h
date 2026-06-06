@@ -15,6 +15,7 @@ public:
 
 	void Shoot();
 
+	void SetKillerId(int id);
 	void SetBulletPool(BulletPool* pool);
 	void SetBarrelLength(float length);
 	void SetBulletConfig(BulletConfig const& config);
@@ -29,6 +30,7 @@ private:
 	BulletPool* m_pBulletPool{};
 	GameGrid* m_pGrid{};
 	BulletConfig m_config;
+	int m_killerId{ -1 };
 
 	float m_barrelLenght{ 0.f };
 	float m_cooldownDuration{};

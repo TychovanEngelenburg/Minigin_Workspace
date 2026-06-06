@@ -61,7 +61,7 @@ void mg::TextComponent::Render() const
 {
 	if (m_pTextTexture)
 	{
-		Renderer::Instance().RenderTexture(*m_pTextTexture, Owner()->Transform());
+		Renderer::Instance().RenderTexture(*m_pTextTexture, Object()->Transform());
 	}
 }
 std::string_view mg::TextComponent::GetText() const noexcept

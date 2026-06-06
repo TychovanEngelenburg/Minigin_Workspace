@@ -12,11 +12,11 @@ namespace mg
 	class GameObject;
 };
 
-class PlayerHealth_UI final : public mg::Component, public mg::IEventListener<PlayerDeath>
+class PlayerHealth_UI final : public mg::Component, public mg::IEventListener<TankDeathEvent>
 {
 public:
 
-	void OnNotify(PlayerDeath const& eventData) override;
+	void OnNotify(TankDeathEvent const& eventData) override;
 
 	explicit PlayerHealth_UI(mg::GameObject& owner);
 

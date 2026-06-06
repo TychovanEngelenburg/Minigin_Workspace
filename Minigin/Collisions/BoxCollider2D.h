@@ -33,17 +33,12 @@ namespace mg
 		Bounds const& LocalBounds() const;
 		mg::OBB GetOBB() const;
 
-		void Awake() override;
+		void OnEnable() override;
+		void OnDisable() override;
+
 		void Render() const override;
 
 		explicit BoxCollider2D(mg::GameObject& owner);
-
-		~BoxCollider2D();
-		BoxCollider2D(BoxCollider2D const& other) = delete;
-		BoxCollider2D(BoxCollider2D&& other) = delete;
-		BoxCollider2D& operator=(BoxCollider2D const& other) = delete;
-		BoxCollider2D& operator=(BoxCollider2D&& other) = delete;
-
 		uint32_t CollisionLayer { 0 };
 		uint32_t CollisionMask { 0xFFFFFFFF };
 

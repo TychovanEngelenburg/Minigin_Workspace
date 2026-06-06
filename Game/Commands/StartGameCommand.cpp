@@ -4,5 +4,6 @@
 
 void StartGameCommand::Execute()
 {
-	GameContext::Instance().HandleEvent(GameEvent::StartPlaying);
+	GameContext::Instance().SetupGame(GameContext::GameMode::Singleplayer);
+	GameContext::Instance().HandleGameEvent(GameEvent::StartPlaying);
 }

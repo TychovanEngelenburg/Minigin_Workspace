@@ -26,6 +26,7 @@ struct TankStats
 	float MoveSpeed{ 50.f };
 	int MaxHealth{ 1 };
 	int CollisionDamage{ 1 };
+	int KillScore{ 100 };
 };
 
 struct TankConfig

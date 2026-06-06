@@ -14,6 +14,11 @@ mg::Scene* mg::SceneManager::GetScene(size_t sceneId)
 	return m_pScenes[sceneId].get();
 }
 
+mg::Scene* mg::SceneManager::ActiveScene() const noexcept
+{
+	return m_pActiveScene;
+}
+
 mg::Scene* mg::SceneManager::SetActiveScene(size_t sceneId)
 {
 	assert(m_pScenes[sceneId]);

@@ -11,7 +11,7 @@
 
 void AutoShooting::Awake()
 {
-	m_pBarrel = Owner()->GetComponent<TankBarrel>();
+	m_pBarrel = Object()->GetComponent<TankBarrel>();
 	assert(m_pBarrel && "MovementAI requires TankMovement");
 }
 
@@ -36,7 +36,7 @@ AutoShooting::AutoShooting(mg::GameObject& owner, TankManager& tankManager, Game
 
 bool AutoShooting::CheckLineOfSight()
 {
-	auto angle = glm::radians(Owner()->Transform().WorldRotationZ());
+	auto angle = glm::radians(Object()->Transform().WorldRotationZ());
 
 	glm::vec2 forwardDir
 	{
@@ -47,7 +47,7 @@ bool AutoShooting::CheckLineOfSight()
 
 	glm::vec2 pos
 	{
-		Owner()->Transform().WorldPosition()
+		Object()->Transform().WorldPosition()
 	};
 
 	float rayDistance{};
@@ -61,5 +61,5 @@ bool AutoShooting::CheckLineOfSight()
 		}
 	}
 
-	return Owner()->Scene()->CollisionSystem().Raycast(pos, forwardDir, rayDistance, m_pBarrel->Config().Collisions.LayerMask).Hit;
+	return Object()->Scene()->CollisionSystem().Raycast(pos, forwardDir, rayDistance, m_pBarrel->Config().Collisions.LayerMask).Hit;
 }

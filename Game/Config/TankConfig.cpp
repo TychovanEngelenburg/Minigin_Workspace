@@ -12,7 +12,7 @@ TankConfig TankPresets::Player(int playerId)
 	cfg.Sprite.SheetPos = { 0 + playerId, 3 };
 
 	cfg.Stats.MoveSpeed = 60.f;
-	cfg.Stats.MaxHealth = 3;
+	cfg.Stats.MaxHealth = 1;
 	cfg.Stats.CollisionDamage = 1;
 
 	BarrelConfig barrel{};
@@ -51,7 +51,7 @@ TankConfig TankPresets::BasicEnemy()
 	cfg.Sprite.SheetPos = { 2, 3 };
 
 	cfg.Stats.MoveSpeed = 60.f;
-	cfg.Stats.MaxHealth = 1;
+	cfg.Stats.MaxHealth = 3;
 	cfg.Stats.CollisionDamage = 1;
 
 	BarrelConfig barrel{};

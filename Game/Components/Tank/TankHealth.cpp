@@ -1,7 +1,9 @@
 #include "TankHealth.h"
+#include "Game/Events/GameEvents.h"
 
 #include <Minigin/Scene/GameObject.h>
 #include <Minigin/Events/IEventListener.h>
+#include "Game/Core/GameContext.h"
 
 bool TankHealth::IsDead() const noexcept
 {
@@ -9,17 +11,17 @@ bool TankHealth::IsDead() const noexcept
 }
 
 int TankHealth::Health() const noexcept
-{ 
+{
 	return m_Health;
 }
 
-void TankHealth::Damage(int amount)
+void TankHealth::Damage(int amount, int killerId)
 {
 	m_Health -= amount;
 
 	if (IsDead())
 	{
-		OnDeath();
+		OnDeath(killerId);
 	}
 
 	// TODO: Remove
@@ -40,9 +42,19 @@ void TankHealth::ResetHealth()
 }
 
 
-void TankHealth::AddListener(mg::IEventListener<PlayerDeath>* listener)
+void TankHealth::AddListener(mg::IEventListener<TankDeathEvent>* listener)
 {
 	m_onDeath.AddListener(listener);
+}
+
+void TankHealth::SetScoreValue(int amount)
+{
+	m_scoreValue = amount;
+}
+
+void TankHealth::Start()
+{
+	m_Health = maxHealth;
 }
 
 TankHealth::TankHealth(mg::GameObject& owner)
@@ -51,9 +63,20 @@ TankHealth::TankHealth(mg::GameObject& owner)
 
 }
 
-void TankHealth::OnDeath()
+void TankHealth::OnDeath(int killedBy)
 {
+	TankDeathEvent deathEvent{ m_tankId , killedBy, m_scoreValue };
+
 	// TODO: Play sound
-	Owner()->SetActive(false);
-	m_onDeath.Notify({ m_playerId });
+	Object()->SetActive(false);
+	m_onDeath.Notify(deathEvent);
+
+	if (m_tankId < 0)
+	{
+		GameContext::Instance().HandleGameEvent(GameEvent::EnemyKilled);
+	}
+	else
+	{
+		GameContext::Instance().HandleGameEvent(GameEvent::PlayerDied);
+	}
 }

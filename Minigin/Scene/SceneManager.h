@@ -13,6 +13,7 @@ namespace mg
 	{
 	public:
 		Scene* GetScene(size_t sceneId);
+		Scene* ActiveScene() const noexcept;
 
 		size_t CreateScene();
 		Scene const& CreateSceneAt(size_t sceneId);
