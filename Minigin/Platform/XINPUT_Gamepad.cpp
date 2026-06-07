@@ -1,4 +1,4 @@
-#include "Gamepad.h"
+#include "XINPUT_Gamepad.h"
 
 #include "Minigin/Input/InputCodes.h"
 

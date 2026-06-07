@@ -3,6 +3,7 @@
 
 #include "Game/Config/PlayerInputConfig.h"
 #include "Game/Core/GameContext.h"
+#include "Game/Core/PlayerDeviceMapper.h"
 
 #include <Minigin/Components/Component.h>
 
@@ -39,6 +40,7 @@ private:
 	BulletPool* m_pBulletPool{ nullptr };
 	std::vector<mg::GameObject*> m_pTanks{};
 
+	mg::PlayerDeviceMapper m_deviceMapper{};
 };
 
 

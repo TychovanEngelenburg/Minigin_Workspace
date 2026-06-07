@@ -31,6 +31,8 @@ namespace mg
         DeviceType GetType() const noexcept;
         TriggerType GetTrigger() const noexcept;
         
+
+        // TODO: replace inputidx and devicetype with std::variant<Keycodes::KeyboardKey, Keycodes::GamepadButton, Keycodes::GamepadAxis> ;
         InputBinding(int deviceIdx, int inputIdx, DeviceType deviceType, std::unique_ptr<ICommand> command,  TriggerType trigger = TriggerType::Pressed);
 
     private:

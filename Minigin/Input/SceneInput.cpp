@@ -11,7 +11,7 @@ void mg::SceneInput::ProcessInput()
 
 	for (auto& binding : m_pBindings)
 	{
-		IInputDevice const* device{};
+		IInputDevice const* device{ nullptr };
 
 		switch (binding->GetType())
 		{
@@ -27,6 +27,11 @@ void mg::SceneInput::ProcessInput()
 				device = inputService.GetKeyboard();
 				break;
 			}
+		}
+
+		if (!device)
+		{
+			continue;
 		}
 
 		switch (binding->GetTrigger())
@@ -84,4 +89,9 @@ void mg::SceneInput::RemoveBinding(InputBinding* binding)
 		),
 		m_pBindings.end()
 	);
+}
+
+void mg::SceneInput::ClearBindings()
+{
+	m_pBindings.clear();
 }

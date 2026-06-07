@@ -1,5 +1,5 @@
-#ifndef SOUND_SERVICE_LOCATOR_H
-#define SOUND_SERVICE_LOCATOR_H
+#ifndef INPUT_SERVICE_LOCATOR_H
+#define INPUT_SERVICE_LOCATOR_H
 #include "Minigin/Input/AbstractInputSystem.h"
 #include <memory>
 
@@ -19,4 +19,4 @@ namespace mg
 	};
 }
 
-#endif // !SOUND_SERVICE_LOCATOR_H
+#endif // !INPUT_SERVICE_LOCATOR_H

@@ -6,10 +6,11 @@ namespace mg
     class IInputDevice
     {
     public:
+        virtual bool Connected() const = 0;
+
         virtual bool GetButton(int button) const = 0;
         virtual bool GetButtonDown(int button) const = 0;
         virtual bool GetButtonUp(int button) const = 0;
-
         virtual void Update() = 0;
 
         IInputDevice() = default;

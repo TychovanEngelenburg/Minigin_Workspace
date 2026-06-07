@@ -12,10 +12,12 @@ public:
 	{
 		return m_current[button];
 	}
+
 	bool GetButtonDown(int button) const
 	{
 		return m_current[button] && !m_previous[button];
 	}
+
 	bool GetButtonUp(int button) const
 	{
 		return !m_current[button] && m_previous[button];
@@ -27,7 +29,8 @@ public:
 
 		m_previous = m_current;
 
-		const bool* sdlState = SDL_GetKeyboardState(nullptr);
+		bool const* sdlState = SDL_GetKeyboardState(nullptr);
+
 		for (size_t keyIdx{}; keyIdx < m_current.size(); ++keyIdx)
 		{
 			auto stateIdxKey = KeyToSDL(static_cast<mg::Keycodes::KeyboardKey>(keyIdx));
@@ -41,9 +44,7 @@ public:
 		}
 	}
 
-	KeyboardImpl()
-	{
-	}
+	KeyboardImpl() = default;
 
 private:
 	std::array<bool, static_cast<int>(Keycodes::KeyboardKey::KeyCount)> m_current{};
@@ -131,6 +132,11 @@ private:
 void mg::SDL_Keyboard::Update()
 {
 	m_pImpl->Update();
+}
+
+bool mg::SDL_Keyboard::Connected() const
+{
+	return true;
 }
 
 bool mg::SDL_Keyboard::GetButton(int button) const

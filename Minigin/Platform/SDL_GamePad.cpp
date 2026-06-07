@@ -8,6 +8,11 @@
 class mg::SDLGamepad::GamepadImpl
 {
 public:
+	bool Connected() const
+	{
+		return m_gamepad != nullptr;
+	}
+
 	bool GetButton(mg::Keycodes::GamepadButton button) const
 	{
 		return m_current[static_cast<int>(button)];
@@ -25,22 +30,17 @@ public:
 
 	void Update()
 	{
-		SDL_PumpEvents();
-		SDL_UpdateGamepads();
+		//SDL_UpdateGamepads();
 
 		m_previous = m_current;
 
 		if (!m_gamepad)
 		{
-			if (!SDL_IsGamepad(m_deviceIndex))
-			{
-				return;
-			}
-
 			m_gamepad = SDL_OpenGamepad(m_deviceIndex);
 
 			if (!m_gamepad)
 			{
+				m_current.fill(false);
 				return;
 			}
 		}
@@ -60,10 +60,10 @@ public:
 		}
 	}
 
-	GamepadImpl(int index)
-	: m_gamepad( nullptr )
-		, m_deviceIndex( index )
+	explicit GamepadImpl(SDL_JoystickID index)
+	: m_deviceIndex( index )
 	{
+		m_gamepad = SDL_OpenGamepad(index);
 	}
 
 	~GamepadImpl()
@@ -81,7 +81,7 @@ public:
 
 private:
 	SDL_Gamepad* m_gamepad{};
-	int m_deviceIndex{};
+	SDL_JoystickID m_deviceIndex{};
 
 	std::array<bool, static_cast<int>(Keycodes::GamepadButton::ButtonCount)> m_current{};
 	std::array<bool, static_cast<int>(Keycodes::GamepadButton::ButtonCount)> m_previous{};
@@ -116,6 +116,11 @@ private:
 
 
 // Base class implementation
+bool mg::SDLGamepad::Connected() const
+{
+	return m_pImpl->Connected();
+}
+
 bool mg::SDLGamepad::GetButton(int buttonId) const
 {
 	return m_pImpl->GetButton(static_cast<mg::Keycodes::GamepadButton>(buttonId));

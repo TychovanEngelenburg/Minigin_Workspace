@@ -96,7 +96,7 @@ void mg::Minigin::RunOneFrame()
 		}
 	}
 
-	InputServiceLocator::Fetch().ProcessInput();
+	InputServiceLocator::Fetch().Update();
 	SceneManager::Instance().Tick();
 	Renderer::Instance().Render();
 	ResourceManager::Instance().UnloadUnusedResources();

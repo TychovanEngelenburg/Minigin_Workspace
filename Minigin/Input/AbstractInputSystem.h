@@ -14,7 +14,9 @@ namespace mg
 		IInputDevice const* GetKeyboard() const;
 		IInputDevice const* GetGamepad(size_t idx) const;
 
-		void ProcessInput();
+		size_t ConnectedGamepadCount() const;
+
+		void Update();
 
 		InputSystem() = default;
 

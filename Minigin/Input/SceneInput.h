@@ -10,8 +10,11 @@ namespace mg
 	{
 	public:
 		void ProcessInput();
+
 		void AddBinding(std::unique_ptr<InputBinding> binding);
 		void RemoveBinding(InputBinding* binding);
+
+		void ClearBindings();
 
 	private:
 		std::vector<std::unique_ptr<InputBinding>> m_pBindings{};

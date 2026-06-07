@@ -8,6 +8,8 @@ namespace mg
 	class SDLGamepad final : public IInputDevice
 	{
 	public:
+		bool Connected() const override;
+
 		bool GetButton(int button) const override;
 		bool GetButtonUp(int button) const override;
 		bool GetButtonDown(int button) const override;

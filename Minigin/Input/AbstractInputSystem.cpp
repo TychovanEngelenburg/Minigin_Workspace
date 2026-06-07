@@ -7,12 +7,34 @@ mg::IInputDevice const* mg::InputSystem::GetKeyboard() const
 
 mg::IInputDevice const* mg::InputSystem::GetGamepad(size_t idx) const
 {
+	if (idx >= m_pGamepads.size())
+	{
+		return nullptr;
+	}
+
 	return m_pGamepads[idx].get();
 }
 
-void mg::InputSystem::ProcessInput()
+size_t mg::InputSystem::ConnectedGamepadCount() const
 {
-	m_pKeyboard->Update();
+	size_t count = 0;
+	for (auto const& device : m_pGamepads)
+	{
+		if (device)
+		{
+			++count;
+		}
+	}
+	return count;
+}
+
+void mg::InputSystem::Update()
+{
+	if (m_pKeyboard)
+	{
+		m_pKeyboard->Update();
+	}
+
 	for (auto& device : m_pGamepads)
 	{
 		if (device)

@@ -9,6 +9,8 @@ namespace mg
 	class SDL_Keyboard final : public IInputDevice
 	{
 	public:
+		bool Connected() const override; // Always returns true for keyboard.
+
 		bool GetButton(int button) const;
 		bool GetButtonDown(int button) const;
 		bool GetButtonUp(int button) const;

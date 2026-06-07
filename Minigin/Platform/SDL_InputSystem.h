@@ -11,6 +11,12 @@ namespace mg
 	public:
 		SDL_InputSystem();
 		~SDL_InputSystem();
+
+		SDL_InputSystem(SDL_InputSystem const&) = delete;
+		SDL_InputSystem(SDL_InputSystem&&) = delete;
+		SDL_InputSystem& operator=(SDL_InputSystem const&) = delete;
+		SDL_InputSystem& operator=(SDL_InputSystem&&) = delete;
+
 	};
 }
 

@@ -1,23 +1,25 @@
 #include "TankManager.h"
 
-#include "Game/Commands/MoveTankCommand.h"
-#include "Game/Commands/TurnBarrelCommand.h"
-#include "Game/Commands/ShootCommand.h"
+#include "Game/Core/GameContext.h"
+#include "Game/Events/GameEvents.h"
+
+#include "Game/Components/System/GameGrid.h"
+
+#include "Game/Config/TankConfig.h"
+#include "Game/Config/PlayerInputConfig.h"
 
 #include "Game/Components/DamageOnCollision.h"
-
 #include "Game/Components/Tank/TankHealth.h"
 #include "Game/Components/Tank/TankMovement.h"
 #include "Game/Components/Tank/TankBarrel.h"
 #include "Game/Components/Tank/RotateWithTank.h"
 
-#include "Game/Components/System/GameGrid.h"
+#include "Game/Commands/MoveTankCommand.h"
+#include "Game/Commands/TurnBarrelCommand.h"
+#include "Game/Commands/ShootCommand.h"
 
 #include "Game/Components/Enemy/AIMovement.h"
 #include "Game/Components/Enemy/AutoShooting.h"
-
-#include "Game/Config/TankConfig.h"
-#include "Game/Config/PlayerInputConfig.h"
 
 #include <Minigin/Scene/GameObject.h>
 #include <Minigin/Input/InputBinding.h>
@@ -26,9 +28,8 @@
 #include <Minigin/Collisions/BoxCollider2D.h>
 #include <Minigin/Scene/Scene.h>
 #include <Minigin/Input/SceneInput.h>
+#include <Minigin/Input/InputServiceLocator.h>
 
-#include "Game/Core/GameContext.h"
-#include <Events/GameEvents.h>
 #include <cassert>
 
 
@@ -109,10 +110,9 @@
 /// </summary>
 mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig const& tankConfig, std::optional<PlayerInputConfig> inputConfig)
 {
-	assert(Object()->Scene() && "TankManager::SpawnTank called before object was added to a scene.");
+	assert(Object()->Scene() && "SpawnTank cannot be called before object was added to a scene!");
 
 	auto& scene = *Object()->Scene();
-
 	glm::vec2 spriteSize{};
 
 
@@ -202,11 +202,15 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 	// Player bindings
 	if (inputConfig.has_value())
 	{
-		bool playerBarrelTurning{ hasBarrel ? !tankConfig.Barrel->AimWithMoveDir : false };
+		bool playerBarrelTurning{ hasBarrel && !tankConfig.Barrel->AimWithMoveDir };
 
-		BindGamepad(*tankObj.get(), barrelObj.get(), inputConfig->PlayerIndex, playerBarrelTurning);
+		auto gamepadSlot = m_deviceMapper.GamepadIndexForPlayer(inputConfig->PlayerIndex);
+		if (gamepadSlot.has_value())
+		{
+			BindGamepad(*tankObj, barrelObj.get(), playerBarrelTurning, *gamepadSlot);
+		}
 
-		if (inputConfig->PlayerIndex == 0)
+		if (m_deviceMapper.PlayerUsesKeyboard(inputConfig->PlayerIndex))
 		{
 			BindKeyboard(*tankObj.get(), barrelObj.get(), playerBarrelTurning);
 		}
@@ -214,7 +218,11 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 	else // AI Controlling
 	{
 		tankObj->AddComponent<EnemyBehaviour>(*m_pGrid);
-		barrelObj->AddComponent<AutoShooting>(*this, *m_pGrid);
+
+		if (barrelObj)
+		{
+			barrelObj->AddComponent<AutoShooting>(*this, *m_pGrid);
+		}
 	}
 
 	// Scene adding
@@ -260,15 +268,20 @@ void TankManager::SetBulletPool(BulletPool* pool)
 
 TankManager::SpawnCounts TankManager::Initialize(GameContext::GameMode const& mode)
 {
-	TankManager::SpawnCounts counts{};
+	assert(Object()->Scene() && "TankManager must be attached to a scene before initializing!");
+	m_deviceMapper.Resolve(mg::InputServiceLocator::Fetch());
 
 	auto& players = m_pGrid->PlayerSpawnpoints();
 	auto& enemies = m_pGrid->EnemySpawnpoints();
 
 	assert(!players.empty() && "Level has no player spawn points.");
+	assert(!enemies.empty() && "Level has no enemy spawn points.");
+
+	TankManager::SpawnCounts counts{};
+
+	// Spawn players
 	SpawnTank(players[0], TankPresets::Player(0), PlayerInputConfig(0));
 	++counts.Players;
-
 
 	switch (mode)
 	{
@@ -299,7 +312,7 @@ TankManager::SpawnCounts TankManager::Initialize(GameContext::GameMode const& mo
 		}
 	}
 
-
+	// Spawn enemies
 	for (auto const& enemySpawn : enemies)
 	{
 		SpawnTank(enemySpawn, TankPresets::BasicEnemy());
