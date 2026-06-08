@@ -5,7 +5,8 @@
 #include <Minigin/Scene/SceneManager.h>
 
 #include <cassert>
-
+#include <ranges>
+#include <algorithm>
 
 GameContext::GameMode const& GameContext::Mode() const noexcept
 {
@@ -91,6 +92,49 @@ void GameContext::ToggleGamemode()
 	m_mode = static_cast<GameMode>(modeId);
 }
 
+#include <iostream>
+void GameContext::OnNotify(TankDeathEvent const& eventData)
+{
+	if (eventData.KillingPlayer.has_value())
+	{
+		auto it = std::ranges::find_if(m_players,
+			[eventData](PlayerSession const& p)
+			{
+				return p.PlayerId == eventData.KillingPlayer.value();
+			});
+
+		if (it != m_players.end())
+		{
+			it->Score += eventData.ScoreValue;
+			std::cout << "Player " << eventData.KillingPlayer.value() << " recieved: " << eventData.ScoreValue << " points. Their total is now: " << it->Score << "\n";
+		}
+	}
+
+
+	
+	if (eventData.PlayerVictim.has_value())
+	{
+		auto it = std::ranges::find_if(m_players,
+			[eventData](PlayerSession const& p)
+			{
+				return p.PlayerId == eventData.PlayerVictim.value();
+			});
+
+		if (it != m_players.end())
+		{
+			--it->Lives;
+			HandleGameEvent(GameEvent::PlayerDied);
+			std::cout << "Player " << eventData.PlayerVictim.value() << " died! They now have: " << it->Lives << " left\n";
+		}
+
+	}
+	else
+	{
+		HandleGameEvent(GameEvent::EnemyKilled);
+		std::cout << "An enemy died!\n";
+	}
+}
+
 void GameContext::HandleGameEvent(GameEvent const& event)
 {
 	m_eventQueue.push_back(event);
@@ -111,7 +155,6 @@ void GameContext::FlushEvents()
 		if (auto newState = m_state->HandleGameEvent(event))
 		{
 			TransitionTo(std::move(newState));
-			//m_pendingState = std::move(newState);
 		}
 	}
 }

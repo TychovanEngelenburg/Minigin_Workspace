@@ -6,13 +6,14 @@
 #include "Game/Events/GameEvents.h"
 
 #include <Minigin/Core/Singleton.h>
+#include <Minigin/Events/IEventListener.h>
 
 #include <memory>
 #include <array>
 #include <vector>
 #include <filesystem>
 
-class GameContext final : public mg::Singleton<GameContext>
+class GameContext final : public mg::Singleton<GameContext>, public mg::IEventListener<TankDeathEvent>
 {
 public:
 	enum class GameMode
@@ -41,6 +42,7 @@ public:
 	void Init();
 	void ToggleGamemode();
 
+	void OnNotify(TankDeathEvent const& eventData) override;
 	void HandleGameEvent(GameEvent const& event);
 	void FlushEvents();
 

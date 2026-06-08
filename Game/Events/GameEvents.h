@@ -1,13 +1,14 @@
 #ifndef GAME_EVENTS_H
 #define GAME_EVENTS_H
 
+#include <optional>
 /// Simple holder for event data structs.
 // In case this project gets big/needs many events these are to be split up over multiple files.
 
 struct TankDeathEvent
 {
-	int TankId{-1}; // -1 for AI tanks
-	int KillerId{-1}; // -1 if unknown
+	std::optional<int> PlayerVictim{ std::nullopt };
+	std::optional<int> KillingPlayer{ std::nullopt };
 	int ScoreValue{};
 };
 

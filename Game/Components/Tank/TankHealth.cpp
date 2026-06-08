@@ -31,16 +31,15 @@ void TankHealth::Damage(int amount, int killerId)
 void TankHealth::Kill()
 {
 	m_Health = 0;
-	OnDeath();
+	OnDeath(std::nullopt);
 }
 
 
 
 void TankHealth::ResetHealth()
 {
-	m_Health = maxHealth;
+	m_Health = MaxHealth;
 }
-
 
 void TankHealth::AddListener(mg::IEventListener<TankDeathEvent>* listener)
 {
@@ -54,7 +53,7 @@ void TankHealth::SetScoreValue(int amount)
 
 void TankHealth::Start()
 {
-	m_Health = maxHealth;
+	m_Health = MaxHealth;
 }
 
 TankHealth::TankHealth(mg::GameObject& owner)
@@ -63,20 +62,11 @@ TankHealth::TankHealth(mg::GameObject& owner)
 
 }
 
-void TankHealth::OnDeath(int killedBy)
+void TankHealth::OnDeath(std::optional<int> killedBy)
 {
-	TankDeathEvent deathEvent{ m_tankId , killedBy, m_scoreValue };
+	TankDeathEvent deathEvent{ OwnerPlayerId , killedBy, m_scoreValue };
 
 	// TODO: Play sound
-	Object()->SetActive(false);
 	m_onDeath.Notify(deathEvent);
-
-	if (m_tankId < 0)
-	{
-		GameContext::Instance().HandleGameEvent(GameEvent::EnemyKilled);
-	}
-	else
-	{
-		GameContext::Instance().HandleGameEvent(GameEvent::PlayerDied);
-	}
+	Object()->SetActive(false);
 }

@@ -123,8 +123,13 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 	tankMovement.SetMoveSpeed(tankConfig.Stats.MoveSpeed);
 
 	auto& tankHealth = tankObj->AddComponent<TankHealth>();
-	tankHealth.maxHealth = tankConfig.Stats.MaxHealth;
+	tankHealth.MaxHealth = tankConfig.Stats.MaxHealth;
 	tankHealth.SetScoreValue(tankConfig.Stats.KillScore);
+	if (inputConfig.has_value())
+	{
+		tankHealth.OwnerPlayerId = inputConfig->PlayerIndex;
+	}
+	tankHealth.AddListener(&GameContext::Instance());
 
 	tankObj->Transform().SetWorldPosition(m_pGrid->GridToWorld(gridPos));
 
@@ -271,16 +276,16 @@ TankManager::SpawnCounts TankManager::Initialize(GameContext::GameMode const& mo
 	assert(Object()->Scene() && "TankManager must be attached to a scene before initializing!");
 	m_deviceMapper.Resolve(mg::InputServiceLocator::Fetch());
 
-	auto& players = m_pGrid->PlayerSpawnpoints();
-	auto& enemies = m_pGrid->EnemySpawnpoints();
+	auto& playerSpawns = m_pGrid->PlayerSpawnpoints();
+	auto& enemySpawns = m_pGrid->EnemySpawnpoints();
 
-	assert(!players.empty() && "Level has no player spawn points.");
-	assert(!enemies.empty() && "Level has no enemy spawn points.");
+	assert(!playerSpawns.empty() && "Level has no player spawn points.");
+	assert(!enemySpawns.empty() && "Level has no enemy spawn points.");
 
 	TankManager::SpawnCounts counts{};
 
 	// Spawn players
-	SpawnTank(players[0], TankPresets::Player(0), PlayerInputConfig(0));
+	SpawnTank(playerSpawns[0], TankPresets::Player(0), PlayerInputConfig(0));
 	++counts.Players;
 
 	switch (mode)
@@ -288,9 +293,9 @@ TankManager::SpawnCounts TankManager::Initialize(GameContext::GameMode const& mo
 		case GameContext::GameMode::Singleplayer:
 		case GameContext::GameMode::Coop:
 		{
-			for (int i{ 1 }; i < players.size(); i++)
+			for (int i{ 1 }; i < playerSpawns.size(); i++)
 			{
-				SpawnTank(players[i], TankPresets::Player(i), PlayerInputConfig(i));
+				SpawnTank(playerSpawns[i], TankPresets::Player(i), PlayerInputConfig(i));
 				++counts.Players;
 			}
 			break;
@@ -298,9 +303,9 @@ TankManager::SpawnCounts TankManager::Initialize(GameContext::GameMode const& mo
 
 		case GameContext::GameMode::Versus:
 		{
-			for (int i{ 1 }; i < players.size(); i++)
+			for (int i{ 1 }; i < playerSpawns.size(); i++)
 			{
-				SpawnTank(players[i], TankPresets::BasicEnemy(), PlayerInputConfig(i));
+				SpawnTank(playerSpawns[i], TankPresets::BasicEnemy(), PlayerInputConfig(i));
 				++counts.Enemies;
 			}
 			break;
@@ -313,7 +318,7 @@ TankManager::SpawnCounts TankManager::Initialize(GameContext::GameMode const& mo
 	}
 
 	// Spawn enemies
-	for (auto const& enemySpawn : enemies)
+	for (auto const& enemySpawn : enemySpawns)
 	{
 		SpawnTank(enemySpawn, TankPresets::BasicEnemy());
 		++counts.Enemies;

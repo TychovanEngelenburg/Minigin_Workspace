@@ -6,6 +6,7 @@
 #include <Minigin/Components/Component.h>
 #include <Minigin/Events/EventSource.h>
 
+#include <optional>
 
 namespace mg
 {
@@ -28,15 +29,15 @@ public:
 
 	explicit TankHealth(mg::GameObject& owner);
 
-	int maxHealth{1};
-
+	int MaxHealth{1};
+	std::optional<int> OwnerPlayerId{std::nullopt };
 private:
 	int m_tankId{};
 	int m_Health{};
 	int m_scoreValue{};
 
 	mg::EventSource<TankDeathEvent> m_onDeath;
-	void OnDeath(int killedBy = -1);
+	void OnDeath(std::optional<int> killedBy);
 
 	// Temporary demonstration code
 	//#include <Minigin/Audio/ISoundSystem.h>
