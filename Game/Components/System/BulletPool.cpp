@@ -10,7 +10,7 @@
 #include <Minigin/Collisions/BoxCollider2D.h>
 #include <Minigin/Components/Sprite.h>
 
-BulletMovement* BulletPool::SpawnBullet(BulletConfig const& config, int killerId)
+BulletMovement* BulletPool::SpawnBullet(BulletConfig const& config, std::optional<int> playerId)
 {
 	if (m_FreeList.empty())
 	{
@@ -31,7 +31,7 @@ BulletMovement* BulletPool::SpawnBullet(BulletConfig const& config, int killerId
 	bullet->Collider().CollisionLayer = config.Collisions.Layer;
 	bullet->Collider().CollisionMask  = config.Collisions.LayerMask;
 
-	bullet->CollissionDamage().SetKillerId(killerId);
+	bullet->CollissionDamage().SetPlayerId(playerId);
 	bullet->CollissionDamage().SetDamageAmount(config.Damage);
 	return bullet;
 }

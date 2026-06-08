@@ -19,10 +19,11 @@ public:
 	bool IsDead() const noexcept;
 	int Health() const noexcept;
 
-	void Damage(int amount = 1, int killerId = -1);
+	void Damage(int amount = 1, std::optional<int> killerId = std::nullopt);
 	void Kill();
 	void ResetHealth();
-	void AddListener(mg::IEventListener<TankDeathEvent>* listener);
+	void SetPlayerId(std::optional<int> playerId);
+	void AddListener(mg::IObserver<TankDeathEvent>* listener);
 	void SetScoreValue(int amount);
 
 	void Start() override;
@@ -30,13 +31,13 @@ public:
 	explicit TankHealth(mg::GameObject& owner);
 
 	int MaxHealth{1};
-	std::optional<int> OwnerPlayerId{std::nullopt };
+
 private:
-	int m_tankId{};
+	std::optional<int> m_playerId{std::nullopt };
 	int m_Health{};
 	int m_scoreValue{};
 
-	mg::EventSource<TankDeathEvent> m_onDeath;
+	mg::Subject<TankDeathEvent> m_onDeath;
 	void OnDeath(std::optional<int> killedBy);
 
 	// Temporary demonstration code

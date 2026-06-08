@@ -12,7 +12,7 @@ namespace mg
 	class GameObject;
 };
 
-class PlayerHealth_UI final : public mg::Component, public mg::IEventListener<TankDeathEvent>
+class PlayerHealth_UI final : public mg::Component, public mg::IObserver<TankDeathEvent>
 {
 public:
 

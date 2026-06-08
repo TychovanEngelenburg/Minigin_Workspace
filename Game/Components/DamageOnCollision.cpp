@@ -5,22 +5,22 @@
 #include <Minigin/Collisions/CollisionSystem.h>
 #include <Minigin/Scene/GameObject.h>
 
-void DamageOnCollision::SetKillerId(int id)
+void DamageOnCollision::SetPlayerId(std::optional<int> playerId)
 {
-	m_killerId = id;
+	m_playerId = playerId;
+}
+
+void DamageOnCollision::SetDamageAmount(int amount)
+{
+	m_damageAmount = amount;
 }
 
 void DamageOnCollision::OnCollisionEnter(mg::CollisionData const& data)
 {
 	if (auto const& healthComp{data.pOtherCollider->Object()->GetComponent<TankHealth>()})
 	{
-		healthComp->Damage(m_damageAmount, m_killerId);
+		healthComp->Damage(m_damageAmount, m_playerId);
 	}
-}
-
-void DamageOnCollision::SetDamageAmount(int amount)
-{
-	m_damageAmount = amount;
 }
 
 DamageOnCollision::DamageOnCollision(mg::GameObject& owner)

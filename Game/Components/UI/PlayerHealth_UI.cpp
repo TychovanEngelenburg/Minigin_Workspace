@@ -7,15 +7,18 @@
 #include <cassert>
 #include <string>
 
-void PlayerHealth_UI::OnNotify(TankDeathEvent const&)
+void PlayerHealth_UI::OnNotify(TankDeathEvent const& eventData)
 {
 	if (!m_pTextComp)
 	{
 		m_pTextComp = Object()->GetComponent<mg::TextComponent>();
 		assert(m_pTextComp);
 	}
+	if (true)
+	{
 
-	//m_pTextComp->SetText("# lives:" + std::to_string(eventData.playerId));
+	}
+	m_pTextComp->SetText("# lives:" ));
 }
 
 PlayerHealth_UI::PlayerHealth_UI(mg::GameObject& owner)

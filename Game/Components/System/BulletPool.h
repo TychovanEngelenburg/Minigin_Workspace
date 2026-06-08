@@ -4,6 +4,7 @@
 #include <Minigin/Components/Component.h>
 
 #include <stack>
+#include <optional>
 
 class BulletMovement;
 struct BulletConfig;
@@ -12,7 +13,7 @@ class GameGrid;
 class BulletPool final : public mg::Component
 {
 public:
-    BulletMovement* SpawnBullet(BulletConfig const& config, int killerId = -1);
+    BulletMovement* SpawnBullet(BulletConfig const& config, std::optional<int> playerId = std::nullopt);
     
     void ReturnBullet(BulletMovement* bullet);
     void Awake() override;

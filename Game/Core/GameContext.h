@@ -13,7 +13,7 @@
 #include <vector>
 #include <filesystem>
 
-class GameContext final : public mg::Singleton<GameContext>, public mg::IEventListener<TankDeathEvent>
+class GameContext final : public mg::Singleton<GameContext>, public mg::IObserver<TankDeathEvent>
 {
 public:
 	enum class GameMode

@@ -6,10 +6,10 @@
 namespace mg
 {
 	template <typename EventType>
-	class IEventListener;
+	class IObserver;
 
 	template<typename EventType>
-	class EventSource final
+	class Subject final
 	{
 	public:
 		void Notify(EventType const& eventData)
@@ -20,18 +20,18 @@ namespace mg
 			}
 		}
 
-		void AddListener(IEventListener<EventType>* listener)
+		void AddListener(IObserver<EventType>* listener)
 		{
 			m_listeners.push_back(listener);
 		}
 
-		void RemoveListener(IEventListener<EventType>* listener)
+		void RemoveListener(IObserver<EventType>* listener)
 		{
 			m_listeners.erase(std::find(m_listeners.begin(), m_listeners.end(), listener));
 		}
 
 	private:
-		std::vector<IEventListener<EventType>*> m_listeners;
+		std::vector<IObserver<EventType>*> m_listeners;
 	};
 };
 #endif // !EVENTSOURE_H

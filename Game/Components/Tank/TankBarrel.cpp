@@ -29,7 +29,7 @@ void TankBarrel::Shoot()
 
 	if (m_pBulletPool)
 	{
-		auto* bullet = m_pBulletPool->SpawnBullet(m_config, m_killerId);
+		auto* bullet = m_pBulletPool->SpawnBullet(m_config, m_playerId);
 		
 		if (!bullet)
 		{
@@ -43,10 +43,11 @@ void TankBarrel::Shoot()
 	m_currentCooldown = m_cooldownDuration;
 }
 
-void TankBarrel::SetKillerId(int id)
+void TankBarrel::SetPlayerId(std::optional<int> playerId)
 {
-	m_killerId = id;
+	m_playerId = playerId;
 }
+
 
 void TankBarrel::SetBulletPool(BulletPool* pool)
 {

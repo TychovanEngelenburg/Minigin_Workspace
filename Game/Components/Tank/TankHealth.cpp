@@ -15,7 +15,7 @@ int TankHealth::Health() const noexcept
 	return m_Health;
 }
 
-void TankHealth::Damage(int amount, int killerId)
+void TankHealth::Damage(int amount, std::optional<int> killerId)
 {
 	m_Health -= amount;
 
@@ -24,7 +24,7 @@ void TankHealth::Damage(int amount, int killerId)
 		OnDeath(killerId);
 	}
 
-	// TODO: Remove
+	// TODO: Hanlde another way?
 	DemoPlaySound();
 }
 
@@ -34,14 +34,17 @@ void TankHealth::Kill()
 	OnDeath(std::nullopt);
 }
 
-
-
 void TankHealth::ResetHealth()
 {
 	m_Health = MaxHealth;
 }
 
-void TankHealth::AddListener(mg::IEventListener<TankDeathEvent>* listener)
+void TankHealth::SetPlayerId(std::optional<int> playerId)
+{
+	m_playerId = playerId;
+}
+
+void TankHealth::AddListener(mg::IObserver<TankDeathEvent>* listener)
 {
 	m_onDeath.AddListener(listener);
 }
@@ -59,14 +62,13 @@ void TankHealth::Start()
 TankHealth::TankHealth(mg::GameObject& owner)
 	: Component(owner)
 {
-
 }
 
 void TankHealth::OnDeath(std::optional<int> killedBy)
 {
-	TankDeathEvent deathEvent{ OwnerPlayerId , killedBy, m_scoreValue };
+	TankDeathEvent deathEvent{ m_playerId , killedBy, m_scoreValue };
 
-	// TODO: Play sound
+	// TODO: Play sound?
 	m_onDeath.Notify(deathEvent);
 	Object()->SetActive(false);
 }

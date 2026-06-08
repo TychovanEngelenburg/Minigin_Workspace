@@ -127,7 +127,7 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 	tankHealth.SetScoreValue(tankConfig.Stats.KillScore);
 	if (inputConfig.has_value())
 	{
-		tankHealth.OwnerPlayerId = inputConfig->PlayerIndex;
+		tankHealth.SetPlayerId(inputConfig->PlayerIndex);
 	}
 	tankHealth.AddListener(&GameContext::Instance());
 
@@ -159,7 +159,7 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 	if (inputConfig.has_value())
 	{
 		tankObj->Name += "_Player" + std::to_string(inputConfig->PlayerIndex);
-		collisionDamage.SetKillerId(inputConfig->PlayerIndex);
+		collisionDamage.SetPlayerId(inputConfig->PlayerIndex);
 	}
 
 	// Barrel (optional)
@@ -179,7 +179,7 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 
 		if (inputConfig.has_value())
 		{
-			barrel.SetKillerId(inputConfig->PlayerIndex);
+			barrel.SetPlayerId(inputConfig->PlayerIndex);
 		}
 
 		barrelObj->Transform().SetParent(&tankObj->Transform());
