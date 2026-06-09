@@ -8,7 +8,7 @@
 #include <ranges>
 #include <algorithm>
 
-GameContext::GameMode const& GameContext::Mode() const noexcept
+GameContext::GameMode GameContext::Mode() const noexcept
 {
 	return m_mode;
 }
@@ -18,7 +18,7 @@ std::vector<GameContext::LevelDefinition> const& GameContext::Levels() const
 	return m_levels;
 }
 
-size_t const& GameContext::CurrentLevel() const noexcept
+size_t GameContext::CurrentLevel() const noexcept
 {
 	return m_currentLevel;
 }
@@ -37,7 +37,7 @@ size_t GameContext::ActivePlayerCount() const
 	return m_players.size();
 }
 
-PlayerSession& GameContext::GetPlayer(size_t index)
+PlayerSession const& GameContext::GetPlayer(size_t index)
 {
 	assert(index < m_players.size());
 	return m_players[index];
@@ -57,7 +57,11 @@ void GameContext::SetupGame(GameMode const& mode)
 
 	for (size_t i = 0; i < m_players.size(); ++i)
 	{
-		m_players[i] = PlayerSession{ static_cast<int>(i), 4 };
+		m_players[i] = PlayerSession{};
+
+		m_players[i].PlayerId = static_cast<int>(i);
+		m_players[i].Lives = m_startingLives;
+
 	}
 
 
@@ -92,6 +96,22 @@ void GameContext::ToggleGamemode()
 	m_mode = static_cast<GameMode>(modeId);
 }
 
+void GameContext::BroadcastPlayerState()
+{
+	for (auto const& player : m_players)
+	{
+		OnScoreChanged.Notify({
+			player.PlayerId,
+			player.Score
+			});
+
+		OnLivesChanged.Notify({
+			player.PlayerId,
+			player.Lives
+			});
+	}
+}
+
 #include <iostream>
 void GameContext::OnNotify(TankDeathEvent const& eventData)
 {
@@ -106,12 +126,14 @@ void GameContext::OnNotify(TankDeathEvent const& eventData)
 		if (it != m_players.end())
 		{
 			it->Score += eventData.ScoreValue;
+			OnScoreChanged.Notify({ it->PlayerId, it->Score });
+
 			std::cout << "Player " << eventData.KillingPlayer.value() << " recieved: " << eventData.ScoreValue << " points. Their total is now: " << it->Score << "\n";
 		}
 	}
 
 
-	
+
 	if (eventData.PlayerVictim.has_value())
 	{
 		auto it = std::ranges::find_if(m_players,
@@ -123,6 +145,7 @@ void GameContext::OnNotify(TankDeathEvent const& eventData)
 		if (it != m_players.end())
 		{
 			--it->Lives;
+			OnLivesChanged.Notify({ it->PlayerId, it->Lives });
 			HandleGameEvent(GameEvent::PlayerDied);
 			std::cout << "Player " << eventData.PlayerVictim.value() << " died! They now have: " << it->Lives << " left\n";
 		}

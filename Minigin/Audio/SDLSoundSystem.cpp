@@ -33,12 +33,6 @@ public:
 			m_thread.join();
 		}
 
-		if (m_pMusicTrack)
-		{
-			MIX_DestroyTrack(m_pMusicTrack);
-			m_pMusicTrack = nullptr;
-		}
-
 		for (auto* track : m_pActiveTracks)
 		{
 			if (track)
@@ -47,6 +41,18 @@ public:
 			}
 		}
 		m_pActiveTracks.clear();
+
+		if (m_pMusicTrack)
+		{
+			MIX_DestroyTrack(m_pMusicTrack);
+			m_pMusicTrack = nullptr;
+		}
+
+		for (auto& audio : m_audioCache)
+		{
+			MIX_DestroyAudio(audio.second);
+		}
+		m_audioCache.clear();
 	}
 
 	void Push(AudioEvent&& event)
@@ -153,7 +159,7 @@ private:
 		m_pActiveTracks.erase(
 			std::remove_if(m_pActiveTracks.begin(), m_pActiveTracks.end(), [](MIX_Track* track)
 				{
-					if (track == nullptr)
+					if (!track)
 					{
 						return true;
 					}

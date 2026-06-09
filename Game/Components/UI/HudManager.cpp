@@ -1,0 +1,55 @@
+#include "HudManager.h"
+
+#include "Game/Components/UI/PlayerUI.h"
+#include "Game/Core/GameContext.h"
+
+#include <Minigin/Scene/GameObject.h>
+#include <Minigin/Scene/Scene.h>
+#include <Minigin/Components/TextComponent.h>
+void HUDManager::Start()
+{
+	auto& context = GameContext::Instance();
+
+	for (size_t i = 0; i < context.ActivePlayerCount(); i++)
+	{
+		auto hudObj = std::make_unique<mg::GameObject>("PlayerUI_P" + std::to_string(i));
+		auto& ui = hudObj->AddComponent<PlayerUI>();
+		ui.SetPlayerId(context.GetPlayer(i).PlayerId);
+		context.OnScoreChanged.AddListener(&ui);
+		context.OnLivesChanged.AddListener(&ui);
+
+		auto livesTextObj = std::make_unique<mg::GameObject>("LivesUI_P" + std::to_string(i));
+		auto& livesText = livesTextObj->AddComponent<mg::TextComponent>("Lingua.otf", 36);
+		ui.SetSLivesComp(&livesText);
+
+
+		auto scoreTextObj = std::make_unique<mg::GameObject>("ScoreUI_P" + std::to_string(i));
+		auto& scoreText = scoreTextObj->AddComponent<mg::TextComponent>("Lingua.otf", 36);
+		ui.SetScoreComp(&scoreText);
+		scoreTextObj->Transform().Translate({ 0, 40 });
+
+
+		m_pPlayerInfoElements.push_back(&ui);
+
+		Object()->Scene()->Add(std::move(hudObj));
+		Object()->Scene()->Add(std::move(livesTextObj));
+		Object()->Scene()->Add(std::move(scoreTextObj));
+	}
+}
+
+HUDManager::HUDManager(mg::GameObject& owner)
+	: Component(owner)
+{
+}
+
+HUDManager::~HUDManager()
+{
+	// HudManager spawns the ui elements, therefore it also removes them
+	auto& context = GameContext::Instance();
+
+	for (auto* ui : m_pPlayerInfoElements)
+	{
+		context.OnScoreChanged.RemoveListener(ui);
+		context.OnLivesChanged.RemoveListener(ui);
+	}
+}

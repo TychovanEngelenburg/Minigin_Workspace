@@ -24,6 +24,7 @@ namespace mg
 		void UnloadUnusedResources();
 		std::filesystem::path const& DataPath();
 		void Init(const std::filesystem::path& data);
+
 	private:
 		friend class Singleton<ResourceManager>;
 		std::filesystem::path m_dataPath;

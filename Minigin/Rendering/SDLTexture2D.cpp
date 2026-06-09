@@ -2,19 +2,16 @@
 
 #include "Minigin/Rendering/Renderer.h"
 
-#include <stdexcept>
+// TODO: Use service locator to not be SDL dependant by default
 #include <SDL3/SDL_render.h>
 
-// .h includes
-#include <filesystem>
-#include <glm/ext/vector_float2.hpp>
-#include <glm/fwd.hpp>
+#include <stdexcept>
 
 glm::vec2 mg::Texture2D::Size() const
 {
-	float w{}, h{};
-	SDL_GetTextureSize(m_pTexture, &w, &h);
-	return { w, h };
+	glm::vec2 size{};
+	SDL_GetTextureSize(m_pTexture, &size.x, &size.y);
+	return size;
 }
 
 SDL_Texture* mg::Texture2D::GetSDLTexture() const noexcept
@@ -23,30 +20,22 @@ SDL_Texture* mg::Texture2D::GetSDLTexture() const noexcept
 }
 
 mg::Texture2D::Texture2D(std::filesystem::path const& filePath)
-	: m_pTexture{}
 {
 	auto pathStr{ filePath.string() };
 	SDL_Surface* surface = SDL_LoadPNG(pathStr.c_str());
 
 	if (!surface)
 	{
-		throw std::runtime_error(
-			std::string("Failed to load PNG: ") + SDL_GetError()
-		);
+		throw std::runtime_error( std::string("Failed to load PNG: ") + SDL_GetError());
 	}
 
-	m_pTexture = SDL_CreateTextureFromSurface(
-		Renderer::Instance().GetSDLRenderer(),
-		surface
-	);
+	m_pTexture = SDL_CreateTextureFromSurface(Renderer::Instance().GetSDLRenderer(), surface);
 
 	SDL_DestroySurface(surface);
 
 	if (!m_pTexture)
 	{
-		throw std::runtime_error(
-			std::string("Failed to create texture from surface: ") + SDL_GetError()
-		);
+		throw std::runtime_error( std::string("Failed to create texture from surface: ") + SDL_GetError() );
 	}
 }
 

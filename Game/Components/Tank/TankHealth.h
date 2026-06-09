@@ -4,7 +4,7 @@
 #include "Game/Events/GameEvents.h"
 
 #include <Minigin/Components/Component.h>
-#include <Minigin/Events/EventSource.h>
+#include <Minigin/Events/Subject.h>
 
 #include <optional>
 

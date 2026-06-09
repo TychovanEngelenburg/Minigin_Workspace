@@ -2,8 +2,6 @@
 #define GAME_EVENTS_H
 
 #include <optional>
-/// Simple holder for event data structs.
-// In case this project gets big/needs many events these are to be split up over multiple files.
 
 struct TankDeathEvent
 {

@@ -45,18 +45,14 @@ void PlayingState::OnEnter()
 	auto& context = GameContext::Instance();
 	auto& scene = MakeFreshScene();
 
-	auto [players, enemies] = SceneLoading::LoadLevelScene(
-		scene,
-		context.Levels()[context.CurrentLevel()].File,
-		context.Mode()
-	);
+	auto [players, enemies] = SceneLoading::LoadLevelScene( scene, context.Levels()[context.CurrentLevel()].File, context.Mode());
 
 	m_playersAlive = players;
 	m_enemiesAlive = enemies;
-
 	assert(m_playersAlive > 0 && "Level loaded with no player spawns.");
 	assert(m_enemiesAlive > 0 && "Level loaded with no enemy spawns.");
 
+	context.BroadcastPlayerState();
 }
 
 std::unique_ptr<GameState> PlayingState::HandleGameEvent(GameEvent const& event)

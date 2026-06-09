@@ -3,7 +3,7 @@
 
 #include "Game/Events/GameEvents.h"
 
-#include <Minigin/Events/IEventListener.h>
+#include <Minigin/Events/IObserver.h>
 
 class ScoreSystem final : public mg::IEventListener<TankDeathEvent>
 {

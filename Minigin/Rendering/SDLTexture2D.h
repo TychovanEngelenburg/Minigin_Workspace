@@ -5,14 +5,10 @@
 
 #include <glm/vec2.hpp>
 
-// TODO: Apply pointer implementation for texture usage.
-
 struct SDL_Texture;
+struct SDL_Renderer;
 namespace mg
 {
-	/**
-	 * Simple RAII wrapper for an SDL_Texture
-	 */
 	class Texture2D final
 	{
 	public:
@@ -20,7 +16,7 @@ namespace mg
 		glm::vec2 Size() const;
 
 		explicit Texture2D(SDL_Texture& texture);
-		explicit Texture2D(std::filesystem::path const& fullPath);
+		explicit Texture2D(std::filesystem::path const& filePath);
 
 		~Texture2D();
 		Texture2D(Texture2D const&) = delete;
@@ -29,7 +25,7 @@ namespace mg
 		Texture2D& operator= (Texture2D&&) = delete;
 
 	private:
-		SDL_Texture* m_pTexture;
+		SDL_Texture* m_pTexture{};
 	};
 }
 #endif // !TEXTURE2D_H

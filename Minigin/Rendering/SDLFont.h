@@ -5,13 +5,8 @@
 
 struct TTF_Font;
 
-// TODO: Apply pointer implementation for font usage.
-
 namespace mg
 {
-	/**
-	 * Simple RAII wrapper for a TTF_Font
-	 */
 	class Font final
 	{
 	public:
@@ -26,7 +21,7 @@ namespace mg
 		Font& operator= (Font const&&) = delete;
 
 	private:
-		TTF_Font* m_pFont;
+		TTF_Font* m_pFont{};
 	};
 }
 #endif // !FONT_H

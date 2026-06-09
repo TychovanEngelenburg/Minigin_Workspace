@@ -83,10 +83,8 @@ glm::vec2 mg::TextComponent::Size() const
 #pragma endregion Game_loop
 
 
-mg::TextComponent::TextComponent(mg::GameObject& owner, std::string_view text, std::filesystem::path const& fontFile, uint8_t size, SDL_Color const& color)
+mg::TextComponent::TextComponent(mg::GameObject& owner, std::filesystem::path const& fontFile, uint8_t size)
 	: Component(owner)
-	, m_text(text)
-	, m_color(color)
 	, m_pFont(mg::ResourceManager::Instance().LoadFont(fontFile, size))
 {
 

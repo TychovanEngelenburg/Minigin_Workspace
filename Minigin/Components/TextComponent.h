@@ -28,7 +28,7 @@ namespace mg
 		void Update() override;
 		void Render() const override;
 
-		TextComponent(mg::GameObject& owner, std::string_view text, std::filesystem::path const& fontFile, uint8_t size, SDL_Color const& color = { 255, 255, 255, 255 });
+		TextComponent(mg::GameObject& owner, std::filesystem::path const& fontFile, uint8_t size);
 
 		virtual ~TextComponent() = default;
 		TextComponent(TextComponent const& other) = delete;
@@ -38,9 +38,9 @@ namespace mg
 
 	private:
 		bool m_needsUpdate{ true };
-		std::string m_text;
+		std::string m_text{"Hello, World!"};
 
-		SDL_Color m_color;
+		SDL_Color m_color{ 255, 255, 255, 255 };
 
 		std::shared_ptr<Font> m_pFont;
 		std::shared_ptr<Texture2D> m_pTextTexture{ nullptr };

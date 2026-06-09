@@ -2,7 +2,7 @@
 #include "Game/Events/GameEvents.h"
 
 #include <Minigin/Scene/GameObject.h>
-#include <Minigin/Events/IEventListener.h>
+#include <Minigin/Events/IObserver.h>
 #include "Game/Core/GameContext.h"
 
 bool TankHealth::IsDead() const noexcept

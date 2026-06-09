@@ -1,5 +1,5 @@
-#ifndef IEVENTLISTENER_H
-#define IEVENTLISTENER_H
+#ifndef I_Observer_H
+#define I_Observer_H
 
 namespace mg
 {
@@ -18,4 +18,4 @@ namespace mg
 	};
 }
 
-#endif // !IEVENTLISTENER_H
+#endif // !I_Observer_H

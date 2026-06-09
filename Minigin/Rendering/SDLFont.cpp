@@ -1,12 +1,11 @@
 #include "SDLFont.h"
 
-#include <stdexcept>
+// TODO: Use service locator to not be SDL dependant by default
 #include <SDL3_ttf/SDL_ttf.h>
-#include <string>
 #include <SDL3/SDL_error.h>
 
-// .h includes
-#include <filesystem>
+#include <stdexcept>
+#include <string>
 
 TTF_Font* mg::Font::GetFont() const noexcept {
 	return m_pFont;
@@ -15,8 +14,10 @@ TTF_Font* mg::Font::GetFont() const noexcept {
 mg::Font::Font(std::filesystem::path const& fullPath, float size) : m_pFont(nullptr)
 {
 	auto pathString{ fullPath.string()};
+
 	m_pFont = TTF_OpenFont(pathString.c_str(), size);
-	if (m_pFont == nullptr) 
+
+	if (!m_pFont) 
 	{
 		throw std::runtime_error(std::string("Failed to load font: ") + SDL_GetError());
 	}

@@ -1,8 +1,9 @@
-#ifndef EVENTSOURE_H
-#define EVENTSOURE_H
+#ifndef SUBJECT_H
+#define SUBJECT_H
+
 #include <vector>
 #include <algorithm>
-
+#include <ranges>
 namespace mg
 {
 	template <typename EventType>
@@ -27,11 +28,11 @@ namespace mg
 
 		void RemoveListener(IObserver<EventType>* listener)
 		{
-			m_listeners.erase(std::find(m_listeners.begin(), m_listeners.end(), listener));
+			std::erase(m_listeners, listener);
 		}
 
 	private:
 		std::vector<IObserver<EventType>*> m_listeners;
 	};
 };
-#endif // !EVENTSOURE_H
+#endif // !SUBJECT_H
