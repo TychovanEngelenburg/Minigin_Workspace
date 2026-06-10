@@ -92,7 +92,7 @@ add_executable(${GAME_TARGET} ${TARGET_PARAM}
     "Game/Core/GameStates.cpp"
     "Game/Core/GameContext.cpp"
     "Game/Core/SceneLoading.cpp"
- "Game/Components/GameManager.cpp" "Game/Core/PlayerDeviceMapper.cpp"  "Game/Components/UI/HudManager.cpp" "Game/Components/UI/PlayerUI.cpp")
+ "Game/Components/GameManager.cpp" "Game/Core/PlayerDeviceMapper.cpp"  "Game/Components/UI/HudManager.cpp" "Game/Components/UI/PlayerUI.cpp" "Game/Commands/ToggleMuteCommand.cpp")
 
 # enable c++20 features
 target_compile_features(${GAME_TARGET} PUBLIC cxx_std_20)

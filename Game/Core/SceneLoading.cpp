@@ -2,6 +2,7 @@
 
 // General
 #include "Game/Components/GameManager.h"
+#include "Game/Commands/ToggleMuteCommand.h"
 
 // Level
 #include "Game/Components/UI/HudManager.h"
@@ -10,18 +11,44 @@
 #include "Game/Components/System/BulletPool.h"
 
 // Main menu
-#include "Commands/StartGameCommand.h"
+#include "Game/Commands/StartGameCommand.h"
 
 // Engine
 #include <Minigin/Scene/Scene.h>
 #include <Minigin/Scene/GameObject.h>
+
 #include <Minigin/Components/TextComponent.h>
 
 #include <Minigin/Input/InputBinding.h>
 #include <Minigin/Input/InputCodes.h>
 #include <Minigin/Input/SceneInput.h>
 
+
+#include <Minigin/Audio/SoundServiceLocator.h>
+#include <Minigin/Audio/ISoundSystem.h>
+
 #include <filesystem>
+
+/// <summary>
+/// Apply this to all scenes!
+/// </summary>
+namespace
+{
+	void ApplyDefault(mg::Scene& sceneOut)
+	{
+		auto gameManagerObj = std::make_unique<mg::GameObject>("gameManager");
+		gameManagerObj->AddComponent<GameManager>();
+		sceneOut.Add(std::move(gameManagerObj));
+
+
+		auto toggleMuteCommand = std::make_unique<mg::InputBinding>(
+			0, static_cast<int>(mg::Keycodes::KeyboardKey::F2), mg::InputBinding::DeviceType::Keyboard,
+			std::make_unique<ToggleMuteCommand>(), mg::InputBinding::TriggerType::Released
+		);
+
+		sceneOut.InputSystem().AddBinding(std::move(toggleMuteCommand));
+	}
+}
 
 TankManager::SpawnCounts SceneLoading::LoadLevelScene(mg::Scene& sceneOut, std::filesystem::path const& levelFile, GameContext::GameMode mode)
 {
@@ -44,9 +71,11 @@ TankManager::SpawnCounts SceneLoading::LoadLevelScene(mg::Scene& sceneOut, std::
 	hudManager->AddComponent<HUDManager>();
 	sceneOut.Add(std::move(hudManager));
 
-	auto gameManagerObj = std::make_unique<mg::GameObject>("gameManager");
-	gameManagerObj->AddComponent<GameManager>();
-	sceneOut.Add(std::move(gameManagerObj));
+	auto& audioSystem = mg::SoundServiceLocator::Fetch();
+	audioSystem.PlayMusic({ "./Data/Audio_Tron1982/03_IO_Tower.wav", "music", -1 });
+	audioSystem.SetMusicVolume(.5f);
+
+	ApplyDefault(sceneOut);
 
 	return counts;
 }
@@ -86,17 +115,13 @@ void SceneLoading::LoadMainMenuScene(mg::Scene& sceneOut)
 		sceneOut.InputSystem().AddBinding(std::move(gamepad));
 
 	}
-
-	auto gameManagerObj = std::make_unique<mg::GameObject>("gameManager");
-	gameManagerObj->AddComponent<GameManager>();
-	sceneOut.Add(std::move(gameManagerObj));
+	
+	ApplyDefault(sceneOut);
 }
 
 void SceneLoading::LoadScoreboardScene(mg::Scene& sceneOut)
 {
 	// TODO
 
-	auto gameManagerObj = std::make_unique<mg::GameObject>("gameManager");
-	gameManagerObj->AddComponent<GameManager>();
-	sceneOut.Add(std::move(gameManagerObj));
+	ApplyDefault(sceneOut);
 }
