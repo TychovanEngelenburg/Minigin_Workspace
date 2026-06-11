@@ -119,7 +119,7 @@ bool PlayingState::IsGameOver() const
 void GameOverState::OnEnter()
 {
 	auto& scene = MakeFreshScene();
-	SceneLoading::LoadScoreboardScene(scene);
+	SceneLoading::LoadScoreSavingScene(scene);
 }
 
 std::unique_ptr<GameState> GameOverState::HandleGameEvent(GameEvent const& event)

@@ -13,11 +13,18 @@
 // Main menu
 #include "Game/Commands/StartGameCommand.h"
 
+// Saving
+#include "Game/Components/System/ScoreSaver.h"
+#include "Game/Commands/ScoreSaving/SaveScoreCommand.h"
+#include "Game/Commands/ScoreSaving/ScrolllLetterCommand.h"
+#include "Game/Commands/ScoreSaving/CancelCharacterCommand.h"
+
 // Engine
 #include <Minigin/Scene/Scene.h>
 #include <Minigin/Scene/GameObject.h>
 
 #include <Minigin/Components/TextComponent.h>
+#include <Minigin/Components/Sprite.h>
 
 #include <Minigin/Input/InputBinding.h>
 #include <Minigin/Input/InputCodes.h>
@@ -50,7 +57,7 @@ namespace
 	}
 }
 
-TankManager::SpawnCounts SceneLoading::LoadLevelScene(mg::Scene& sceneOut, std::filesystem::path const& levelFile, GameContext::GameMode mode)
+TankManager::SpawnCounts SceneLoading::LoadLevelScene(mg::Scene& sceneOut, std::filesystem::path const& levelFile, GameMode mode)
 {
 	auto gridObj = std::make_unique<mg::GameObject>("Grid", glm::vec2(20, 100.f));
 	auto& gridComp = gridObj->AddComponent<GameGrid>(levelFile, 16.f);
@@ -85,7 +92,7 @@ void SceneLoading::LoadMainMenuScene(mg::Scene& sceneOut)
 	// Header
 	{
 		auto obj = std::make_unique<mg::GameObject>("Header_Text", glm::vec2(150.f, 20.f));
-		auto& textComp = obj->AddComponent<mg::TextComponent>("Lingua.otf", 36);
+		auto& textComp = obj->AddComponent<mg::TextComponent>("joystixmonospace-regular.otf", 36);
 		textComp.SetText("Press Gamepad A / Keyboard CTRL to start!");
 		textComp.SetColor({ 255, 255, 0, 255 });
 		sceneOut.Add(std::move(obj));
@@ -94,7 +101,7 @@ void SceneLoading::LoadMainMenuScene(mg::Scene& sceneOut)
 	// Mode display
 	{
 		auto obj = std::make_unique<mg::GameObject>("Mode_Text", glm::vec2(150.f, 80.f));
-		auto& textComp = obj->AddComponent<mg::TextComponent>("Lingua.otf", 24);
+		auto& textComp = obj->AddComponent<mg::TextComponent>("joystixmonospace-regular.otf", 24);
 		textComp.SetText("Press Tab / Gamepad Y to change mode");
 		textComp.SetColor({ 200, 200, 200, 255 });
 		sceneOut.Add(std::move(obj));
@@ -115,7 +122,83 @@ void SceneLoading::LoadMainMenuScene(mg::Scene& sceneOut)
 		sceneOut.InputSystem().AddBinding(std::move(gamepad));
 
 	}
-	
+
+	ApplyDefault(sceneOut);
+}
+
+void SceneLoading::LoadScoreSavingScene(mg::Scene& sceneOut)
+{
+	auto obj = std::make_unique<mg::GameObject>("Selector_Text", glm::vec2(150.f, 80.f));
+	 obj->AddComponent<ScoreSaver>();
+	 obj->AddComponent<mg::TextComponent>("joystixmonospace-regular.otf", 24);
+
+
+	//auto selectorObj = std::make_unique<mg::GameObject>("Selector_Sprite", glm::vec2(150.f, 80.f));
+	//auto& spriteComp = selectorObj->AddComponent<mg::Sprite>("joystixmonospace-regular.otf", 24);
+
+		// Save score input
+	 {
+		 auto keyboard = std::make_unique<mg::InputBinding>(
+			 0, static_cast<int>(mg::Keycodes::KeyboardKey::X), mg::InputBinding::DeviceType::Keyboard,
+			 std::make_unique<SaveScoreCommand>(*obj), mg::InputBinding::TriggerType::Released
+		 );
+		 sceneOut.InputSystem().AddBinding(std::move(keyboard));
+
+		 auto gamepad = std::make_unique<mg::InputBinding>(
+			 0, static_cast<int>(mg::Keycodes::GamepadButton::A), mg::InputBinding::DeviceType::Gamepad,
+			 std::make_unique<SaveScoreCommand>(*obj), mg::InputBinding::TriggerType::Released
+		 );
+		 sceneOut.InputSystem().AddBinding(std::move(gamepad));
+	 }
+
+	 // Cycle up command
+	 {
+		 auto keyboard = std::make_unique<mg::InputBinding>(
+			 0, static_cast<int>(mg::Keycodes::KeyboardKey::Up), mg::InputBinding::DeviceType::Keyboard,
+			 std::make_unique<ScrollLetterCommand>(*obj), mg::InputBinding::TriggerType::Released
+		 );
+		 sceneOut.InputSystem().AddBinding(std::move(keyboard));
+
+		 auto gamepad = std::make_unique<mg::InputBinding>(
+			 0, static_cast<int>(mg::Keycodes::GamepadButton::DPadUp), mg::InputBinding::DeviceType::Gamepad,
+			 std::make_unique<ScrollLetterCommand>(*obj), mg::InputBinding::TriggerType::Released
+		 );
+		 sceneOut.InputSystem().AddBinding(std::move(gamepad));
+	 }
+
+	 // Cycle down command
+	 {
+		 auto keyboard = std::make_unique<mg::InputBinding>(
+			 0, static_cast<int>(mg::Keycodes::KeyboardKey::Down), mg::InputBinding::DeviceType::Keyboard,
+			 std::make_unique<ScrollLetterCommand>(*obj, true), mg::InputBinding::TriggerType::Released
+		 );
+		 sceneOut.InputSystem().AddBinding(std::move(keyboard));
+
+		 auto gamepad = std::make_unique<mg::InputBinding>(
+			 0, static_cast<int>(mg::Keycodes::GamepadButton::DPadDown), mg::InputBinding::DeviceType::Gamepad,
+			 std::make_unique<ScrollLetterCommand>(*obj, true), mg::InputBinding::TriggerType::Released
+		 );
+		 sceneOut.InputSystem().AddBinding(std::move(gamepad));
+	 }
+
+	 // Cancel command
+	 {
+		 auto keyboard = std::make_unique<mg::InputBinding>(
+			 0, static_cast<int>(mg::Keycodes::KeyboardKey::Z), mg::InputBinding::DeviceType::Keyboard,
+			 std::make_unique<CancelCharacter>(*obj), mg::InputBinding::TriggerType::Released
+		 );
+		 sceneOut.InputSystem().AddBinding(std::move(keyboard));
+
+		 auto gamepad = std::make_unique<mg::InputBinding>(
+			 0, static_cast<int>(mg::Keycodes::GamepadButton::B), mg::InputBinding::DeviceType::Gamepad,
+			 std::make_unique<CancelCharacter>(*obj), mg::InputBinding::TriggerType::Released
+		 );
+		 sceneOut.InputSystem().AddBinding(std::move(gamepad));
+	 }
+
+	sceneOut.Add(std::move(obj));
+	//sceneOut.Add(std::move(selectorObj));
+
 	ApplyDefault(sceneOut);
 }
 

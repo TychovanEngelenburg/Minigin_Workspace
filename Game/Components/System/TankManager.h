@@ -3,6 +3,7 @@
 
 #include "Game/Config/PlayerInputConfig.h"
 #include "Game/Core/GameContext.h"
+#include "Game/Core/GameModes.h"
 #include "Game/Core/PlayerDeviceMapper.h"
 
 #include <Minigin/Components/Component.h>
@@ -26,7 +27,7 @@ public:
 	};
 
 	mg::GameObject* SpawnTank(glm::ivec2 const& gridPos, TankConfig const& tankConfig, std::optional<PlayerInputConfig> inputConfig = std::nullopt);
-	SpawnCounts Initialize(GameContext::GameMode const& mode);
+	SpawnCounts Initialize(GameMode const& mode);
 
 	void SetBulletPool(BulletPool* pool);
 

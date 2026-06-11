@@ -271,7 +271,7 @@ void TankManager::SetBulletPool(BulletPool* pool)
 }
 
 
-TankManager::SpawnCounts TankManager::Initialize(GameContext::GameMode const& mode)
+TankManager::SpawnCounts TankManager::Initialize(GameMode const& mode)
 {
 	assert(Object()->Scene() && "TankManager must be attached to a scene before initializing!");
 	m_deviceMapper.Resolve(mg::InputServiceLocator::Fetch());
@@ -290,8 +290,8 @@ TankManager::SpawnCounts TankManager::Initialize(GameContext::GameMode const& mo
 
 	switch (mode)
 	{
-		case GameContext::GameMode::Singleplayer:
-		case GameContext::GameMode::Coop:
+		case GameMode::Singleplayer:
+		case GameMode::Coop:
 		{
 			for (int i{ 1 }; i < playerSpawns.size(); i++)
 			{
@@ -301,7 +301,7 @@ TankManager::SpawnCounts TankManager::Initialize(GameContext::GameMode const& mo
 			break;
 		}
 
-		case GameContext::GameMode::Versus:
+		case GameMode::Versus:
 		{
 			for (int i{ 1 }; i < playerSpawns.size(); i++)
 			{

@@ -62,6 +62,7 @@ target_compile_features(minigin_engine PUBLIC cxx_std_20)
 
 # list source files here
 add_executable(${GAME_TARGET} ${TARGET_PARAM}
+    "Game/Commands/ScoreSaving/ScrollLetterCommand.cpp"
     "Game/Commands/MoveTankCommand.cpp"
     "Game/Commands/StartGameCommand.cpp"
     "Game/Commands/ShootCommand.cpp"
@@ -92,7 +93,7 @@ add_executable(${GAME_TARGET} ${TARGET_PARAM}
     "Game/Core/GameStates.cpp"
     "Game/Core/GameContext.cpp"
     "Game/Core/SceneLoading.cpp"
- "Game/Components/GameManager.cpp" "Game/Core/PlayerDeviceMapper.cpp"  "Game/Components/UI/HudManager.cpp" "Game/Components/UI/PlayerUI.cpp" "Game/Commands/ToggleMuteCommand.cpp")
+ "Game/Components/GameManager.cpp" "Game/Core/PlayerDeviceMapper.cpp"  "Game/Components/UI/HudManager.cpp" "Game/Components/UI/PlayerUI.cpp" "Game/Commands/ToggleMuteCommand.cpp" "Game/Core/HighscoreManager.cpp" "Game/Components/System/ScoreSaver.cpp" "Game/Commands/ScoreSaving/SaveScoreCommand.cpp" "Game/Commands/ScoreSaving/CancelCharacterCommand.cpp")
 
 # enable c++20 features
 target_compile_features(${GAME_TARGET} PUBLIC cxx_std_20)

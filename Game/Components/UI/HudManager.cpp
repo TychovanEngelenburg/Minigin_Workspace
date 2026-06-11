@@ -2,10 +2,12 @@
 
 #include "Game/Components/UI/PlayerUI.h"
 #include "Game/Core/GameContext.h"
+#include "Game/Config/FileLocations.h"
 
 #include <Minigin/Scene/GameObject.h>
 #include <Minigin/Scene/Scene.h>
 #include <Minigin/Components/TextComponent.h>
+
 void HUDManager::Start()
 {
 	auto& context = GameContext::Instance();
@@ -19,12 +21,12 @@ void HUDManager::Start()
 		context.OnLivesChanged.AddListener(&ui);
 
 		auto livesTextObj = std::make_unique<mg::GameObject>("LivesUI_P" + std::to_string(i));
-		auto& livesText = livesTextObj->AddComponent<mg::TextComponent>("Lingua.otf", 36);
+		auto& livesText = livesTextObj->AddComponent<mg::TextComponent>("joystixmonospace-regular.otf", 36);
 		ui.SetSLivesComp(&livesText);
 
 
 		auto scoreTextObj = std::make_unique<mg::GameObject>("ScoreUI_P" + std::to_string(i));
-		auto& scoreText = scoreTextObj->AddComponent<mg::TextComponent>("Lingua.otf", 36);
+		auto& scoreText = scoreTextObj->AddComponent<mg::TextComponent>("joystixmonospace-regular.otf", 36);
 		ui.SetScoreComp(&scoreText);
 		scoreTextObj->Transform().Translate({ 0, 40 });
 

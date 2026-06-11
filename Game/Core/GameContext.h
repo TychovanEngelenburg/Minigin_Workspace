@@ -1,8 +1,10 @@
 #ifndef GAME_CONTEXT_H
 #define GAME_CONTEXT_H
 
+#include "Game/Core/HighscoreManager.h"
 #include "Game/Core/GameStates.h"
 #include "Game/Core/PlayerSession.h"
+#include "Game/Core/GameModes.h"
 #include "Game/Events/GameEvents.h"
 #include "Game/Events/UIEvents.h"
 
@@ -19,14 +21,6 @@
 class GameContext final : public mg::Singleton<GameContext>, public mg::IObserver<TankDeathEvent>
 {
 public:
-	enum class GameMode
-	{
-		Singleplayer,
-		Coop,
-		Versus,
-		end
-	};
-
 	struct LevelDefinition
 	{
 		std::filesystem::path File;
@@ -35,6 +29,8 @@ public:
 	GameMode Mode() const noexcept;
 	std::vector<LevelDefinition> const& Levels() const;
 	size_t CurrentLevel() const noexcept;
+	int CurrentScore() const;
+	HighScoreManager& ScoreManager() const;
 
 	size_t ActivePlayerCount() const;
 	PlayerSession const& GetPlayer(size_t index);
@@ -59,14 +55,16 @@ private:
 
 	void TransitionTo(std::unique_ptr<GameState> state);
 
-	static int constexpr m_startingLives{ 4 };
-
+	static int constexpr m_startingLives{ 0 };
 	std::unique_ptr<GameState> m_state{};
 	std::vector <GameEvent> m_eventQueue{};
 
 	std::vector<LevelDefinition> m_levels;
+	size_t m_currentLevel{0};
+	
 	std::array<PlayerSession, 2> m_players{};
 	GameMode m_mode{ GameMode::Singleplayer };
-	size_t m_currentLevel{0};
+
+	std::unique_ptr<HighScoreManager> m_scoreManager{};
 };
 #endif //GAME_CONTEXT_H

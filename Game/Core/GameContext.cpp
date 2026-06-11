@@ -8,7 +8,7 @@
 #include <ranges>
 #include <algorithm>
 
-GameContext::GameMode GameContext::Mode() const noexcept
+GameMode GameContext::Mode() const noexcept
 {
 	return m_mode;
 }
@@ -21,6 +21,29 @@ std::vector<GameContext::LevelDefinition> const& GameContext::Levels() const
 size_t GameContext::CurrentLevel() const noexcept
 {
 	return m_currentLevel;
+}
+
+int GameContext::CurrentScore() const
+{
+
+	int score{};
+	if (m_mode != GameMode::Versus)
+	{
+		for (auto const& playerSession : m_players)
+		{
+			score += playerSession.Score;
+		}
+	}
+	else
+	{
+		score = m_players[0].Score;
+	}
+	return score;
+}
+
+HighScoreManager& GameContext::ScoreManager() const
+{
+	return *m_scoreManager;
 }
 
 /// <summary>
@@ -86,6 +109,7 @@ void GameContext::SetupGame(GameMode const& mode)
 void GameContext::Init()
 {
 	TransitionTo(std::make_unique<MainMenuState>());
+	m_scoreManager = std::make_unique<HighScoreManager>();
 }
 
 void GameContext::ToggleGamemode()
