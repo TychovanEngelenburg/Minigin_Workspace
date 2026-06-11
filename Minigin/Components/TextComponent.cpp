@@ -1,7 +1,7 @@
 ﻿#include "TextComponent.h"
 
 #include "Minigin/Scene/GameObject.h"
-#include "Minigin/Rendering/Renderer.h"
+#include "Minigin/Rendering/SDLRenderer.h"
 #include "Minigin/Rendering/ResourceManager.h"
 
 #include <stdexcept>

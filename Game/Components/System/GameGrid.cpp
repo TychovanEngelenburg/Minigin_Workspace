@@ -2,7 +2,7 @@
 
 #include <Minigin/Scene/GameObject.h>
 #include <Minigin/Rendering/ResourceManager.h>
-#include <Minigin/Rendering/Renderer.h>
+#include <Minigin/Rendering/SDLRenderer.h>
 #include <Minigin/Rendering/SourceRect.h>
 #include <Minigin/Rendering/SDLTexture2D.h>
 

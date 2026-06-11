@@ -1,4 +1,4 @@
-﻿#include "Renderer.h"
+﻿#include "SDLRenderer.h"
 
 #include "Minigin/Scene/SceneManager.h"
 #include "Minigin/Rendering/SDLTexture2D.h"
@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <SDL3/SDL_hints.h>
+#include "SDLRenderer.h"
 
 SDL_Renderer* mg::Renderer::GetSDLRenderer() const noexcept
 {
@@ -108,6 +109,13 @@ void mg::Renderer::RenderTexture(Texture2D const& texture, SourceRect const& dst
 		hasSrc ? &sdlSource : nullptr,
 		&newDst
 	);
+}
+
+glm::ivec2 mg::Renderer::WindowSize()
+{
+	glm::ivec2 size{};
+	SDL_GetWindowSize(m_pWindow, &size.x, &size.y);
+	return size;
 }
 
 const SDL_Color& mg::Renderer::BackgroundColor() const

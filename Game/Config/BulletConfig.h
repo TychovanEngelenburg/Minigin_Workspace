@@ -2,11 +2,12 @@
 #define BULLET_CONFIG_H
 
 #include "Game/Config/CollisionConfig.h"
+#include "Game/Config/FileLocations.h"
 
 #include <Minigin/Rendering/SpriteConfig.h>
 #include <glm/vec2.hpp>
 
-inline const mg::SpriteSheet BulletSpriteSheet{ "T_SpriteSheet_BattleTanks.png" , 4, 4 };
+inline mg::SpriteSheet const BulletSpriteSheet{ FileLocations::BulletSheet, 4, 4 };
 
 struct BulletConfig
 {

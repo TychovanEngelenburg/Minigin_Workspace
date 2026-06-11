@@ -3,14 +3,15 @@
 #include "Game/Config/BulletConfig.h"
 #include "Game/Config/PlayerInputConfig.h"
 #include "Game/Config/CollisionConfig.h"
-#include <Minigin/Rendering/SpriteConfig.h>
+#include "Game/Config/FileLocations.h"
 
+#include <Minigin/Rendering/SpriteConfig.h>
 
 #include <optional>
 #include <glm/vec2.hpp>
 #include <filesystem>
 
-inline const mg::SpriteSheet TankSheet{ "T_SpriteSheet_BattleTanks.png" , 4, 4 };
+inline  mg::SpriteSheet const TankSheet { FileLocations::TankSheet , 4, 4 };
 
 struct BarrelConfig
 {

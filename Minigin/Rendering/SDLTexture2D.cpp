@@ -1,6 +1,6 @@
 #include "SDLTexture2D.h"
 
-#include "Minigin/Rendering/Renderer.h"
+#include "Minigin/Rendering/SDLRenderer.h"
 
 // TODO: Use service locator to not be SDL dependant by default
 #include <SDL3/SDL_render.h>

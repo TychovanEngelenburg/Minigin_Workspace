@@ -5,21 +5,23 @@
 #include "Minigin/Rendering/SourceRect.h"
 
 #include <glm/vec2.hpp>
+
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_video.h>
 
-// TODO: look into making a different renderer?
+// TODO: look into making a different renderer? Use rendercomponents.
+// Also use servicelocator
 namespace mg
 {
 	class Transform2D;
 	class Texture2D;
-	/**
-	 * Simple RAII wrapper for the SDL renderer
-	 */
+
 	class Renderer final : public Singleton<Renderer>
 	{
 	public:
+		glm::ivec2 WindowSize();
+
 		const SDL_Color& BackgroundColor() const;
 		SDL_Renderer* GetSDLRenderer() const noexcept;
 

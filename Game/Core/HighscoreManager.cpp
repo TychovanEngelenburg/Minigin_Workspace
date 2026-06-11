@@ -1,5 +1,7 @@
 #include "HighScoreManager.h"
 
+#include <Minigin/Rendering/ResourceManager.h>
+
 #include <fstream>
 #include <algorithm>
 
@@ -26,10 +28,10 @@ void HighScoreManager::AddScore(GameMode mode,  PlayerScore&& entry)
 	}
 }
 
-#include <iostream>
+#include <iostream> // TODO: remove this.
 void HighScoreManager::Load(std::filesystem::path const& file)
 {
-	std::ifstream in(file, std::ios::binary);
+	std::ifstream in(mg::ResourceManager::Instance().DataPath() / file, std::ios::binary);
 	if (!in)
 	{
 		return;
@@ -67,7 +69,7 @@ void HighScoreManager::Load(std::filesystem::path const& file)
 
 void HighScoreManager::Save(std::filesystem::path const& file) const
 {
-	std::ofstream out(file, std::ios::binary);
+	std::ofstream out(mg::ResourceManager::Instance().DataPath() / file, std::ios::binary);
 	if (!out)
 	{
 		return;

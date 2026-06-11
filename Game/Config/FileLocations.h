@@ -6,7 +6,10 @@
 
 namespace FileLocations
 {
-	std::filesystem::path GameFont{ "joystixmonospace-regular.otf" };
+	inline  std::filesystem::path const JoystixFont{ "joystixmonospace-regular.otf" };
+	inline  std::filesystem::path const TankSheet{ "T_SpriteSheet_BattleTanks.png" };
+	inline  std::filesystem::path const BulletSheet{ "T_SpriteSheet_BattleTanks.png" };
+	inline  std::filesystem::path const ScoreFile{"Scores/highscores.dat"};
 }
 
 #endif // ! FILE_LOCATIONS_H

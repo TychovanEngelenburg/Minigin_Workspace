@@ -7,8 +7,9 @@
 
 #include "Minigin/Scene/SceneManager.h"
 #include "Minigin/Rendering/ResourceManager.h"
+#include "Minigin/Core/EngineConfig.h"
 #include "Minigin/Core/DeltaClock.h"
-#include "Minigin/Rendering/Renderer.h"
+#include "Minigin/Rendering/SDLRenderer.h"
 #include "Minigin/Input/InputServiceLocator.h"
 
 #include <stdexcept>
@@ -24,7 +25,6 @@
 #include <filesystem>
 #include <functional>
 #include <memory>
-
 SDL_Window* g_window{};
 
 static void LogSDLVersion(std::string const& message, int major, int minor, int patch)
@@ -102,7 +102,7 @@ void mg::Minigin::RunOneFrame()
 	ResourceManager::Instance().UnloadUnusedResources();
 }
 
-mg::Minigin::Minigin(std::filesystem::path const& dataPath)
+mg::Minigin::Minigin(mg::EngineConfig const& config)
 	: m_pDeltaClock{ std::make_unique<DeltaClock>() }
 {
 	PrintSDLVersion();
@@ -122,9 +122,9 @@ mg::Minigin::Minigin(std::filesystem::path const& dataPath)
 #endif 
 
 	g_window = SDL_CreateWindow(
-		"Programming 4 assignment",
-		1024,
-		576,
+		config.window.title.c_str(),
+		config.window.width,
+		config.window.height,
 		SDL_WINDOW_OPENGL
 	);
 
@@ -134,7 +134,7 @@ mg::Minigin::Minigin(std::filesystem::path const& dataPath)
 	}
 
 	Renderer::Instance().Init(g_window);
-	ResourceManager::Instance().Init(dataPath);
+	ResourceManager::Instance().Init(config.assetPath);
 }
 
 mg::Minigin::~Minigin()

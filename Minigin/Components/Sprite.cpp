@@ -1,7 +1,7 @@
 #include "Sprite.h"
 
 #include "Minigin/Rendering/ResourceManager.h"
-#include "Minigin/Rendering/Renderer.h"
+#include "Minigin/Rendering/SDLRenderer.h"
 #include "Minigin/Scene/GameObject.h"
 
 // .h includes

@@ -5,37 +5,21 @@
 #include <vld.h>
 #endif
 
-#include <glm/fwd.hpp>
 #include <filesystem>
-#include <utility>
 #include <memory>
 
-#if USE_STEAMWORKS
-#pragma warning (push)
-#pragma warning (disable:4996)
-#include <steam_api.h>
-#pragma warning (pop)
-// Used for exception-handling
-#include <iostream>
-#endif
 
 // Game
+#include "Game/Core/GameContext.h"
+
+
+#include <Minigin/Core/EngineConfig.h>
 #include <Minigin/Core/Minigin.h>
-#include <Minigin/Scene/SceneManager.h>
 
-
-// Audio
 #include <Minigin/Audio/SoundServiceLocator.h>
 #include <Minigin/Audio/LoggingSoundSystem.h>
 #include <Minigin/Audio/SDLSoundSystem.h>
 
-#include "Game/Core/GameContext.h"
-#include "Game/Core/GameStates.h"
-
-/// <summary>
-/// This script and the surrounding "Game" folder is a temporary stand in for the eventual external game project. 
-/// It's purpose is to test engine functions and it should not be included in the final engine library!
-/// </summary>
 
 static void load()
 {
@@ -51,6 +35,10 @@ static void load()
 
 int main(int, char* [])
 {
+	mg::EngineConfig config{};
+	config.window.title = "Tron_1982_Batteltanks";
+	config.window.width = 520;
+	config.window.height = 570;
 
 #if __EMSCRIPTEN__
 	std::filesystem::path data_location{ "" };
@@ -61,9 +49,10 @@ int main(int, char* [])
 		data_location = "../Data/";
 	}
 #endif
+	config.assetPath = data_location;
 
 
-	mg::Minigin engine(data_location);
+	mg::Minigin engine(config);
 	engine.Run(load);
 
 	return 0;

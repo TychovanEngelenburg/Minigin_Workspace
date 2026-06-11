@@ -51,4 +51,12 @@ public:
 
 	[[nodiscard]] std::unique_ptr<GameState> HandleGameEvent(GameEvent const& event) override;
 };
+
+//class GameOverState final : public GameState
+//{
+//public:
+//	void OnEnter() override;
+//
+//	[[nodiscard]] std::unique_ptr<GameState> HandleGameEvent(GameEvent const& event) override;
+//};
 #endif // GAME_STATES_H

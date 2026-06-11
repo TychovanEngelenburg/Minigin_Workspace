@@ -9,13 +9,14 @@
 
 namespace mg
 {
+	struct EngineConfig;
 	class Minigin final
 	{
 	public:
 		void Run(const std::function<void()>& load);
 		void RunOneFrame();
 
-		explicit Minigin(std::filesystem::path const& dataPath);
+		explicit Minigin(mg::EngineConfig const& windowConfig);
 
 		~Minigin();
 		Minigin(Minigin const& other) = delete;

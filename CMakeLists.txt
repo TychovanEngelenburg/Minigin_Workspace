@@ -46,7 +46,7 @@ add_library(${LIBRARY_TARGET} STATIC
     "Minigin/Platform/SDL_InputSystem.cpp"
     "Minigin/Platform/SDL_Keyboard.cpp"
 
-    "Minigin/Rendering/Renderer.cpp"
+    "Minigin/Rendering/SDLRenderer.cpp"
     "Minigin/Rendering/ResourceManager.cpp"
     "Minigin/Rendering/SDLFont.cpp"
     "Minigin/Rendering/SDLTexture2D.cpp"
@@ -54,7 +54,7 @@ add_library(${LIBRARY_TARGET} STATIC
     "Minigin/Scene/GameObject.cpp"
     "Minigin/Scene/Scene.cpp"
     "Minigin/Scene/SceneManager.cpp"
-     )
+      "Minigin/Core/EngineConfig.h")
 target_include_directories(minigin_engine PUBLIC
   ${CMAKE_SOURCE_DIR}
 )
