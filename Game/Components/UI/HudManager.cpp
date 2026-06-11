@@ -12,28 +12,30 @@ void HUDManager::Start()
 {
 	auto& context = GameContext::Instance();
 
-	for (size_t i = 0; i < context.ActivePlayerCount(); i++)
+	for (auto const& player : context.Players())
 	{
-		auto hudObj = std::make_unique<mg::GameObject>("PlayerUI_P" + std::to_string(i));
+		auto hudObj = std::make_unique<mg::GameObject>("PlayerUI_P" + std::to_string(player.PlayerId));
 		auto& ui = hudObj->AddComponent<PlayerUI>();
-		ui.SetPlayerId(context.GetPlayer(i).PlayerId);
+		ui.SetPlayerId(player.PlayerId);
 
 		// This could be handled in this class instead. Or with a "OnTankDeath" but this is a better demonstration.
-		context.OnScoreChanged.AddListener(&ui);
-		context.OnLivesChanged.AddListener(&ui);
+		if (player.Lives > 0)
+		{
+			context.OnScoreChanged.AddListener(&ui);
+			context.OnLivesChanged.AddListener(&ui);
+		}
 
-		auto livesTextObj = std::make_unique<mg::GameObject>("LivesUI_P" + std::to_string(i));
+		auto livesTextObj = std::make_unique<mg::GameObject>("LivesUI_P" + std::to_string(player.PlayerId));
 		auto& livesText = livesTextObj->AddComponent<mg::TextComponent>(FileLocations::JoystixFont, m_fontSize);
 		ui.SetSLivesComp(&livesText);
 		livesTextObj->Transform().SetParent(&this->Object()->Transform());
-		livesTextObj->Transform().SetLocalPosition({ mg::Renderer::Instance().WindowSize().x / context.ActivePlayerCount() * i, 0.f});
+		livesTextObj->Transform().SetLocalPosition({ mg::Renderer::Instance().WindowSize().x / context.Players().size() * player.PlayerId, 0.f });
 
-		auto scoreTextObj = std::make_unique<mg::GameObject>("ScoreUI_P" + std::to_string(i));
+		auto scoreTextObj = std::make_unique<mg::GameObject>("ScoreUI_P" + std::to_string(player.PlayerId));
 		auto& scoreText = scoreTextObj->AddComponent<mg::TextComponent>(FileLocations::JoystixFont, m_fontSize);
 		ui.SetScoreComp(&scoreText);
 		scoreTextObj->Transform().SetParent(&livesTextObj->Transform());
 		scoreTextObj->Transform().Translate({ 0, 40 });
-
 
 		m_pPlayerInfoElements.push_back(&ui);
 
@@ -45,8 +47,7 @@ void HUDManager::Start()
 
 HUDManager::HUDManager(mg::GameObject& owner)
 	: Component(owner)
-{
-}
+{}
 
 HUDManager::~HUDManager()
 {

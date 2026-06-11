@@ -64,7 +64,7 @@ target_compile_features(minigin_engine PUBLIC cxx_std_20)
 add_executable(${GAME_TARGET} ${TARGET_PARAM}
     "Game/Commands/ScoreSaving/ScrollLetterCommand.cpp"
     "Game/Commands/MoveTankCommand.cpp"
-    "Game/Commands/StartGameCommand.cpp"
+    "Game/Commands/ToggleGameModeCommand.cpp"
     "Game/Commands/ShootCommand.cpp"
     "Game/Commands/TurnBarrelCommand.cpp"
     
@@ -93,7 +93,7 @@ add_executable(${GAME_TARGET} ${TARGET_PARAM}
     "Game/Core/GameStates.cpp"
     "Game/Core/GameContext.cpp"
     "Game/Core/SceneLoading.cpp"
- "Game/Components/GameManager.cpp" "Game/Core/PlayerDeviceMapper.cpp"  "Game/Components/UI/HudManager.cpp" "Game/Components/UI/PlayerUI.cpp" "Game/Commands/ToggleMuteCommand.cpp" "Game/Core/HighscoreManager.cpp" "Game/Components/System/ScoreSaver.cpp" "Game/Commands/ScoreSaving/SaveScoreCommand.cpp" "Game/Commands/ScoreSaving/CancelCharacterCommand.cpp")
+ "Game/Components/GameManager.cpp" "Game/Core/PlayerDeviceMapper.cpp"  "Game/Components/UI/HudManager.cpp" "Game/Components/UI/PlayerUI.cpp" "Game/Commands/ToggleMuteCommand.cpp" "Game/Core/ScoreWriter.cpp" "Game/Components/System/ScoreSaver.cpp" "Game/Commands/ScoreSaving/SaveScoreCommand.cpp" "Game/Commands/ScoreSaving/CancelCharacterCommand.cpp" "Game/Components/UI/TotalScoreUI.cpp" "Game/Components/UI/ScoreBoardUI.cpp" "Game/Commands/ContinueSceneCommand.cpp" "Game/Components/UI/GameModeUI.cpp")
 
 # enable c++20 features
 target_compile_features(${GAME_TARGET} PUBLIC cxx_std_20)

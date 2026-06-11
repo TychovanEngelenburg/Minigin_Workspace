@@ -10,10 +10,13 @@ namespace
 {
 	mg::Scene& MakeFreshScene()
 	{
-		auto& scebeNabager = mg::SceneManager::Instance();
-		size_t sceneId = scebeNabager.CreateScene();
-		scebeNabager.SetActiveScene(sceneId);
-		return *scebeNabager.GetScene(sceneId);
+		auto& sceneManager = mg::SceneManager::Instance();
+
+		size_t sceneId{ 0 };
+		
+		sceneManager.CreateSceneAt(sceneId);
+		sceneManager.SetActiveScene(sceneId);
+		return *sceneManager.GetScene(sceneId);
 	}
 }
 
@@ -27,7 +30,7 @@ void MainMenuState::OnEnter()
 
 std::unique_ptr<GameState> MainMenuState::HandleGameEvent(GameEvent const& event)
 {
-	if (event == GameEvent::StartPlaying)
+	if (event == GameEvent::Continue)
 	{
 		auto& context = GameContext::Instance();
 
@@ -45,7 +48,7 @@ void PlayingState::OnEnter()
 	auto& context = GameContext::Instance();
 	auto& scene = MakeFreshScene();
 
-	auto [players, enemies] = SceneLoading::LoadLevelScene( scene, context.Levels()[context.CurrentLevel()].File, context.Mode());
+	auto [players, enemies] = SceneLoading::LoadLevelScene( scene, context.Levels()[context.CurrentLevel()]);
 
 	m_playersAlive = players;
 	m_enemiesAlive = enemies;
@@ -77,16 +80,22 @@ std::unique_ptr<GameState> PlayingState::HandleGameEvent(GameEvent const& event)
 		{
 			--m_playersAlive;
 
-			if (m_playersAlive <= 0)
+			if (IsLose())
 			{
+				if (IsGameOver())
+				{
+					return std::make_unique<ScoreSavingState>();
+				}
 				return std::make_unique<PlayingState>();
 			}
-			if (IsGameOver())
-			{
-				return std::make_unique<GameOverState>();
-			}
-
+	
 			break;
+		}
+
+		case GameEvent::Continue:
+		{
+			GameContext::Instance().AdvanceLevel();
+			return std::make_unique<PlayingState>();
 		}
 	}
 
@@ -99,13 +108,16 @@ bool PlayingState::IsWin() const
 	return m_enemiesAlive <= 0;
 }
 
+bool PlayingState::IsLose() const
+{
+	return m_playersAlive <= 0;
+}
+
 bool PlayingState::IsGameOver() const
 {
-	auto& context = GameContext::Instance();
-
-	for (int i = 0; i < context.ActivePlayerCount(); i++)
+	for (auto const& player : GameContext::Instance().Players())
 	{
-		if (context.GetPlayer(i).Lives > 0)
+		if (player.Lives > 0)
 		{
 			return false;
 		}
@@ -115,20 +127,45 @@ bool PlayingState::IsGameOver() const
 }
 #pragma endregion
 
-#pragma region GameOverState
-void GameOverState::OnEnter()
+#pragma region ScoreSaving
+void ScoreSavingState::OnEnter()
 {
 	auto& scene = MakeFreshScene();
 	SceneLoading::LoadScoreSavingScene(scene);
 }
 
-std::unique_ptr<GameState> GameOverState::HandleGameEvent(GameEvent const& event)
+std::unique_ptr<GameState> ScoreSavingState::HandleGameEvent(GameEvent const& event)
 {
-	if (event == GameEvent::scoreSaved)
+	switch (event)
 	{
-		return std::make_unique<MainMenuState>();
+		case GameEvent::Continue:
+		{
+			return std::make_unique<ScoreBoardScene>();
+		}
+
+		default:
+			break;
 	}
 
 	return nullptr;
 }
 #pragma endregion
+
+#pragma region ScoreBoard
+
+#pragma endregion
+
+void ScoreBoardScene::OnEnter()
+{
+	auto& scene = MakeFreshScene();
+	SceneLoading::LoadScoreboardScene(scene);
+}
+
+std::unique_ptr<GameState> ScoreBoardScene::HandleGameEvent(GameEvent const& event)
+{
+	if (event == GameEvent::Continue)
+	{
+		return std::make_unique<MainMenuState>();
+	}
+	return nullptr;
+}

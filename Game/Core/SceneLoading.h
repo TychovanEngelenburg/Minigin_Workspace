@@ -12,7 +12,7 @@ namespace mg
 
 namespace SceneLoading
 {
-	TankManager::SpawnCounts LoadLevelScene( mg::Scene& scene, std::filesystem::path const&, GameMode mode);
+	TankManager::SpawnCounts LoadLevelScene( mg::Scene& scene, std::filesystem::path const&);
 
 	void LoadMainMenuScene(mg::Scene& sceneOut);
 	void LoadScoreSavingScene(mg::Scene& sceneOut);

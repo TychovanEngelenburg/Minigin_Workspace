@@ -26,8 +26,8 @@ public:
 		int Enemies{ 0 };
 	};
 
-	mg::GameObject* SpawnTank(glm::ivec2 const& gridPos, TankConfig const& tankConfig, std::optional<PlayerInputConfig> inputConfig = std::nullopt);
-	SpawnCounts Initialize(GameMode const& mode);
+	mg::GameObject* SpawnTank(glm::ivec2 const& gridPos, TankConfig const& tankConfig, std::optional<PlayerSession> playerBinding = std::nullopt);
+	SpawnCounts SpawnTanks();
 
 	void SetBulletPool(BulletPool* pool);
 

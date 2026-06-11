@@ -6,6 +6,8 @@
 #include <Minigin/Components/Component.h>
 #include <Minigin/Events/IObserver.h>
 
+#include <string_view>
+
 namespace mg
 {
 	class TextComponent;
@@ -24,6 +26,8 @@ public:
 	PlayerUI(mg::GameObject& owner);
 
 private:
+	static std::string_view constexpr m_noLivesText{ "OUT!" };
+
 	mg::TextComponent* m_pScoreText{};
 	mg::TextComponent* m_pLivesText{};
 

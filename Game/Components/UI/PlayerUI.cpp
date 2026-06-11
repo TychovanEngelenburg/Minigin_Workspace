@@ -37,7 +37,12 @@ void PlayerUI::OnNotify(LivesChangedEvent const& eventData)
 		return;
 	}
 
-	m_pLivesText->SetText(std::to_string(eventData.Lives));
+	if (eventData.Lives <= 0)
+	{
+		m_pLivesText->SetText(m_noLivesText);
+		return;
+	}
+	m_pLivesText->SetText(std::to_string(eventData.Lives  - 1));
 	std::cout << "Player " << m_playerId << "'s lives are now: " << eventData.Lives << "\n";
 }
 

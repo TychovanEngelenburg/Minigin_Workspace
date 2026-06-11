@@ -1,7 +1,7 @@
 #ifndef GAME_CONTEXT_H
 #define GAME_CONTEXT_H
 
-#include "Game/Core/HighscoreManager.h"
+#include "Game/Core/ScoreWriter.h"
 #include "Game/Core/GameStates.h"
 #include "Game/Core/PlayerSession.h"
 #include "Game/Core/GameModes.h"
@@ -14,26 +14,20 @@
 #include <Minigin/Events/Subject.h>
 
 #include <memory>
-#include <array>
 #include <vector>
 #include <filesystem>
 
 class GameContext final : public mg::Singleton<GameContext>, public mg::IObserver<TankDeathEvent>
 {
 public:
-	struct LevelDefinition
-	{
-		std::filesystem::path File;
-	};
-
 	GameMode Mode() const noexcept;
-	std::vector<LevelDefinition> const& Levels() const;
+	std::vector<std::filesystem::path> const& Levels() const;
 	size_t CurrentLevel() const noexcept;
-	int CurrentScore() const;
-	HighScoreManager& ScoreManager() const;
+	int TotalScore() const;
+	ScoreWriter& ScoreManager() const;
 
-	size_t ActivePlayerCount() const;
-	PlayerSession const& GetPlayer(size_t index);
+	std::vector<PlayerSession> const& Players();
+
 
 	void AdvanceLevel();
 
@@ -44,7 +38,7 @@ public:
 	void BroadcastPlayerState();
 
 	void OnNotify(TankDeathEvent const& eventData) override;
-	void HandleGameEvent(GameEvent const& event);
+	void PushEvent(GameEvent const& event);
 	void FlushEvents();
 
 	GameContext() = default;
@@ -57,22 +51,26 @@ public:
 
 	mg::Subject<ScoreChangedEvent> OnScoreChanged;
 	mg::Subject<LivesChangedEvent> OnLivesChanged;
+	mg::Subject<GameModeChangedEvent> OnGameModeChanged;
 
 private:
 	friend class Singleton<GameContext>;
 
 	void TransitionTo(std::unique_ptr<GameState> state);
 
-	static int constexpr m_startingLives{ 0 };
+	static int constexpr m_startingLives{ 1 };
+	static size_t constexpr m_maxPlayers{ 2 };
+
+	
 	std::unique_ptr<GameState> m_pState{};
 	std::vector <GameEvent> m_eventQueue{};
 
-	std::vector<LevelDefinition> m_levels;
+	std::vector<std::filesystem::path> m_levels;
 	size_t m_currentLevel{0};
 	
-	std::array<PlayerSession, 2> m_players{};
+	std::vector<PlayerSession> m_players{};
 	GameMode m_mode{ GameMode::Singleplayer };
 
-	std::unique_ptr<HighScoreManager> m_pScoreManager{};
+	std::unique_ptr<ScoreWriter> m_pScoreManager{};
 };
 #endif //GAME_CONTEXT_H

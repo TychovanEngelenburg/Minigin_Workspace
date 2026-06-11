@@ -15,7 +15,7 @@ struct PlayerScore
 };
 
 
-class HighScoreManager
+class ScoreWriter
 {
 public:
 	using ScoreBoard = std::vector<PlayerScore>;

@@ -39,7 +39,8 @@ void mg::TextComponent::Update()
 {
 	if (m_needsUpdate)
 	{
-		auto const surf = TTF_RenderText_Blended(m_pFont->GetFont(), m_text.c_str(), m_text.length(), m_color);
+		//auto const surf = TTF_RenderText_Blended(m_pFont->GetFont(), m_text.c_str(), m_text.length(), m_color);
+		auto const surf = TTF_RenderText_Blended_Wrapped(m_pFont->GetFont(), m_text.c_str(), m_text.length(), m_color, 0);
 		if (surf == nullptr)
 		{
 			throw std::runtime_error(std::string("Render text failed: ") + SDL_GetError());

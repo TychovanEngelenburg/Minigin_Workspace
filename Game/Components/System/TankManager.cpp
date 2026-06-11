@@ -108,7 +108,7 @@
 ///		- MovementAI (Handles movement direction)
 /// 
 /// </summary>
-mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig const& tankConfig, std::optional<PlayerInputConfig> inputConfig)
+mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig const& tankConfig, std::optional<PlayerSession> playerBinding)
 {
 	assert(Object()->Scene() && "SpawnTank cannot be called before object was added to a scene!");
 
@@ -125,10 +125,12 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 	auto& tankHealth = tankObj->AddComponent<TankHealth>();
 	tankHealth.MaxHealth = tankConfig.Stats.MaxHealth;
 	tankHealth.SetScoreValue(tankConfig.Stats.KillScore);
-	if (inputConfig.has_value())
+
+	if (playerBinding.has_value())
 	{
-		tankHealth.SetPlayerId(inputConfig->PlayerIndex);
+		tankHealth.SetPlayerId(playerBinding->PlayerId);
 	}
+	
 	tankHealth.AddListener(&GameContext::Instance());
 
 	tankObj->Transform().SetWorldPosition(m_pGrid->GridToWorld(gridPos));
@@ -156,10 +158,10 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 	auto& collisionDamage = tankObj->AddComponent<DamageOnCollision>();
 	collisionDamage.SetDamageAmount(tankConfig.Stats.CollisionDamage);
 
-	if (inputConfig.has_value())
+	if (playerBinding.has_value())
 	{
-		tankObj->Name += "_Player" + std::to_string(inputConfig->PlayerIndex);
-		collisionDamage.SetPlayerId(inputConfig->PlayerIndex);
+		tankObj->Name += "_Player" + std::to_string(playerBinding->PlayerId);
+		collisionDamage.SetPlayerId(playerBinding->PlayerId);
 	}
 
 	// Barrel (optional)
@@ -177,9 +179,9 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 		barrel.SetBulletConfig(tankConfig.Barrel->BulletConf);
 		barrel.SetCooldown(tankConfig.Barrel->ShootInterval);
 
-		if (inputConfig.has_value())
+		if (playerBinding.has_value())
 		{
-			barrel.SetPlayerId(inputConfig->PlayerIndex);
+			barrel.SetPlayerId(playerBinding->PlayerId);
 		}
 
 		barrelObj->Transform().SetParent(&tankObj->Transform());
@@ -205,17 +207,17 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 	}
 
 	// Player bindings
-	if (inputConfig.has_value())
+	if (playerBinding.has_value())
 	{
 		bool playerBarrelTurning{ hasBarrel && !tankConfig.Barrel->AimWithMoveDir };
 
-		auto gamepadSlot = m_deviceMapper.GamepadIndexForPlayer(inputConfig->PlayerIndex);
+		auto gamepadSlot = m_deviceMapper.GamepadIndexForPlayer(playerBinding->PlayerId);
 		if (gamepadSlot.has_value())
 		{
 			BindGamepad(*tankObj, barrelObj.get(), playerBarrelTurning, *gamepadSlot);
 		}
 
-		if (m_deviceMapper.PlayerUsesKeyboard(inputConfig->PlayerIndex))
+		if (m_deviceMapper.PlayerUsesKeyboard(playerBinding->PlayerId))
 		{
 			BindKeyboard(*tankObj.get(), barrelObj.get(), playerBarrelTurning);
 		}
@@ -271,7 +273,7 @@ void TankManager::SetBulletPool(BulletPool* pool)
 }
 
 
-TankManager::SpawnCounts TankManager::Initialize(GameMode const& mode)
+TankManager::SpawnCounts TankManager::SpawnTanks()
 {
 	assert(Object()->Scene() && "TankManager must be attached to a scene before initializing!");
 	m_deviceMapper.Resolve(mg::InputServiceLocator::Fetch());
@@ -285,35 +287,22 @@ TankManager::SpawnCounts TankManager::Initialize(GameMode const& mode)
 	TankManager::SpawnCounts counts{};
 
 	// Spawn players
-	SpawnTank(playerSpawns[0], TankPresets::Player(0), PlayerInputConfig(0));
-	++counts.Players;
-
-	switch (mode)
+	for (auto const& player : GameContext::Instance().Players())
 	{
-		case GameMode::Singleplayer:
-		case GameMode::Coop:
+		if (!player.AsEnemy)
 		{
-			for (int i{ 1 }; i < playerSpawns.size(); i++)
+			if (player.Lives <= 0)
 			{
-				SpawnTank(playerSpawns[i], TankPresets::Player(i), PlayerInputConfig(i));
-				++counts.Players;
+				continue;
 			}
-			break;
-		}
 
-		case GameMode::Versus:
-		{
-			for (int i{ 1 }; i < playerSpawns.size(); i++)
-			{
-				SpawnTank(playerSpawns[i], TankPresets::BasicEnemy(), PlayerInputConfig(i));
-				++counts.Enemies;
-			}
-			break;
+			SpawnTank(playerSpawns[player.PlayerId], TankPresets::Player(player.PlayerId), player);
+			++counts.Players;
 		}
-
-		default:
+		else
 		{
-			break;
+			SpawnTank(playerSpawns[player.PlayerId], TankPresets::BasicEnemy(), player);
+			++counts.Enemies;
 		}
 	}
 

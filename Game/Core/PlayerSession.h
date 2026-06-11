@@ -3,10 +3,11 @@
 
 struct PlayerSession
 {
-	int PlayerId{};
+	int const PlayerId;
+	bool const AsEnemy;
+
 	int Lives{};
 	int Score{};
-	bool IsDead{ false };
 };
 
 #endif // !PLAYER_SESSION_H

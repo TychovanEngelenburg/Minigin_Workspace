@@ -8,7 +8,7 @@ namespace mg
 	class GameObject;
 }
 
-class StartGameCommand final : public mg::ICommand
+class ToggleGameModeCommand final : public mg::ICommand
 {
 public:
 	void Execute() override;

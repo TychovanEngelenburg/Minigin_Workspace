@@ -1,6 +1,6 @@
 #include "ScoreSaver.h"
 
-#include "Game/Core/HighscoreManager.h"
+#include "Game/Core/ScoreWriter.h"
 #include "Game/Core/GameContext.h"
 
 #include <Minigin/Components/TextComponent.h>
@@ -49,10 +49,10 @@ void ScoreSaver::Continue()
 			name += m_currentLetters[i];
 		
 		}
-		context.ScoreManager().AddScore(context.Mode(), {context.CurrentScore(), name});
+		context.ScoreManager().AddScore(context.Mode(), {context.TotalScore(), name});
 		context.ScoreManager().Save();
 
-		context.HandleGameEvent(GameEvent::scoreSaved);
+		context.PushEvent(GameEvent::Continue);
 	}
 }
 

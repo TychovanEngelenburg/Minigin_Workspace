@@ -13,7 +13,7 @@ GameMode GameContext::Mode() const noexcept
 	return m_mode;
 }
 
-std::vector<GameContext::LevelDefinition> const& GameContext::Levels() const
+std::vector<std::filesystem::path> const& GameContext::Levels() const
 {
 	return m_levels;
 }
@@ -23,47 +23,30 @@ size_t GameContext::CurrentLevel() const noexcept
 	return m_currentLevel;
 }
 
-int GameContext::CurrentScore() const
+int GameContext::TotalScore() const
 {
 
 	int score{};
-	if (m_mode != GameMode::Versus)
+
+	for (auto const& player : m_players)
 	{
-		for (auto const& playerSession : m_players)
+		if (!player.AsEnemy)
 		{
-			score += playerSession.Score;
+			score += player.Score;
 		}
 	}
-	else
-	{
-		score = m_players[0].Score;
-	}
+
 	return score;
 }
 
-HighScoreManager& GameContext::ScoreManager() const
+ScoreWriter& GameContext::ScoreManager() const
 {
 	return *m_pScoreManager;
 }
 
-/// <summary>
-/// Return the amount of players whom are playing on the "player" team.
-/// </summary>
-/// <returns></returns>
-size_t GameContext::ActivePlayerCount() const
+std::vector<PlayerSession> const& GameContext::Players()
 {
-	if (m_mode == GameMode::Versus)
-	{
-		return 1;
-	}
-
-	return m_players.size();
-}
-
-PlayerSession const& GameContext::GetPlayer(size_t index)
-{
-	assert(index < m_players.size());
-	return m_players[index];
+	return m_players;
 }
 
 
@@ -75,32 +58,69 @@ void GameContext::AdvanceLevel()
 
 void GameContext::SetupGame(GameMode const& mode)
 {
+	m_players.clear();
 	m_mode = mode;
 	m_currentLevel = 0;
 
-	for (size_t i = 0; i < m_players.size(); ++i)
-	{
-		m_players[i] = PlayerSession{};
-
-		m_players[i].PlayerId = static_cast<int>(i);
-		m_players[i].Lives = m_startingLives;
-
-	}
-
+	PlayerSession playerOne{ 0, false };
+	playerOne.Lives = m_startingLives;
+	m_players.push_back(std::move(playerOne));
 
 	switch (mode)
 	{
-		case GameMode::Singleplayer:
 		case GameMode::Coop:
+		{
+			for (int i = 1; i < m_maxPlayers; ++i)
+			{
+				PlayerSession player{i, false };
+				player.Lives = m_startingLives;
+
+				m_players.push_back(std::move(player));
+			}
+			break;
+		}
+
 		case GameMode::Versus:
+		{
+			for (int i{ 1 }; i < m_maxPlayers; ++i)
+			{
+				PlayerSession player{ i, true };
+				playerOne.Lives = m_startingLives;
+
+				m_players.push_back(std::move(player));
+			}
+			break;
+		}
+
+		case GameMode::Singleplayer:
 		default:
 		{
-			m_levels =
-			{
-				{ "LevelData/01.lvl" }//,
-				//{ "LevelData/02.lvl" },
-				//{ "LevelData/03.lvl" }
-			};
+			break;
+		}
+	}
+
+	// Levels
+	switch (mode)
+	{
+		case GameMode::Coop:
+		{
+			m_levels = LevelFiles::Singleplayer;
+
+			break;
+		}
+
+		case GameMode::Versus:
+		{
+			m_levels = LevelFiles::Versus;
+
+			break;
+		}
+
+		case GameMode::Singleplayer:
+		default:
+		{
+			m_levels = LevelFiles::Singleplayer;
+
 			break;
 		}
 	}
@@ -109,7 +129,7 @@ void GameContext::SetupGame(GameMode const& mode)
 void GameContext::Init()
 {
 	TransitionTo(std::make_unique<MainMenuState>());
-	m_pScoreManager = std::make_unique<HighScoreManager>();
+	m_pScoreManager = std::make_unique<ScoreWriter>();
 
 	m_pScoreManager->Load();
 }
@@ -120,6 +140,8 @@ void GameContext::ToggleGamemode()
 	modeId = ++modeId % static_cast<int>(GameMode::end);
 
 	m_mode = static_cast<GameMode>(modeId);
+
+	OnGameModeChanged.Notify({ m_mode });
 }
 
 void GameContext::BroadcastPlayerState()
@@ -143,51 +165,34 @@ void GameContext::OnNotify(TankDeathEvent const& eventData)
 {
 	if (eventData.KillingPlayer.has_value())
 	{
-		auto it = std::ranges::find_if(m_players,
-			[eventData](PlayerSession const& p)
-			{
-				return p.PlayerId == eventData.KillingPlayer.value();
-			});
+		auto& player = m_players[eventData.KillingPlayer.value()];
+		player.Score += eventData.ScoreValue;
+		OnScoreChanged.Notify({ player.PlayerId, player.Score });
 
-		if (it != m_players.end())
-		{
-			it->Score += eventData.ScoreValue;
-			OnScoreChanged.Notify({ it->PlayerId, it->Score });
+		std::cout << "Player " << player.PlayerId << " recieved: " << eventData.ScoreValue << " points. Their total is now: " << player.Score << "\n";
 
-			std::cout << "Player " << eventData.KillingPlayer.value() << " recieved: " << eventData.ScoreValue << " points. Their total is now: " << it->Score << "\n";
-		}
 	}
-
-
 
 	if (eventData.PlayerVictim.has_value())
 	{
-		auto it = std::ranges::find_if(m_players,
-			[eventData](PlayerSession const& p)
-			{
-				return p.PlayerId == eventData.PlayerVictim.value();
-			});
+		auto& player = m_players[eventData.PlayerVictim.value()];
+		--player.Lives;
+		OnLivesChanged.Notify({ player.PlayerId, player.Lives });
 
-		if (it != m_players.end())
-		{
-			--it->Lives;
-			OnLivesChanged.Notify({ it->PlayerId, it->Lives });
-			HandleGameEvent(GameEvent::PlayerDied);
-			std::cout << "Player " << eventData.PlayerVictim.value() << " died! They now have: " << it->Lives << " left\n";
-		}
+		PushEvent(GameEvent::PlayerDied);
 
+		std::cout << "Player " << player.PlayerId << " died! They now have: " << player.Lives << " left\n";
 	}
 	else
 	{
-		HandleGameEvent(GameEvent::EnemyKilled);
+		PushEvent(GameEvent::EnemyKilled);
 		std::cout << "An enemy died!\n";
 	}
 }
 
-void GameContext::HandleGameEvent(GameEvent const& event)
+void GameContext::PushEvent(GameEvent const& event)
 {
 	m_eventQueue.push_back(event);
-
 }
 
 void GameContext::FlushEvents()

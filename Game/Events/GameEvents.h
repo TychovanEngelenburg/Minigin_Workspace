@@ -15,7 +15,6 @@ enum class GameEvent
 	PlayerDied,
 	EnemyKilled,
 
-	StartPlaying,
-	scoreSaved,
+	Continue,
 };
 #endif // !GAME_EVENTS_H
