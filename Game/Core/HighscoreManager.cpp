@@ -26,6 +26,7 @@ void HighScoreManager::AddScore(GameMode mode,  PlayerScore&& entry)
 	}
 }
 
+#include <iostream>
 void HighScoreManager::Load(std::filesystem::path const& file)
 {
 	std::ifstream in(file, std::ios::binary);
@@ -57,6 +58,8 @@ void HighScoreManager::Load(std::filesystem::path const& file)
 			{
 				return;
 			}
+
+			std::cout << entry.name << " loaded with score " << entry.score << "\n";
 			board.push_back(entry);
 		}
 	}

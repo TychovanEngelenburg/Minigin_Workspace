@@ -236,7 +236,8 @@ private:
 					m_pMusicTrack = nullptr;
 				}
 
-				m_pMusicTrack = CreateTrack(audio, m_musicVolume.load(), event.clip.loops);
+				float gain = m_isMuted ? 0.f : 1.f;
+				m_pMusicTrack = CreateTrack(audio, gain * m_musicVolume.load(), event.clip.loops);
 				break;
 			}
 
@@ -273,7 +274,8 @@ private:
 				m_musicVolume.store(event.value);
 				if (m_pMusicTrack)
 				{
-					MIX_SetTrackGain(m_pMusicTrack, m_musicVolume.load());
+					float gain = m_isMuted ? 0.f : 1.f;
+					MIX_SetTrackGain(m_pMusicTrack, gain * m_musicVolume.load());
 				}
 				break;
 			}

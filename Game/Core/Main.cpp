@@ -45,40 +45,12 @@ static void load()
 	mg::SoundServiceLocator::Register(std::make_unique<mg::SDLSoundSystem>());
 #endif // _DEBUG
 
-	//size_t sceneId{ mg::SceneManager::Instance().CreateScene() };
-	//auto& scene{ *mg::SceneManager::Instance().GetScene(sceneId)};
-	//audioSystem.PlayMusic({ "./Data/Audio_Tron1982/11 - Sounds (Derezzed).wav", "derezzed", -1});
-
-
 	GameContext::Instance().Init();
-
-	//SceneLoading::LoadTestScene(scene);
-
-	//mg::SceneManager::Instance().SetActiveScene(sceneId);
 }
 
 
 int main(int, char* [])
 {
-#if USE_STEAMWORKS
-	try
-	{
-		if (!SteamAPI_Init())
-		{
-			throw std::runtime_error(std::string("Fatal Error - Steam must be running to play this game (SteamAPI_Init() failed)."));
-		}
-	}
-	// Because of SDL_main being "noexcept" there shouldn't be throwing in main.
-	catch (std::exception const& except)
-	{
-		std::cerr << "Fatal Error: " << except.what() << "\n";
-		//return -1;
-	}
-#endif
-
-#if USE_STEAMWORKS
-	SteamAPI_RunCallbacks();
-#endif 
 
 #if __EMSCRIPTEN__
 	std::filesystem::path data_location{ "" };
@@ -94,9 +66,5 @@ int main(int, char* [])
 	mg::Minigin engine(data_location);
 	engine.Run(load);
 
-
-#if USE_STEAMWORKS
-	SteamAPI_Shutdown();
-#endif
 	return 0;
 }

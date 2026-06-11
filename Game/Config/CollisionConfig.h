@@ -3,6 +3,8 @@
 
 #include <cstdint>
 
+// Use these as types in other config files
+
 enum class GameCollisionLayer : uint32_t
 {
     None = 0,

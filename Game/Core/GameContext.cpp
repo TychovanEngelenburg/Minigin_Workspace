@@ -43,7 +43,7 @@ int GameContext::CurrentScore() const
 
 HighScoreManager& GameContext::ScoreManager() const
 {
-	return *m_scoreManager;
+	return *m_pScoreManager;
 }
 
 /// <summary>
@@ -109,7 +109,9 @@ void GameContext::SetupGame(GameMode const& mode)
 void GameContext::Init()
 {
 	TransitionTo(std::make_unique<MainMenuState>());
-	m_scoreManager = std::make_unique<HighScoreManager>();
+	m_pScoreManager = std::make_unique<HighScoreManager>();
+
+	m_pScoreManager->Load();
 }
 
 void GameContext::ToggleGamemode()
@@ -193,31 +195,36 @@ void GameContext::FlushEvents()
 	std::vector<GameEvent> currentEvents{};
 	std::swap(m_eventQueue, currentEvents);
 
-	if (!m_state)
+	if (!m_pState)
 	{
 		return;
 	}
 	for (auto& event : currentEvents)
 	{
-		if (auto newState = m_state->HandleGameEvent(event))
+		if (auto newState = m_pState->HandleGameEvent(event))
 		{
 			TransitionTo(std::move(newState));
 		}
 	}
 }
 
+GameContext::~GameContext()
+{
+	m_pScoreManager->Save();
+}
+
 
 void GameContext::TransitionTo(std::unique_ptr<GameState> state)
 {
-	if (m_state)
+	if (m_pState)
 	{
-		m_state->OnExit();
+		m_pState->OnExit();
 	}
 
-	m_state = std::move(state);
+	m_pState = std::move(state);
 
-	if (m_state)
+	if (m_pState)
 	{
-		m_state->OnEnter();
+		m_pState->OnEnter();
 	}
 }

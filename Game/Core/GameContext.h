@@ -47,6 +47,14 @@ public:
 	void HandleGameEvent(GameEvent const& event);
 	void FlushEvents();
 
+	GameContext() = default;
+
+	~GameContext() override;
+	GameContext(GameContext const& other) = delete;
+	GameContext(GameContext&& other) = delete;
+	GameContext& operator=(GameContext const& other) = delete;
+	GameContext& operator=(GameContext&& other) = delete;
+
 	mg::Subject<ScoreChangedEvent> OnScoreChanged;
 	mg::Subject<LivesChangedEvent> OnLivesChanged;
 
@@ -56,7 +64,7 @@ private:
 	void TransitionTo(std::unique_ptr<GameState> state);
 
 	static int constexpr m_startingLives{ 0 };
-	std::unique_ptr<GameState> m_state{};
+	std::unique_ptr<GameState> m_pState{};
 	std::vector <GameEvent> m_eventQueue{};
 
 	std::vector<LevelDefinition> m_levels;
@@ -65,6 +73,6 @@ private:
 	std::array<PlayerSession, 2> m_players{};
 	GameMode m_mode{ GameMode::Singleplayer };
 
-	std::unique_ptr<HighScoreManager> m_scoreManager{};
+	std::unique_ptr<HighScoreManager> m_pScoreManager{};
 };
 #endif //GAME_CONTEXT_H
