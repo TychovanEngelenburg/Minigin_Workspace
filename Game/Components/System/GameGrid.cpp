@@ -20,28 +20,28 @@ GameGrid::GameGrid(mg::GameObject& owner, std::filesystem::path const& filePath,
 	m_pBackgroundTexture = mg::ResourceManager::Instance().LoadTexture(FileLocations::GridBackground);
 }
 
-Tile* GameGrid::GetTile(glm::ivec2 const& gridPos)
+Tile* GameGrid::GetTile(glm::ivec2 const& gridPos) 
 {
-	if (gridPos.x >= m_cols || gridPos.x < 0 ||
-		gridPos.y >= m_rows || gridPos.y < 0)
+	if (gridPos.x >= m_gridSize.x || gridPos.x < 0 ||
+		gridPos.y >= m_gridSize.y || gridPos.y < 0)
 	{
 		return nullptr;
 	}
 
 
-	return &m_tiles[m_cols * gridPos.y + gridPos.x];
+	return &m_tiles[m_gridSize.x * gridPos.y + gridPos.x];
 }
 
 Tile const* GameGrid::GetTile(glm::ivec2 const& gridPos) const
 {
-	if (gridPos.x >= m_cols || gridPos.x < 0 ||
-		gridPos.y >= m_rows || gridPos.y < 0)
+	if (gridPos.x >= m_gridSize.x || gridPos.x < 0 ||
+		gridPos.y >= m_gridSize.y || gridPos.y < 0)
 	{
 		return nullptr;
 	}
 
 
-	return &m_tiles[m_cols * gridPos.y + gridPos.x];
+	return &m_tiles[m_gridSize.x * gridPos.y + gridPos.x];
 }
 
 std::vector<GameGrid::TankSpawnPoint> const& GameGrid::TankSpawnpoints() const noexcept
@@ -57,6 +57,11 @@ glm::ivec2 const& GameGrid::TeleporterPos() const noexcept
 float GameGrid::TileSize() const noexcept
 {
 	return m_tileSize;
+}
+
+glm::ivec2 const& GameGrid::Size() const noexcept
+{
+	return m_gridSize;
 }
 
 bool GameGrid::WallAt(glm::ivec2 const& gridPos) const
@@ -96,8 +101,8 @@ glm::vec2 GameGrid::GridToWorld(glm::ivec2 const& gridPos) const
 glm::ivec2 GameGrid::IdToGrid(int idx) const
 {
 	return glm::ivec2(
-		idx % m_cols,
-		idx / m_cols
+		idx % m_gridSize.x,
+		idx / m_gridSize.x
 	);
 }
 
@@ -105,7 +110,8 @@ glm::ivec2 GameGrid::IdToGrid(int idx) const
 void GameGrid::Render() const
 {
 	glm::vec2 gridPos{ Object()->Transform().LocalPosition() };
-	SourceRect bgDst{ gridPos.x, gridPos.y, m_tileSize * m_cols, m_tileSize * m_rows };
+	glm::vec2 gridSize{ m_tileSize * static_cast<glm::vec2>(m_gridSize) };
+	SourceRect bgDst{ gridPos.x, gridPos.y, gridSize.x, gridSize.y };
 	mg::Renderer::Instance().RenderTexture(*m_pBackgroundTexture, bgDst);
 
 
@@ -141,11 +147,11 @@ void GameGrid::Render() const
 
 void GameGrid::ComputeWalkables()
 {
-	for (int x = 0; x < m_cols; x++)
+	for (int x = 0; x < m_gridSize.x; x++)
 	{
-		for (int y = 0; y < m_rows; y++)
+		for (int y = 0; y < m_gridSize.y; y++)
 		{
-			m_tiles[m_cols * y + x].Walkable = (
+			m_tiles[m_gridSize.x * y + x].Walkable = (
 				!WallAt({ x, y }) &&
 				!WallAt({ x + 1, y }) &&
 				!WallAt({ x + 1, y + 1 }) &&
@@ -157,9 +163,9 @@ void GameGrid::ComputeWalkables()
 
 void GameGrid::ComputeConnections()
 {
-	for (int x = 0; x < m_cols; x++)
+	for (int x = 0; x < m_gridSize.x; x++)
 	{
-		for (int y = 0; y < m_rows; y++)
+		for (int y = 0; y < m_gridSize.y; y++)
 		{
 
 			auto const* left = GetTile({ x - 1, y });
@@ -197,9 +203,9 @@ void GameGrid::ProcessLine(std::string const& line)
 		return;
 	}
 
-	if (m_cols == 0)
+	if (m_gridSize.x == 0)
 	{
-		m_cols = static_cast<int>(line.length());
+		m_gridSize.x = static_cast<int>(line.length());
 	}
 
 	for (size_t col = 0; col < line.length(); ++col)
@@ -209,7 +215,7 @@ void GameGrid::ProcessLine(std::string const& line)
 		glm::ivec2 gridPos
 		{
 			static_cast<int>(col),
-			m_rows
+			m_gridSize.y
 		};
 
 		switch (tile)
@@ -282,13 +288,12 @@ void GameGrid::ProcessLine(std::string const& line)
 		}
 	}
 
-	++m_rows;
+	++m_gridSize.y;
 }
 
 void GameGrid::LoadFromFile(std::filesystem::path const& filePath)
 {
-	m_rows = 0;
-	m_cols = 0;
+	m_gridSize = {};
 
 	m_tiles.clear();
 	m_tankSpawns.clear();

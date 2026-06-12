@@ -25,9 +25,7 @@ public:
 
 	std::vector<glm::ivec2> OccupiedTiles() const;
 
-	mg::GameObject* SpawnTank(glm::ivec2 const& gridPos, TankConfig const& tankConfig, std::optional<PlayerSession> playerBinding = std::nullopt);
 	SpawnCounts SpawnTanks();
-
 	void SetBulletPool(BulletPool* pool);
 
 	TankManager(mg::GameObject& owner, GameGrid& grid);
@@ -35,6 +33,8 @@ public:
 private:
 	void BindKeyboard(mg::GameObject& playerObj, mg::GameObject* barrelObj, bool canTurnBarrel);
 	void BindGamepad(mg::GameObject& playerObj, mg::GameObject* barrelObj, bool canTurnBarrel, int playerId);
+
+	mg::GameObject* SpawnTank(glm::ivec2 const& gridPos, TankConfig const& tankConfig, std::optional<PlayerSession> playerBinding = std::nullopt);
 
 	GameGrid* m_pGrid;
 	BulletPool* m_pBulletPool{ nullptr };

@@ -35,6 +35,8 @@ public:
 	void RequestMovement(Direction dir);
 	void SetMoveSpeed(float speed);
 
+	void Teleport(glm::ivec2 const& gridPos);
+
 	void Awake() override;
 	void FixedUpdate() override;
 

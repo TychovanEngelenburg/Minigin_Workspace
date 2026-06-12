@@ -11,7 +11,8 @@
 #include "Game/Components/System/GameGrid.h"
 #include "Game/Components/System/TankManager.h"
 #include "Game/Components/System/BulletPool.h"
-
+#include "Game/Components/Teleporter/Teleporter.h"
+#include "Game/Config/CollisionConfig.h"
 // Main menu
 #include "Game/Commands/ToggleGameModeCommand.h"
 #include "Game/Components/UI/GameModeUI.h"
@@ -32,6 +33,9 @@
 
 #include <Minigin/Components/TextComponent.h>
 #include <Minigin/Components/Sprite.h>
+#include <Minigin/Rendering/SpriteConfig.h>
+
+#include <Minigin/Collisions/BoxCollider2D.h>
 
 #include <Minigin/Input/InputBinding.h>
 #include <Minigin/Input/InputCodes.h>
@@ -76,14 +80,17 @@ namespace
 
 TankManager::SpawnCounts SceneLoading::LoadLevelScene(mg::Scene& sceneOut, std::filesystem::path const& levelFile)
 {
+	// Grid
 	auto gridObj = std::make_unique<mg::GameObject>("Grid", glm::vec2(20, 100.f));
 	auto& gridComp = gridObj->AddComponent<GameGrid>(levelFile, 16.f);
 	sceneOut.Add(std::move(gridObj));
 
+	// Bullet manager
 	auto bulletManagerObj = std::make_unique<mg::GameObject>("BulletManager");
 	auto& bulletPoolComp = bulletManagerObj->AddComponent<BulletPool>(gridComp, 32);
 	sceneOut.Add(std::move(bulletManagerObj));
 
+	// Tank manager
 	auto tankManagerObj = std::make_unique<mg::GameObject>("TankManager");
 	auto& tankManager = tankManagerObj->AddComponent<TankManager>(gridComp);
 	tankManager.SetBulletPool(&bulletPoolComp);
@@ -91,10 +98,30 @@ TankManager::SpawnCounts SceneLoading::LoadLevelScene(mg::Scene& sceneOut, std::
 
 	TankManager::SpawnCounts counts{ tankManager.SpawnTanks() };
 
+	// Teleporter
+	auto teleporterObj = std::make_unique<mg::GameObject>("Teleporter");
+	teleporterObj->AddComponent<Teleporter>(gridComp, tankManager);
+	mg::SpriteSheet TankSheet{ FileLocations::EntitySpriteSheet , 4, 4 };
+	auto& telepSprite = teleporterObj->AddComponent<mg::Sprite>(TankSheet);
+	telepSprite.SetTileSize({ 2, 2 });
+	telepSprite.SetSprite({ 2, 1 });
+	telepSprite.SetPivot(telepSprite.Size() / 4.f);
+
+	
+	auto& telepColl = teleporterObj->AddComponent<mg::BoxCollider2D>(); 
+	telepColl.SetCenter(telepSprite.Size() / 4.f);
+	telepColl.CollisionLayer = static_cast<uint32_t>(GameCollisionLayer::All);
+	telepColl.CollisionMask = static_cast<uint32_t>(GameCollisionLayer::Good);
+	sceneOut.Add(std::move(teleporterObj));
+
+
+	// UI
 	auto hudManager = std::make_unique<mg::GameObject>("HUD_Manager");
 	hudManager->AddComponent<HUDManager>();
 	sceneOut.Add(std::move(hudManager));
 
+
+// Audio
 	auto& audioSystem = mg::SoundServiceLocator::Fetch();
 	audioSystem.PlayMusic({ "./Data/Audio_Tron1982/03_IO_Tower.wav", "music", -1 });
 	audioSystem.SetMusicVolume(.5f);
@@ -119,7 +146,7 @@ void SceneLoading::LoadMainMenuScene(mg::Scene& sceneOut)
 
 	 // Current game mode
 	{
-		auto obj = std::make_unique<mg::GameObject>( "Mode_Text",glm::vec2(60.f, 140.f));
+		auto obj = std::make_unique<mg::GameObject>("Mode_Text", glm::vec2(60.f, 140.f));
 
 		auto& textComp = obj->AddComponent<mg::TextComponent>("joystixmonospace-regular.otf", 20);
 		textComp.SetColor({ 255,255,255,255 });
@@ -131,7 +158,7 @@ void SceneLoading::LoadMainMenuScene(mg::Scene& sceneOut)
 
 	// Instructions
 	{
-		auto obj = std::make_unique<mg::GameObject>( "Instruction_Text", glm::vec2(60.f, 220.f));
+		auto obj = std::make_unique<mg::GameObject>("Instruction_Text", glm::vec2(60.f, 220.f));
 
 		auto& textComp = obj->AddComponent<mg::TextComponent>("joystixmonospace-regular.otf", 18);
 		textComp.SetText("X / Gamepad A : Start\n"  "Z / Gamepad Y : Change Mode");

@@ -31,16 +31,17 @@
 #include <cassert>
 
 
-
 std::vector<glm::ivec2> TankManager::OccupiedTiles() const
 {
 	std::vector<glm::ivec2> occupied;
 	for (auto* tank : m_pTanks)
 	{
-		if (auto* movement = tank->GetComponent<TankMovement>())
-		{
-			occupied.push_back(movement->CurrentTile());
-		}
+		auto const& tankTile = m_pGrid->WorldToGrid(tank->Transform().WorldPosition());
+		occupied.push_back(tankTile);
+
+		occupied.push_back({ tankTile.x + 1, tankTile.y });
+		occupied.push_back({ tankTile.x + 1, tankTile.y + 1 });
+		occupied.push_back({ tankTile.x,	 tankTile.y + 1});
 	}
 	return occupied;
 }
@@ -67,7 +68,7 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 	{
 		tankHealth.SetPlayerId(playerBinding->PlayerId);
 	}
-	
+
 	tankHealth.AddListener(&GameContext::Instance());
 
 	tankObj->Transform().SetWorldPosition(m_pGrid->GridToWorld(gridPos));
@@ -217,7 +218,7 @@ TankManager::SpawnCounts TankManager::SpawnTanks()
 	m_deviceMapper.Resolve(mg::InputServiceLocator::Fetch());
 
 	TankManager::SpawnCounts counts{};
-	
+
 	auto& context = GameContext::Instance();
 
 	for (auto const& spawn : m_pGrid->TankSpawnpoints())

@@ -21,7 +21,7 @@ namespace mg
 		void SetTexture(std::filesystem::path const& filename);
 		void SetSprite(glm::ivec2 const& sprite, bool flipX = false, bool flipY = false);
 		void SetPivot(glm::vec2 const& pivot);
-
+		void SetTileSize(glm::ivec2 const& tiles);
 		void Render() const override;
 
 		explicit Sprite(GameObject& owner, SpriteSheet const& sheet);
@@ -30,8 +30,11 @@ namespace mg
 	private:
 		std::shared_ptr<Texture2D> m_pTexture;
 		SpriteSheet const m_spriteSheet;
+
+
 		SourceRect m_sourceRect;
 		glm::ivec2 m_currentSheetPos{0, 0};
+		glm::ivec2 m_tileSize{1, 1};
 		glm::vec2 m_pivot{};
 		bool m_xFlipped{ false };
 		bool m_yFlipped{ false };

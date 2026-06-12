@@ -18,6 +18,7 @@ namespace mg
 		SpriteSheet Sheet{};
 		glm::ivec2 SheetPos{};
 
+		glm::ivec2 TileSize{ 1, 1 };
 		glm::vec2 RenderPivot{ 0.f, 0.f };
 	};
 }

@@ -38,8 +38,9 @@ void mg::Sprite::SetSprite(glm::ivec2 const& sheetPos, bool flipX, bool flipY)
 	m_sourceRect.x = m_pTexture->Size().x / m_spriteSheet.cols * m_currentSheetPos.x;
 	m_sourceRect.y = m_pTexture->Size().y / m_spriteSheet.rows * m_currentSheetPos.y;
 
-	m_sourceRect.w = m_pTexture->Size().x / m_spriteSheet.cols;
-	m_sourceRect.h = m_pTexture->Size().y / m_spriteSheet.rows;
+	 
+	m_sourceRect.w = (m_pTexture->Size().x / m_spriteSheet.cols) * m_tileSize.x;
+	m_sourceRect.h = (m_pTexture->Size().y / m_spriteSheet.rows) * m_tileSize.y;
 
 	m_xFlipped = flipX;
 	m_yFlipped = flipY;
@@ -48,6 +49,14 @@ void mg::Sprite::SetSprite(glm::ivec2 const& sheetPos, bool flipX, bool flipY)
 void mg::Sprite::SetPivot(glm::vec2 const& pivot)
 {
 	m_pivot = pivot;
+}
+
+void mg::Sprite::SetTileSize(glm::ivec2 const& tiles)
+{
+	m_tileSize = tiles;
+
+	SetSprite(m_currentSheetPos, m_xFlipped, m_yFlipped);
+
 }
 
 #pragma region Game_Loop
@@ -62,6 +71,7 @@ mg::Sprite::Sprite(GameObject& owner, SpriteSheet const& spriteSheetData)
 	, m_pTexture( ResourceManager::Instance().LoadTexture(spriteSheetData.filePath) )
 	, m_spriteSheet( spriteSheetData )
 {
+	SetTileSize({ 1,1 });
 	SetSprite(m_currentSheetPos);
 }
 
@@ -72,5 +82,6 @@ mg::Sprite::Sprite(GameObject& owner, SpriteConfig const& config)
 	, m_currentSheetPos(config.SheetPos)
 	, m_pivot(config.RenderPivot)
 {
+	SetTileSize(config.TileSize);
 	SetSprite(config.SheetPos);
 }

@@ -7,7 +7,7 @@
 #include <Minigin/Rendering/SpriteConfig.h>
 #include <glm/vec2.hpp>
 
-inline mg::SpriteSheet const BulletSpriteSheet{ FileLocations::BulletSheet, 4, 4 };
+inline mg::SpriteSheet const BulletSpriteSheet{ FileLocations::EntitySpriteSheet, 4, 4 };
 
 struct BulletConfig
 {

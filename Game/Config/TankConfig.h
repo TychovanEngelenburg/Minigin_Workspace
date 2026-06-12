@@ -10,7 +10,7 @@
 #include <optional>
 #include <filesystem>
 
-inline  mg::SpriteSheet const TankSheet { FileLocations::TankSheet , 4, 4 };
+inline  mg::SpriteSheet const TankSheet { FileLocations::EntitySpriteSheet , 4, 4 };
 
 struct BarrelConfig
 {

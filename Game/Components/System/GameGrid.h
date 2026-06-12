@@ -49,8 +49,10 @@ public:
 	glm::ivec2 const& TeleporterPos() const noexcept;
 
 	float TileSize() const noexcept;
+	glm::ivec2 const& Size() const noexcept;
 	bool WallAt(glm::ivec2 const& gridPos) const;
 	bool IsPath(glm::ivec2 const& gridPos) const;
+	
 	glm::ivec2 WorldToGrid(glm::vec2 const& worldPos) const;
 	glm::vec2 GridToWorld(glm::ivec2 const& gridPos) const;
 	glm::ivec2 IdToGrid(int idx) const;
@@ -68,8 +70,7 @@ private:
 	void ProcessLine(std::string const& line);
 	void LoadFromFile(std::filesystem::path const& filePath);
 
-	int m_rows{};
-	int m_cols{};
+	glm::ivec2 m_gridSize{};
 	float m_tileSize;
 
 	std::vector<TankSpawnPoint> m_tankSpawns{};

@@ -106,6 +106,18 @@ void TankMovement::SetMoveSpeed(float speed)
 	m_moveSpeed = speed;
 }
 
+void TankMovement::Teleport(glm::ivec2 const& gridPos)
+{
+	m_currentTile = gridPos;
+	m_targetTile = gridPos;
+	m_currentDirection = Direction::None;
+	m_requestedDirection = Direction::None;
+	m_movementRequested = false;
+
+	Object()->Transform().SetWorldPosition(m_pGrid->GridToWorld(gridPos));
+}
+
+
 void TankMovement::Awake()
 {
 	auto worldPos = Object()->Transform().WorldPosition();

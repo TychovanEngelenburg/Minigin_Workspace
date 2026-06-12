@@ -70,6 +70,7 @@ void mg::BoxCollider2D::OnDisable()
 
 void mg::BoxCollider2D::Render() const
 {
+
 	const auto& obb{ GetOBB() };
 
 	Renderer::Instance().DrawRect({
