@@ -1,12 +1,10 @@
 #include "TankManager.h"
 
 #include "Game/Core/GameContext.h"
-#include "Game/Events/GameEvents.h"
 
 #include "Game/Components/System/GameGrid.h"
 
 #include "Game/Config/TankConfig.h"
-#include "Game/Config/PlayerInputConfig.h"
 
 #include "Game/Components/DamageOnCollision.h"
 #include "Game/Components/Tank/TankHealth.h"
@@ -34,80 +32,19 @@
 
 
 
-/// <summary>
-/// Components
-/// 
-/// PlayerTank:
-/// Allignment: Good, can only hit/shoot Evil tanks
-/// 
-/// Base
-///		- Sprite
-///			Set player sprite
-///		- TankVisuals  (Sets/Flips sprite to face movedirection)
-///		- Hitbox
-///		- CollisionDamage
-///		- TankMovement
-///			Set player movespeed
-///		- TankHealth
-///			Set player health
-/// 
-/// 
-/// Barrel (parented to base)
-///		- TankBarrel
-///			Set barrel shoot offset to barrel length
-///			Set bullet config to playerbullet
-///		
-/// BarrelVisuals (Parented to barrel
-///		- Sprite
-///			Set barrel sprite
-/// 
-/// Player can bind tankmovement, barrelturning and shooting.
-/// 
-/// 
-/// 
-/// EnemyTank:
-/// Allignment: Evil, can only hit/shoot Good tanks
-/// 
-/// Base
-///		- Sprite
-///			Set enemytank sprite
-///		- TankVisuals  (Sets/Flips sprite to face movedirection)
-///		- Hitbox
-///		- CollisionDamage
-///		- TankMovement
-///			Set EnemyTank movespeed
-///		- TankHealth
-///			Set EnemyTank health
-///		- MovementAI (unless player bound to tank) (Handles movement direction)
-/// 
-/// 
-/// Barrel (parented to base)
-///		- TankBarrel
-///			Set Barreloffset to 0
-///			Set bullet config to enemybullet
-///		- BarrelAI (automatically aims in movedirection)
-/// 
-/// Player can bind tankmovement and shooting.
-/// 
-/// 
-/// 
-/// Recogniser:
-/// Allignment: Evil, can only hit/shoot Good tanks
-/// 
-/// Base
-///		- Sprite
-///			Set recogniser sprite
-///		- TankVisuals (Sets/Flips sprite to face movedirection)
-///		- Hitbox
-///		- CollisionDamage
-///			Set recogniser damage
-///		- TankMovement
-///			Set double EnemyTank movespeed
-///		- TankHealth
-///			Set Recogniser health
-///		- MovementAI (Handles movement direction)
-/// 
-/// </summary>
+std::vector<glm::ivec2> TankManager::OccupiedTiles() const
+{
+	std::vector<glm::ivec2> occupied;
+	for (auto* tank : m_pTanks)
+	{
+		if (auto* movement = tank->GetComponent<TankMovement>())
+		{
+			occupied.push_back(movement->CurrentTile());
+		}
+	}
+	return occupied;
+}
+
 mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig const& tankConfig, std::optional<PlayerSession> playerBinding)
 {
 	assert(Object()->Scene() && "SpawnTank cannot be called before object was added to a scene!");
@@ -273,46 +210,75 @@ void TankManager::SetBulletPool(BulletPool* pool)
 }
 
 
+
 TankManager::SpawnCounts TankManager::SpawnTanks()
 {
 	assert(Object()->Scene() && "TankManager must be attached to a scene before initializing!");
 	m_deviceMapper.Resolve(mg::InputServiceLocator::Fetch());
 
-	auto& playerSpawns = m_pGrid->PlayerSpawnpoints();
-	auto& enemySpawns = m_pGrid->EnemySpawnpoints();
-
-	assert(!playerSpawns.empty() && "Level has no player spawn points.");
-	assert(!enemySpawns.empty() && "Level has no enemy spawn points.");
-
 	TankManager::SpawnCounts counts{};
+	
+	auto& context = GameContext::Instance();
 
-	// Spawn players
-	for (auto const& player : GameContext::Instance().Players())
+	for (auto const& spawn : m_pGrid->TankSpawnpoints())
 	{
-		if (!player.AsEnemy)
+		switch (spawn.Type)
 		{
-			if (player.Lives <= 0)
+			case GameGrid::TankSpawnType::Player:
 			{
-				continue;
+
+				if (spawn.PlayerId.has_value())
+				{
+					auto it = std::find_if(context.Players().begin(), context.Players().end(), [&](PlayerSession const& p)
+												   {
+													   return p.PlayerId == spawn.PlayerId;
+												   });
+
+					if (it == context.Players().end())
+					{
+						break;
+					}
+
+
+					if (!it->AsEnemy)
+					{
+						if (it->Lives <= 0)
+						{
+							break;
+						}
+
+						SpawnTank(spawn.GridPos, TankPresets::Player(it->PlayerId), *it);
+						++counts.Players;
+					}
+					else
+					{
+						SpawnTank(spawn.GridPos, TankPresets::BasicEnemy(), *it);
+						++counts.Enemies;
+					}
+				}
+				else
+				{
+					SpawnTank(spawn.GridPos, TankPresets::Player(0));
+				}
+
+				break;
 			}
 
-			SpawnTank(playerSpawns[player.PlayerId], TankPresets::Player(player.PlayerId), player);
-			++counts.Players;
-		}
-		else
-		{
-			SpawnTank(playerSpawns[player.PlayerId], TankPresets::BasicEnemy(), player);
-			++counts.Enemies;
+			case  GameGrid::TankSpawnType::BasicEnemy:
+			{
+				SpawnTank(spawn.GridPos, TankPresets::BasicEnemy());
+				++counts.Enemies;
+				break;
+			}
+
+			case  GameGrid::TankSpawnType::Recogniser:
+			{
+				SpawnTank(spawn.GridPos, TankPresets::Recogniser());
+				++counts.Enemies;
+				break;
+			}
 		}
 	}
-
-	// Spawn enemies
-	for (auto const& enemySpawn : enemySpawns)
-	{
-		SpawnTank(enemySpawn, TankPresets::BasicEnemy());
-		++counts.Enemies;
-	}
-
 	return counts;
 }
 

@@ -1,5 +1,83 @@
 #include "TankConfig.h"
 
+
+
+/// <summary>
+/// Components
+/// 
+/// PlayerTank:
+/// Allignment: Good, can only hit/shoot Evil tanks
+/// 
+/// Base
+///		- Sprite
+///			Set player sprite
+///		- TankVisuals  (Sets/Flips sprite to face movedirection)
+///		- Hitbox
+///		- CollisionDamage
+///		- TankMovement
+///			Set player movespeed
+///		- TankHealth
+///			Set player health
+/// 
+/// 
+/// Barrel (parented to base)
+///		- TankBarrel
+///			Set barrel shoot offset to barrel length
+///			Set bullet config to playerbullet
+///		
+/// BarrelVisuals (Parented to barrel
+///		- Sprite
+///			Set barrel sprite
+/// 
+/// Player can bind tankmovement, barrelturning and shooting.
+/// 
+/// 
+/// 
+/// EnemyTank:
+/// Allignment: Evil, can only hit/shoot Good tanks
+/// 
+/// Base
+///		- Sprite
+///			Set enemytank sprite
+///		- TankVisuals  (Sets/Flips sprite to face movedirection)
+///		- Hitbox
+///		- CollisionDamage
+///		- TankMovement
+///			Set EnemyTank movespeed
+///		- TankHealth
+///			Set EnemyTank health
+///		- MovementAI (unless player bound to tank) (Handles movement direction)
+/// 
+/// 
+/// Barrel (parented to base)
+///		- TankBarrel
+///			Set Barreloffset to 0
+///			Set bullet config to enemybullet
+///		- BarrelAI (automatically aims in movedirection)
+/// 
+/// Player can bind tankmovement and shooting.
+/// 
+/// 
+/// 
+/// Recogniser:
+/// Allignment: Evil, can only hit/shoot Good tanks
+/// 
+/// Base
+///		- Sprite
+///			Set recogniser sprite
+///		- TankVisuals (Sets/Flips sprite to face movedirection)
+///		- Hitbox
+///		- CollisionDamage
+///			Set recogniser damage
+///		- TankMovement
+///			Set double EnemyTank movespeed
+///		- TankHealth
+///			Set Recogniser health
+///		- MovementAI (Handles movement direction)
+/// 
+/// </summary>
+/// 
+/// 
 TankConfig TankPresets::Player(int playerId)
 {
 	TankConfig cfg{};

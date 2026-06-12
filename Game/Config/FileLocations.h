@@ -16,6 +16,8 @@ namespace FileLocations
 	inline  std::filesystem::path const JoystixFont{ "joystixmonospace-regular.otf" };
 	inline  std::filesystem::path const TankSheet{ "T_SpriteSheet_BattleTanks.png" };
 	inline  std::filesystem::path const BulletSheet{ "T_SpriteSheet_BattleTanks.png" };
+	inline  std::filesystem::path const GridTileSheet{  "T_TileSheet_Tron_BattleTanks.png"  };
+	inline  std::filesystem::path const GridBackground{ "T_Motherboard_Background.png" };
 	inline  std::filesystem::path const ScoreFile{"Scores/highscores.dat"};
 }
 

@@ -1,5 +1,7 @@
 #include "GameGrid.h"
 
+#include "Game/Config/FileLocations.h"
+
 #include <Minigin/Scene/GameObject.h>
 #include <Minigin/Rendering/ResourceManager.h>
 #include <Minigin/Rendering/SDLRenderer.h>
@@ -14,8 +16,8 @@ GameGrid::GameGrid(mg::GameObject& owner, std::filesystem::path const& filePath,
 	, m_tileSize(tileSize)
 {
 	LoadFromFile(mg::ResourceManager::Instance().DataPath() / filePath);
-	m_pTileSheet = mg::ResourceManager::Instance().LoadTexture("T_TileSheet_Tron_BattleTanks.png");
-	m_pBackgroundTexture = mg::ResourceManager::Instance().LoadTexture("T_Motherboard_Background.png");
+	m_pTileSheet = mg::ResourceManager::Instance().LoadTexture(FileLocations::GridTileSheet);
+	m_pBackgroundTexture = mg::ResourceManager::Instance().LoadTexture(FileLocations::GridBackground);
 }
 
 Tile* GameGrid::GetTile(glm::ivec2 const& gridPos)
@@ -42,15 +44,14 @@ Tile const* GameGrid::GetTile(glm::ivec2 const& gridPos) const
 	return &m_tiles[m_cols * gridPos.y + gridPos.x];
 }
 
-
-std::vector<glm::ivec2> const& GameGrid::PlayerSpawnpoints() const noexcept
+std::vector<GameGrid::TankSpawnPoint> const& GameGrid::TankSpawnpoints() const noexcept
 {
-	return m_playerSpawns;
+	return m_tankSpawns;
 }
 
-std::vector<glm::ivec2> const& GameGrid::EnemySpawnpoints() const noexcept
+glm::ivec2 const& GameGrid::TeleporterPos() const noexcept
 {
-	return m_enemySpawns;
+	return m_teleporterGridPos;
 }
 
 float GameGrid::TileSize() const noexcept
@@ -213,9 +214,9 @@ void GameGrid::ProcessLine(std::string const& line)
 
 		switch (tile)
 		{
-			case '.':
+			case '#':
 			{
-				m_tiles.push_back(Tile{ false, false });
+				m_tiles.push_back(Tile(true, false));
 				break;
 			}
 
@@ -230,28 +231,52 @@ void GameGrid::ProcessLine(std::string const& line)
 			case '8':
 			case '9':
 			{
-				m_tiles.push_back(Tile{ false, false });
+				m_tiles.push_back(Tile( false, false ));
 
-				auto digit = static_cast<int>(tile - '0');
-				if ( m_playerSpawns.size() <= digit)
-				{
-					m_playerSpawns.resize(digit + 1);
-				}
-				m_playerSpawns[digit] = gridPos;
-				//m_playerSpawns.push_back(gridPos);
+				TankSpawnPoint tankSpawn{};
+				tankSpawn.GridPos = gridPos;
+				tankSpawn.Type = TankSpawnType::Player;
+				tankSpawn.PlayerId = static_cast<int>(tile - '0');
+				m_tankSpawns.push_back(std::move(tankSpawn));
+				
 				break;
 			}
 
 			case 'E':
 			{
-				m_tiles.push_back(Tile{ false, false });
-				m_enemySpawns.push_back(gridPos);
+				m_tiles.push_back(Tile( false, false ));
+
+				TankSpawnPoint tankSpawn{};
+				tankSpawn.GridPos = gridPos;
+				tankSpawn.Type = TankSpawnType::BasicEnemy;
+				m_tankSpawns.push_back(std::move(tankSpawn));
+				
+				break;
+			}
+
+			case 'R':
+			{
+				m_tiles.push_back(Tile(false, false));
+
+				TankSpawnPoint tankSpawn{};
+				tankSpawn.GridPos = gridPos;
+				tankSpawn.Type = TankSpawnType::Recogniser;
+				m_tankSpawns.push_back(std::move(tankSpawn));
+
+				break;
+			}
+
+			case 'T':
+			{
+				m_tiles.push_back(Tile(false, false));
+				m_teleporterGridPos = gridPos;
+
 				break;
 			}
 
 			default:
 			{
-				m_tiles.push_back(Tile{ true, false });
+				m_tiles.push_back(Tile(false, false));
 				break;
 			}
 		}
@@ -266,8 +291,7 @@ void GameGrid::LoadFromFile(std::filesystem::path const& filePath)
 	m_cols = 0;
 
 	m_tiles.clear();
-	m_playerSpawns.clear();
-	m_enemySpawns.clear();
+	m_tankSpawns.clear();
 
 	std::ifstream file(filePath, std::ios::binary);
 
@@ -294,13 +318,4 @@ void GameGrid::LoadFromFile(std::filesystem::path const& filePath)
 
 	ComputeWalkables();
 	ComputeConnections();
-
-	//for (int y = 0; y < m_rows; y++)
-	//{
-	//	for (int x = 0; x < m_cols; x++)
-	//	{
-	//		std::cout << (GetTile({ x, y })->Walkable ? "." : (GetTile({ x, y })->IsWall ? "#" : " "));
-	//	}
-	//	std::cout << '\n';
-	//}
 }

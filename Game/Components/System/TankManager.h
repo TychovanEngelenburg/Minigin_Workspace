@@ -1,9 +1,7 @@
-#ifndef PLAYER_MANAGER_H
-#define PLAYER_MANAGER_H
+#ifndef TANK_MANAGER_H
+#define TANK_MANAGER_H
 
-#include "Game/Config/PlayerInputConfig.h"
 #include "Game/Core/GameContext.h"
-#include "Game/Core/GameModes.h"
 #include "Game/Core/PlayerDeviceMapper.h"
 
 #include <Minigin/Components/Component.h>
@@ -15,7 +13,6 @@
 class BulletPool;
 class GameGrid;
 struct TankConfig;
-struct PlayerInputConfig;
 
 class TankManager final : public mg::Component
 {
@@ -25,6 +22,8 @@ public:
 		int Players{ 0 };
 		int Enemies{ 0 };
 	};
+
+	std::vector<glm::ivec2> OccupiedTiles() const;
 
 	mg::GameObject* SpawnTank(glm::ivec2 const& gridPos, TankConfig const& tankConfig, std::optional<PlayerSession> playerBinding = std::nullopt);
 	SpawnCounts SpawnTanks();
@@ -45,4 +44,4 @@ private:
 };
 
 
-#endif // !PLAYER_MANAGER_H
+#endif // !TANK_MANAGER_H

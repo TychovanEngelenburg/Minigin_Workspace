@@ -1,14 +1,13 @@
 #ifndef TANK_PRESETS_H
 #define TANK_PRESETS_H
+
 #include "Game/Config/BulletConfig.h"
-#include "Game/Config/PlayerInputConfig.h"
 #include "Game/Config/CollisionConfig.h"
 #include "Game/Config/FileLocations.h"
 
 #include <Minigin/Rendering/SpriteConfig.h>
 
 #include <optional>
-#include <glm/vec2.hpp>
 #include <filesystem>
 
 inline  mg::SpriteSheet const TankSheet { FileLocations::TankSheet , 4, 4 };
@@ -40,6 +39,7 @@ struct TankConfig
 	std::optional<BarrelConfig> Barrel{std::nullopt};
 };
 
+// TODO: Load these from a file
 namespace TankPresets
 {
 	TankConfig Player(int playerId);

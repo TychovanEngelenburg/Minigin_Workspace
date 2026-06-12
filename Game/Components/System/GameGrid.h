@@ -31,34 +31,22 @@ struct Tile
 class GameGrid final : public mg::Component
 {
 public:
-	// Unused, possible example
-	struct PlayerSpawnPoint
+	enum class TankSpawnType
 	{
-		glm::ivec2 Position{};
-		int PlayerId{};
-	};
-
-	enum EnemyType
-	{
-		Basic,
+		Player,
+		BasicEnemy,
 		Recogniser
 	};
-	struct EnemySpawnPoint
-	{
-		glm::ivec2 Position{};
-		EnemyType Type{};
-	};
-	// Other example
-	//#include "Game/Config/TankConfig.h"
-	//struct SpawnPoint
-	//{
-	//	glm::ivec2 Position{};
-	//	TankConfig Config{};
-	//};
-	// End of example
 
-	std::vector<glm::ivec2> const& PlayerSpawnpoints() const noexcept;
-	std::vector<glm::ivec2> const& EnemySpawnpoints() const noexcept;
+	struct TankSpawnPoint
+	{
+		glm::ivec2           GridPos{};
+		TankSpawnType             Type{};
+		std::optional<int>   PlayerId{ std::nullopt };
+	};
+
+	std::vector<TankSpawnPoint> const& TankSpawnpoints() const noexcept;
+	glm::ivec2 const& TeleporterPos() const noexcept;
 
 	float TileSize() const noexcept;
 	bool WallAt(glm::ivec2 const& gridPos) const;
@@ -80,13 +68,12 @@ private:
 	void ProcessLine(std::string const& line);
 	void LoadFromFile(std::filesystem::path const& filePath);
 
-	glm::vec2 m_gridPos;
 	int m_rows{};
 	int m_cols{};
 	float m_tileSize;
 
-	std::vector<glm::ivec2> m_playerSpawns;
-	std::vector<glm::ivec2> m_enemySpawns;
+	std::vector<TankSpawnPoint> m_tankSpawns{};
+	glm::ivec2 m_teleporterGridPos{};
 	std::vector<Tile> m_tiles{};
 
 	std::shared_ptr<mg::Texture2D> m_pTileSheet{};

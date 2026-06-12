@@ -2,8 +2,7 @@
 #define SUBJECT_H
 
 #include <vector>
-#include <algorithm>
-#include <ranges>
+
 namespace mg
 {
 	template <typename EventType>

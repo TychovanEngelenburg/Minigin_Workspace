@@ -5,7 +5,6 @@
 #include <Minigin/Scene/SceneManager.h>
 
 #include <cassert>
-#include <ranges>
 #include <algorithm>
 
 GameMode GameContext::Mode() const noexcept

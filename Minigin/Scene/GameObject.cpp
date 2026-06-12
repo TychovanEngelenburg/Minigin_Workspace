@@ -4,10 +4,7 @@
 
 #include <string_view>
 #include <memory>
-#include <glm/fwd.hpp>
-#include <string>
 #include <vector>
-#include <ranges>
 
 mg::Transform2D& mg::GameObject::Transform()
 {
@@ -274,7 +271,7 @@ void mg::GameObject::Cleanup()
 	std::erase_if(m_pComponents,
 		[&](auto const& component)
 		{
-			return std::ranges::find( m_pPendingRemoval, component.get()) != m_pPendingRemoval.end();
+			return std::find( m_pPendingRemoval.begin(), m_pPendingRemoval.end(), component.get()) != m_pPendingRemoval.end();
 		});
 
 
