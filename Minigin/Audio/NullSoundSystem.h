@@ -7,18 +7,18 @@ namespace mg
 {
 	class NullSoundSystem final : public ISoundSystem
 	{
-        void PreLoadSFX([[maybe_unused]] AudioClip const& clip) override {};
+        void PreLoadSFX(AudioClip const&) override {};
 
-        void PlaySFX([[maybe_unused]] AudioClip const& clip) override {}
-        void PlayMusic([[maybe_unused]] AudioClip const& clip) override {}
+        void PlaySFX(AudioClip const&) override {}
+        void PlayMusic(AudioClip const&) override {}
 
         void StopMusic() override {}
 
         void PauseMusic() override {}
         void ResumeMusic() override {}
 
-        void SetMusicVolume([[maybe_unused]] float volume) override {}
-        void SetSFXVolume([[maybe_unused]] float volume) override {}
+        void SetMusicVolume( float volume) override {}
+        void SetSFXVolume(float volume) override {}
 
         void ToggleMute() override { }
 	};

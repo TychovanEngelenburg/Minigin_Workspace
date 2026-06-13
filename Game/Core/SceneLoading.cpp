@@ -159,7 +159,7 @@ void SceneLoading::LoadMainMenuScene(mg::Scene& sceneOut)
 		auto obj = std::make_unique<mg::GameObject>("Instruction_Text", glm::vec2(60.f, 220.f));
 
 		auto& textComp = obj->AddComponent<mg::TextComponent>("joystixmonospace-regular.otf", 18);
-		textComp.SetText("  CTRL / Gamepad X : Start\n"  "Z / Gamepad A : Change Mode"  );
+		textComp.SetText("  CTRL / Gamepad X : Start\n"  "X / Gamepad A : Change Mode"  );
 		textComp.SetColor({ 200,200,200,255 });
 
 		sceneOut.Add(std::move(obj));
