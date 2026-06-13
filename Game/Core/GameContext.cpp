@@ -1,11 +1,14 @@
 #include "GameContext.h"
 
-#include "Game/Core/SceneLoading.h"
-
-#include <Minigin/Scene/SceneManager.h>
+#include <Minigin/Input/InputServiceLocator.h>
 
 #include <cassert>
 #include <algorithm>
+
+PlayerDeviceMapper const& GameContext::InputMap() const
+{
+	return m_inputMap;
+}
 
 GameMode GameContext::Mode() const noexcept
 {
@@ -123,6 +126,8 @@ void GameContext::SetupGame(GameMode const& mode)
 			break;
 		}
 	}
+
+	m_inputMap.Resolve(mg::InputServiceLocator::Fetch(), m_players.size());
 }
 
 void GameContext::Init()
@@ -159,7 +164,6 @@ void GameContext::BroadcastPlayerState()
 	}
 }
 
-#include <iostream>
 void GameContext::OnNotify(TankDeathEvent const& eventData)
 {
 	if (eventData.KillingPlayer.has_value())
@@ -167,9 +171,6 @@ void GameContext::OnNotify(TankDeathEvent const& eventData)
 		auto& player = m_players[eventData.KillingPlayer.value()];
 		player.Score += eventData.ScoreValue;
 		OnScoreChanged.Notify({ player.PlayerId, player.Score });
-
-		std::cout << "Player " << player.PlayerId << " recieved: " << eventData.ScoreValue << " points. Their total is now: " << player.Score << "\n";
-
 	}
 
 	if (eventData.PlayerVictim.has_value())
@@ -179,13 +180,10 @@ void GameContext::OnNotify(TankDeathEvent const& eventData)
 		OnLivesChanged.Notify({ player.PlayerId, player.Lives });
 
 		PushEvent(GameEvent::PlayerDied);
-
-		std::cout << "Player " << player.PlayerId << " died! They now have: " << player.Lives << " left\n";
 	}
 	else
 	{
 		PushEvent(GameEvent::EnemyKilled);
-		std::cout << "An enemy died!\n";
 	}
 }
 

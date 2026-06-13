@@ -84,6 +84,11 @@ std::unique_ptr<GameState> PlayingState::HandleGameEvent(GameEvent const& event)
 			{
 				if (IsGameOver())
 				{
+					if (GameContext::Instance().TotalScore() == 0)
+					{
+						return std::make_unique<ScoreBoardScene>();
+					}
+
 					return std::make_unique<ScoreSavingState>();
 				}
 				return std::make_unique<PlayingState>();

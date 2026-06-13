@@ -24,7 +24,7 @@ namespace mg
             Axis
         };
 
-        int DeviceIdx() const noexcept;
+        size_t DeviceIdx() const noexcept;
         int InputCode() const noexcept;
 
         ICommand* Command() const noexcept;
@@ -33,10 +33,10 @@ namespace mg
         
 
         // TODO: replace inputidx and devicetype with std::variant<Keycodes::KeyboardKey, Keycodes::GamepadButton, Keycodes::GamepadAxis> ;
-        InputBinding(int deviceIdx, int inputIdx, DeviceType deviceType, std::unique_ptr<ICommand> command,  TriggerType trigger = TriggerType::Pressed);
+        InputBinding(size_t deviceIdx, int inputIdx, DeviceType deviceType, std::unique_ptr<ICommand> command,  TriggerType trigger = TriggerType::Pressed);
 
     private:
-        int m_deviceIndex;
+        size_t m_deviceIndex;
         int m_inputCode;
 
         DeviceType m_deviceType;

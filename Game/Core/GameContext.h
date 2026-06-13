@@ -7,6 +7,7 @@
 #include "Game/Core/GameModes.h"
 #include "Game/Events/GameEvents.h"
 #include "Game/Events/UIEvents.h"
+#include "Game/Core/PlayerDeviceMapper.h"
 
 #include <Minigin/Core/Singleton.h>
 #include <Minigin/Events/IObserver.h>
@@ -17,9 +18,12 @@
 #include <vector>
 #include <filesystem>
 
+
 class GameContext final : public mg::Singleton<GameContext>, public mg::IObserver<TankDeathEvent>
 {
 public:
+	PlayerDeviceMapper const& InputMap() const;
+
 	GameMode Mode() const noexcept;
 	std::vector<std::filesystem::path> const& Levels() const;
 	size_t CurrentLevel() const noexcept;
@@ -61,7 +65,8 @@ private:
 	static int constexpr m_startingLives{ 1 };
 	static size_t constexpr m_maxPlayers{ 2 };
 
-	
+	PlayerDeviceMapper m_inputMap{};
+
 	std::unique_ptr<GameState> m_pState{};
 	std::vector <GameEvent> m_eventQueue{};
 

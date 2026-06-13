@@ -1,59 +1,88 @@
 #include "PlayerDeviceMapper.h"
+
 #include <Minigin/Input/AbstractInputSystem.h>
 
-std::optional<int> mg::PlayerDeviceMapper::GamepadIndexForPlayer(int playerId) const
+bool PlayerDeviceMapper::PlayerUsesKeyboard(size_t playerId) const noexcept
 {
-    if (playerId < 0 || playerId >= m_playerGamepadIds.size())
-    {
-        return std::nullopt;
-    }
-
-    int slot = m_playerGamepadIds[playerId];
-    if (slot < 0)
-    {
-        return std::nullopt;
-    }
-
-    return slot;
+	return  m_playerWithKeyboard == playerId;
 }
 
-bool mg::PlayerDeviceMapper::PlayerUsesKeyboard(int playerId) const
+std::optional<size_t> PlayerDeviceMapper::GamepadIndexForPlayer(size_t playerId) const
 {
-    if (playerId < 0 || playerId >= 2)
-    {
-        return false;
-    }
+	if (playerId < 0 || playerId >= m_playerGamepadIds.size())
+	{
+		return std::nullopt;
+	}
 
-    return m_playerUsesKeyboard[playerId];
+	return m_playerGamepadIds[playerId];
 }
 
-void mg::PlayerDeviceMapper::Resolve(InputSystem const& input)
+void PlayerDeviceMapper::Resolve(mg::InputSystem const& input, size_t playerCount)
 {
-    m_playerGamepadIds[0] = -1;
-    m_playerGamepadIds[1] = -1;
+	if (playerCount <= 0)
+	{
+		return;
+	}
 
-    m_playerUsesKeyboard[0] = true;
-    m_playerUsesKeyboard[1] = false;
+	m_playerGamepadIds.clear();
+	m_playerGamepadIds.resize(playerCount);
 
-    size_t const connected = input.ConnectedGamepadCount();
+	m_disconnectedPads.clear();
+	RemoveDisconnected(input);
 
-    if (connected == 0)
-    {
-        m_playerUsesKeyboard[0] = true;
-        m_playerUsesKeyboard[1] = false;
-    }
-    else if (connected == 1)
-    {
-        m_playerGamepadIds[0] = -1; 
-        m_playerGamepadIds[1] = 0;  
-        m_playerUsesKeyboard[0] = true;
-        m_playerUsesKeyboard[1] = false;
-    }
-    else
-    {
-        m_playerGamepadIds[0] = 0;
-        m_playerGamepadIds[1] = 1;
-        m_playerUsesKeyboard[0] = true;  
-        m_playerUsesKeyboard[1] = false;
-    }
+	for (size_t i{ 0 }; i < playerCount; ++i)
+	{
+		auto const* pad = input.GetGamepad(i);
+		if (pad && pad->Connected())
+		{
+			if (std::find(m_connectedPads.begin(), m_connectedPads.end(), i) == m_connectedPads.end())
+			{
+				m_connectedPads.push_back(i);
+			}
+		}
+		else
+		{
+			m_disconnectedPads.push_back(i);
+		}
+	}
+
+	AssignGamepads();
+}
+
+void PlayerDeviceMapper::RemoveDisconnected(mg::InputSystem const& input)
+{
+	std::erase_if(m_connectedPads, [&input](size_t slot)
+	{
+		auto const* pad = input.GetGamepad(slot);
+		return !pad || !pad->Connected();
+	});
+}
+
+void PlayerDeviceMapper::AssignGamepads()
+{
+	auto playerCount = m_playerGamepadIds.size();
+	int gamepadId{ 0 };
+
+	for (size_t i{ 0 }; i < playerCount; ++i)
+	{
+		if (i == 0)
+		{
+			if (playerCount > m_connectedPads.size())
+			{
+				m_playerGamepadIds[0] = m_disconnectedPads.back();
+				continue;
+			}
+		}
+
+		if (gamepadId < m_connectedPads.size())
+		{
+			m_playerGamepadIds[i] = m_connectedPads[gamepadId];
+		}
+		else
+		{
+			m_playerGamepadIds[i] = m_disconnectedPads[gamepadId - m_connectedPads.size()];
+		}
+
+		gamepadId++;
+	}
 }

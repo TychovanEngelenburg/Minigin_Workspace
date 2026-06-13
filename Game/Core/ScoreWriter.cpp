@@ -28,7 +28,6 @@ void ScoreWriter::AddScore(GameMode mode, PlayerScore&& entry)
 	}
 }
 
-#include <iostream> // TODO: remove this.
 void ScoreWriter::Load(std::filesystem::path const& file)
 {
 	std::ifstream in(mg::ResourceManager::Instance().DataPath() / file);
@@ -60,7 +59,6 @@ void ScoreWriter::Load(std::filesystem::path const& file)
 			PlayerScore entry{};
 			std::istringstream ss(line);
 			ss >> entry.name >> entry.score;
-			std::cout << entry.name << " - " << entry.score << "\n";
 			board.push_back(std::move(entry));
 		}
 	}
@@ -83,7 +81,6 @@ void ScoreWriter::Save(std::filesystem::path const& file) const
 		out << board.size() << '\n';
 		for (PlayerScore const& entry : board)
 		{
-			std::cout << entry.name << " - " << entry.score << "\n";
 			out << entry.name << ' ' << entry.score << '\n';
 		}
 	}

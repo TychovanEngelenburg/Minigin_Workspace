@@ -31,16 +31,15 @@ public:
 	TankManager(mg::GameObject& owner, GameGrid& grid);
 
 private:
+	// TODO: Look into making playerinputcomponent.
 	void BindKeyboard(mg::GameObject& playerObj, mg::GameObject* barrelObj, bool canTurnBarrel);
-	void BindGamepad(mg::GameObject& playerObj, mg::GameObject* barrelObj, bool canTurnBarrel, int playerId);
+	void BindGamepad(mg::GameObject& playerObj, mg::GameObject* barrelObj, bool canTurnBarrel, size_t playerId);
 
 	mg::GameObject* SpawnTank(glm::ivec2 const& gridPos, TankConfig const& tankConfig, std::optional<PlayerSession> playerBinding = std::nullopt);
 
 	GameGrid* m_pGrid;
 	BulletPool* m_pBulletPool{ nullptr };
 	std::vector<mg::GameObject*> m_pTanks{};
-
-	mg::PlayerDeviceMapper m_deviceMapper{};
 };
 
 

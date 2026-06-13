@@ -161,7 +161,7 @@ void SceneLoading::LoadMainMenuScene(mg::Scene& sceneOut)
 		auto obj = std::make_unique<mg::GameObject>("Instruction_Text", glm::vec2(60.f, 220.f));
 
 		auto& textComp = obj->AddComponent<mg::TextComponent>("joystixmonospace-regular.otf", 18);
-		textComp.SetText("X / Gamepad A : Start\n"  "Z / Gamepad Y : Change Mode");
+		textComp.SetText("CTRL / Gamepad X : Start\n"  "  Z / Gamepad A : Change Mode"  );
 		textComp.SetColor({ 200,200,200,255 });
 
 		sceneOut.Add(std::move(obj));
@@ -170,14 +170,13 @@ void SceneLoading::LoadMainMenuScene(mg::Scene& sceneOut)
 	// Start game
 	{
 		auto keyboard = std::make_unique<mg::InputBinding>(
-			0,
-			static_cast<int>(mg::Keycodes::KeyboardKey::X), mg::InputBinding::DeviceType::Keyboard,
+			0, static_cast<int>(mg::Keycodes::KeyboardKey::LCtrl), mg::InputBinding::DeviceType::Keyboard,
 			std::make_unique<ContinueSceneCommand>(), mg::InputBinding::TriggerType::Released);
 
 		sceneOut.InputSystem().AddBinding(std::move(keyboard));
 
 		auto gamepad = std::make_unique<mg::InputBinding>(
-			0, static_cast<int>(mg::Keycodes::GamepadButton::A), mg::InputBinding::DeviceType::Gamepad,
+			0, static_cast<int>(mg::Keycodes::GamepadButton::X), mg::InputBinding::DeviceType::Gamepad,
 			std::make_unique<ContinueSceneCommand>(), mg::InputBinding::TriggerType::Released);
 
 		sceneOut.InputSystem().AddBinding(std::move(gamepad));
@@ -186,13 +185,13 @@ void SceneLoading::LoadMainMenuScene(mg::Scene& sceneOut)
 	// Change game mode
 	{
 		auto keyboard = std::make_unique<mg::InputBinding>(
-			0, static_cast<int>(mg::Keycodes::KeyboardKey::Z), mg::InputBinding::DeviceType::Keyboard,
+			0, static_cast<int>(mg::Keycodes::KeyboardKey::X), mg::InputBinding::DeviceType::Keyboard,
 			std::make_unique<ToggleGameModeCommand>(), mg::InputBinding::TriggerType::Released);
 
 		sceneOut.InputSystem().AddBinding(std::move(keyboard));
 
 		auto gamepad = std::make_unique<mg::InputBinding>(
-			0, static_cast<int>(mg::Keycodes::GamepadButton::Y), mg::InputBinding::DeviceType::Gamepad,
+			0, static_cast<int>(mg::Keycodes::GamepadButton::A), mg::InputBinding::DeviceType::Gamepad,
 			std::make_unique<ToggleGameModeCommand>(), mg::InputBinding::TriggerType::Released);
 
 		sceneOut.InputSystem().AddBinding(std::move(gamepad));
@@ -285,6 +284,23 @@ void SceneLoading::LoadScoreboardScene(mg::Scene& sceneOut)
 	boardObj->AddComponent<ScoreBoardUI>();
 
 	sceneOut.Add(std::move(boardObj));
+
+			// Continue command
+	{
+		auto continueSceneCommand = std::make_unique<mg::InputBinding>(
+			0, static_cast<int>(mg::Keycodes::KeyboardKey::LCtrl), mg::InputBinding::DeviceType::Keyboard,
+			std::make_unique<ContinueSceneCommand>(), mg::InputBinding::TriggerType::Released
+		);
+		sceneOut.InputSystem().AddBinding(std::move(continueSceneCommand));
+	}
+
+	{
+		auto continueSceneCommand = std::make_unique<mg::InputBinding>(
+			0, static_cast<int>(mg::Keycodes::GamepadButton::X), mg::InputBinding::DeviceType::Keyboard,
+			std::make_unique<ContinueSceneCommand>(), mg::InputBinding::TriggerType::Released
+		);
+		sceneOut.InputSystem().AddBinding(std::move(continueSceneCommand));
+	}
 
 	ApplyDefault(sceneOut);
 }

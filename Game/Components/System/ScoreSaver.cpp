@@ -58,7 +58,7 @@ void ScoreSaver::Continue()
 
 void ScoreSaver::Back()
 {
-	if (m_currentLetters.size() > 0)
+	if (m_currentLetters.size() > 1)
 	{
 		m_currentLetters.pop_back();
 		m_pTextComp->SetText(GetName(m_currentLetters));

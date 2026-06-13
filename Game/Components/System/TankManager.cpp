@@ -26,7 +26,6 @@
 #include <Minigin/Collisions/BoxCollider2D.h>
 #include <Minigin/Scene/Scene.h>
 #include <Minigin/Input/SceneInput.h>
-#include <Minigin/Input/InputServiceLocator.h>
 
 #include <cassert>
 
@@ -149,13 +148,13 @@ mg::GameObject* TankManager::SpawnTank(glm::ivec2 const& gridPos, TankConfig con
 	{
 		bool playerBarrelTurning{ hasBarrel && !tankConfig.Barrel->AimWithMoveDir };
 
-		auto gamepadSlot = m_deviceMapper.GamepadIndexForPlayer(playerBinding->PlayerId);
+		auto gamepadSlot = GameContext::Instance().InputMap().GamepadIndexForPlayer(playerBinding->PlayerId);
 		if (gamepadSlot.has_value())
 		{
 			BindGamepad(*tankObj, barrelObj.get(), playerBarrelTurning, *gamepadSlot);
 		}
 
-		if (m_deviceMapper.PlayerUsesKeyboard(playerBinding->PlayerId))
+		if (GameContext::Instance().InputMap().PlayerUsesKeyboard(playerBinding->PlayerId))
 		{
 			BindKeyboard(*tankObj.get(), barrelObj.get(), playerBarrelTurning);
 		}
@@ -215,7 +214,6 @@ void TankManager::SetBulletPool(BulletPool* pool)
 TankManager::SpawnCounts TankManager::SpawnTanks()
 {
 	assert(Object()->Scene() && "TankManager must be attached to a scene before initializing!");
-	m_deviceMapper.Resolve(mg::InputServiceLocator::Fetch());
 
 	TankManager::SpawnCounts counts{};
 
@@ -346,7 +344,7 @@ void TankManager::BindKeyboard(mg::GameObject& playerObj, mg::GameObject* barrel
 	}
 }
 
-void TankManager::BindGamepad(mg::GameObject& playerObj, mg::GameObject* barrelObj, bool canTurnBarrel, int playerId)
+void TankManager::BindGamepad(mg::GameObject& playerObj, mg::GameObject* barrelObj, bool canTurnBarrel, size_t playerId)
 {
 	assert(playerId < 4);
 

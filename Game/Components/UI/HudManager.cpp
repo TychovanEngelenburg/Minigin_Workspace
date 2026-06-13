@@ -14,6 +14,11 @@ void HUDManager::Start()
 
 	for (auto const& player : context.Players())
 	{
+		if (player.AsEnemy)
+		{
+			continue;
+		}
+
 		auto hudObj = std::make_unique<mg::GameObject>("PlayerUI_P" + std::to_string(player.PlayerId));
 		auto& ui = hudObj->AddComponent<PlayerUI>();
 		ui.SetPlayerId(player.PlayerId);

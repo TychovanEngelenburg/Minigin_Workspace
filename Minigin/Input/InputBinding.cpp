@@ -1,6 +1,6 @@
 #include "InputBinding.h"
 
-int mg::InputBinding::DeviceIdx() const noexcept
+size_t mg::InputBinding::DeviceIdx() const noexcept
 {
 	return m_deviceIndex;
 }
@@ -26,7 +26,7 @@ mg::InputBinding::TriggerType mg::InputBinding::GetTrigger() const noexcept
 	return m_triggersOn;
 }
 
-mg::InputBinding::InputBinding(int deviceIdx, int inputIdx, DeviceType deviceType, std::unique_ptr<ICommand> command, TriggerType trigger)
+mg::InputBinding::InputBinding(size_t deviceIdx, int inputIdx, DeviceType deviceType, std::unique_ptr<ICommand> command, TriggerType trigger)
 	: m_deviceIndex(deviceIdx)
 	, m_inputCode(inputIdx)
 	, m_deviceType(deviceType)
