@@ -1,25 +1,38 @@
 ﻿# Minigin
 
-Minigin is a very small project using [SDL3](https://www.libsdl.org/) and [glm](https://github.com/g-truc/glm) for 2D c++ game projects. It is in no way a game engine, only a barebone start project where everything sdl related has been set up. It contains glm for vector math, to aleviate the need to write custom vector and matrix classes.
+Minigin is a small student Game-Engine based on the Howest Digital Arts & Entertainment - Programming 4 engine template of the same name. It was made as an exam assignment for said Programming 4 subject.
 
-[![Build Status](https://github.com/avadae/minigin/actions/workflows/cmake.yml/badge.svg)](https://github.com/avadae/cmake/actions)
-[![Build Status](https://github.com/avadae/minigin/actions/workflows/emscripten.yml/badge.svg)](https://github.com/avadae/emscripten/actions)
-[![GitHub Release](https://img.shields.io/github/v/release/avadae/minigin?logo=github&sort=semver)](https://github.com/avadae/minigin/releases/latest)
+Minigin is available at https://github.com/TychovanEngelenburg/Minigin_Workspace/
 
 # Goal
 
-Minigin can/may be used as a start project for the exam assignment in the course [Programming 4](https://youtu.be/j96Oh6vzhmg) at DAE. In that assignment students need to recreate a popular 80's arcade game with a game engine they need to program themselves. During the course we discuss several game programming patterns, using the book '[Game Programming Patterns](https://gameprogrammingpatterns.com/)' by [Robert Nystrom](https://github.com/munificent) as reading material. 
+My goal was to make a small GameEngine, to showcase my knowledge of programming patterns and proper code architecture conventions. To show off what this engine can do I have used it to make a recreation of the 1982 Tron arcade game.
 
-# Disclaimer
+# Features
+The engine has many features, these are the most important:
+- Scenegraph system featuring component based gameobject
+- Built in gamepad and keyboard support
+- Built in audio system
+- Easily expandable audio and input systems.
+- Collisionsystem with support for boxcolliders and raycasting
 
-Minigin is, despite perhaps the suggestion in its name, **not** a game engine. It is just a very simple SDL3 ready project with some of the scaffolding in place to get started. None of the patterns discussed in the course are used yet (except singleton which use we challenge during the course). It is up to the students to implement their own vision for their engine, apply patterns as they see fit, create their game as efficient as possible.
+As this engine is meant to showcase program pattern usage here are some of the used patterns:
+- Update
+- Scene
+- Entity Component System
+- Command
+- Observer
+- Event queue
+- Service locator
+- Object pool
+- State
 
-# Use
-
-Get the source from this project, or since students need to have their work on github too, they can use this repository as a template. Hit the "Use this template" button on the top right corner of the github page of this project.
+# Build
+Make sure to always pull the latest version of minigin from https://github.com/TychovanEngelenburg/Minigin_Workspace/
 
 ## Windows version
 
+Recommended build procedure:
 Either
 - Open the root folder in Visual Studio 2026; this will be recognized as a cmake project.
   
@@ -28,8 +41,6 @@ Or
 - Install CMake and CMake Tools extensions in Visual Code
 - Open the root folder in Visual Code,  this will be recognized as a cmake project.
 
-Or
-- Use whatever editor you like :)
 
 ## Emscripten (web) version
 
@@ -86,3 +97,37 @@ This project is build with github actions.
 
 ```<iframe style="position: absolute; top: 0px; left: 0px; width: 1024px; height: 576px;" src="https://<username>.github.io/<repository>/" loading="lazy"></iframe>```
 
+# Credits 
+This project makes uses of the Digital Arts & Entertainment Minigin template:
+https://github.com/avadae/minigin
+
+As well as the following third-party libraries:
+
+- SDL3 — Simple DirectMedia Layer
+  https://github.com/libsdl-org/SDL
+
+- SDL3_ttf — SDL text rendering extension
+  https://github.com/libsdl-org/SDL_ttf
+
+- SDL3_mixer — SDL audio and music playback extension
+  https://github.com/libsdl-org/SDL_mixer
+
+- GLM (OpenGL Mathematics) — Header-only mathematics library for graphics software
+  https://github.com/g-truc/glm
+
+- XInput (Windows only) — Microsoft game controller input API
+  https://learn.microsoft.com/en-us/windows/win32/xinput/xinput-game-controller-apis
+
+- Visual Leak Detector (Windows only, development builds)
+  https://github.com/KindDragon/vld
+
+- Emscripten (Web builds)
+  https://emscripten.org/
+
+And these Assets:
+
+- Joystix Monospace
+  https://typodermicfonts.com/joystix-monospace/
+
+- Tron 1982 textures
+These have manually been extracted from imagery of the original game by "Bally Midway"(Now defunct)
