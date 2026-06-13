@@ -41,21 +41,21 @@ namespace LevelFiles
 
 	inline const std::vector<std::filesystem::path> Singleplayer =
 	{
-		"LevelData/SinglePlayer/01.lvl"
-		//"LevelData/SinglePlayer/02.lvl",
-		//"LevelData/SinglePlayer/03.lvl"
+		{"LevelData/SinglePlayer/01.lvl"},
+		{"LevelData/SinglePlayer/02.lvl"},
+		{"LevelData/SinglePlayer/03.lvl"}
 	};
 
 	inline const std::vector<std::filesystem::path> Coop =
 	{
-		"LevelData/Coop/01.lvl"
-		//"LevelData/Coop/02.lvl",
-		//"LevelData/Coop/03.lvl"
+		{"LevelData/Coop/01.lvl"  }
+		//{"LevelData/Coop/02.lvl"},
+		//{"LevelData/Coop/03.lvl"}
 	};
 
 	inline const std::vector<std::filesystem::path> Versus =
 	{
-		"LevelData/Versus/01.lvl"
+		{"LevelData/Versus/01.lvl" }
 	};
 }
 
