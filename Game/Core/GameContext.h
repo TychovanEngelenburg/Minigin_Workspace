@@ -62,7 +62,8 @@ private:
 
 	void TransitionTo(std::unique_ptr<GameState> state);
 
-	static int constexpr m_startingLives{ 1 };
+	// TODO: Move to external settings file
+	static int constexpr m_startingLives{ 4 };
 	static size_t constexpr m_maxPlayers{ 2 };
 
 	PlayerDeviceMapper m_inputMap{};

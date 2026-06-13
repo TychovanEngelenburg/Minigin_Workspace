@@ -3,14 +3,13 @@
 
 #include "Game/Config/BulletConfig.h"
 #include "Game/Config/CollisionConfig.h"
-#include "Game/Config/FileLocations.h"
+#include "Game/Config/FileConfig.h"
 
 #include <Minigin/Rendering/SpriteConfig.h>
 
 #include <optional>
 #include <filesystem>
 
-inline  mg::SpriteSheet const TankSheet { FileLocations::EntitySpriteSheet , 4, 4 };
 
 struct BarrelConfig
 {
@@ -32,7 +31,7 @@ struct TankStats
 struct TankConfig
 {
 	std::string Name;
-	mg::SpriteConfig Sprite{ TankSheet, { 3, 2 } };
+	mg::SpriteConfig Sprite{ Files::EntitySpriteSheet, { 3, 2 } };
 	CollisionConfig Collisions{};
 	TankStats Stats{};
 

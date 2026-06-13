@@ -59,7 +59,7 @@ public:
 
 	void Render() const override;
 
-	GameGrid(mg::GameObject& owner, std::filesystem::path const& filePath, float tileSize);
+	explicit GameGrid(mg::GameObject& owner, std::filesystem::path const& filePath, float tileSize);
 
 private:
 	Tile const* GetTile(glm::ivec2 const& gridPos) const;
@@ -80,7 +80,6 @@ private:
 	std::shared_ptr<mg::Texture2D> m_pTileSheet{};
 	std::shared_ptr<mg::Texture2D> m_pBackgroundTexture{};
 
-	static float constexpr m_tileTexSize{16.f};
-	static int constexpr m_walkableTileY{0};
+	float m_tileTexSize{}; // TODO: load from spritesheet. Done like this due to last minute bugfixes
 };
 #endif // !GAMEGRID_H

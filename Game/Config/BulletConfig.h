@@ -2,16 +2,15 @@
 #define BULLET_CONFIG_H
 
 #include "Game/Config/CollisionConfig.h"
-#include "Game/Config/FileLocations.h"
+#include "Game/Config/FileConfig.h"
 
 #include <Minigin/Rendering/SpriteConfig.h>
 #include <glm/vec2.hpp>
 
-inline mg::SpriteSheet const BulletSpriteSheet{ FileLocations::EntitySpriteSheet, 4, 4 };
 
 struct BulletConfig
 {
-	mg::SpriteConfig Sprite{ BulletSpriteSheet, { 0, 1 } };
+	mg::SpriteConfig Sprite{ Files::EntitySpriteSheet, { 0, 1 } };
 	glm::vec2 ColliderSize{ 8.f, 8.f };
 	CollisionConfig Collisions{};
 	int Bounces{ 0 };

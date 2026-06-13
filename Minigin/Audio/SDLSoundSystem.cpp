@@ -10,6 +10,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <algorithm>
+#include <filesystem>
 
 class mg::SDLSoundSystem::Impl
 {
@@ -117,24 +118,24 @@ private:
 		return track;
 	}
 
-	MIX_Audio* GetTrack(std::string const& path)
+	MIX_Audio* GetTrack(std::filesystem::path const& path)
 	{
 
 		std::unique_lock<std::mutex> lock(m_mutex);
-		if (auto it = m_audioCache.find(path); it != m_audioCache.end())
+		if (auto it = m_audioCache.find(path.string()); it != m_audioCache.end())
 		{
 			return it->second;
 		}
 		lock.unlock();
 
-		MIX_Audio* newAudio = MIX_LoadAudio(m_pMixer, path.c_str(), false);
+		MIX_Audio* newAudio = MIX_LoadAudio(m_pMixer, path.string().c_str(), false);
 		if (!newAudio)
 		{
 			return nullptr;
 		}
 
 		lock.lock();
-		auto& cached = m_audioCache[path];
+		auto& cached = m_audioCache[path.string()];
 		if (!cached)
 		{
 
@@ -175,23 +176,23 @@ private:
 
 	}
 
-	void PreLoadSFX(std::string const& path)
+	void PreLoadSFX(std::filesystem::path const& path)
 	{
 		std::unique_lock<std::mutex> lock(m_mutex);
-		if (m_audioCache.find(path) != m_audioCache.end())
+		if (m_audioCache.find(path.string()) != m_audioCache.end())
 		{
 			return;
 		}
 		lock.unlock();
 
-		MIX_Audio* audio = MIX_LoadAudio(m_pMixer, path.c_str(), false);
+		MIX_Audio* audio = MIX_LoadAudio(m_pMixer, path.string().c_str(), false);
 		if (!audio)
 		{
 			return;
 		}
 
 		lock.lock();
-		m_audioCache[path] = audio;
+		m_audioCache[path.string()] = audio;
 	}
 
 	void HandleEvent(AudioEvent const& event)
@@ -212,7 +213,8 @@ private:
 					break;
 				}
 
-				auto* track = CreateTrack(audio, m_SFXVolume.load(), event.clip.loops);
+				float gain = m_isMuted ? 0.f : 1.f;
+				auto* track = CreateTrack(audio, gain * m_SFXVolume.load(), event.clip.loops);
 
 				if (track)
 				{

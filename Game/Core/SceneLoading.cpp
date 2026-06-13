@@ -4,7 +4,7 @@
 #include "Game/Components/GameManager.h"
 #include "Game/Commands/ToggleMuteCommand.h"
 #include "Game/Commands/ContinueSceneCommand.h"
-#include "Game/Config/FileLocations.h"
+#include "Game/Config/FileConfig.h"
 
 // Level
 #include "Game/Components/UI/HudManager.h"
@@ -101,8 +101,7 @@ TankManager::SpawnCounts SceneLoading::LoadLevelScene(mg::Scene& sceneOut, std::
 	// Teleporter
 	auto teleporterObj = std::make_unique<mg::GameObject>("Teleporter");
 	teleporterObj->AddComponent<Teleporter>(gridComp, tankManager);
-	mg::SpriteSheet TankSheet{ FileLocations::EntitySpriteSheet , 4, 4 };
-	auto& telepSprite = teleporterObj->AddComponent<mg::Sprite>(TankSheet);
+	auto& telepSprite = teleporterObj->AddComponent<mg::Sprite>(Files::EntitySpriteSheet);
 	telepSprite.SetTileSize({ 2, 2 });
 	telepSprite.SetSprite({ 2, 1 });
 	telepSprite.SetPivot(telepSprite.Size() / 4.f);
@@ -123,8 +122,7 @@ TankManager::SpawnCounts SceneLoading::LoadLevelScene(mg::Scene& sceneOut, std::
 
 // Audio
 	auto& audioSystem = mg::SoundServiceLocator::Fetch();
-	audioSystem.PlayMusic({ "./Data/Audio_Tron1982/03_IO_Tower.wav", "music", -1 });
-	audioSystem.SetMusicVolume(.5f);
+	audioSystem.PlayMusic({ Files::GameMusic, "music", -1 });
 
 	ApplyDefault(sceneOut);
 
@@ -135,7 +133,7 @@ void SceneLoading::LoadMainMenuScene(mg::Scene& sceneOut)
 {
 	// Header
 	{
-		auto obj = std::make_unique<mg::GameObject>("Header_Text", glm::vec2(60.f, 40.f));
+		auto obj = std::make_unique<mg::GameObject>("Header_Text", glm::vec2(50.f, 40.f));
 		auto& textComp = obj->AddComponent<mg::TextComponent>("joystixmonospace-regular.otf", 32);
 		textComp.SetText("TRON BATTLETANKS");
 		textComp.SetColor({ 255, 255, 0, 255 });
@@ -146,7 +144,7 @@ void SceneLoading::LoadMainMenuScene(mg::Scene& sceneOut)
 
 	 // Current game mode
 	{
-		auto obj = std::make_unique<mg::GameObject>("Mode_Text", glm::vec2(60.f, 140.f));
+		auto obj = std::make_unique<mg::GameObject>("Mode_Text", glm::vec2(50.f, 140.f));
 
 		auto& textComp = obj->AddComponent<mg::TextComponent>("joystixmonospace-regular.otf", 20);
 		textComp.SetColor({ 255,255,255,255 });
@@ -161,7 +159,7 @@ void SceneLoading::LoadMainMenuScene(mg::Scene& sceneOut)
 		auto obj = std::make_unique<mg::GameObject>("Instruction_Text", glm::vec2(60.f, 220.f));
 
 		auto& textComp = obj->AddComponent<mg::TextComponent>("joystixmonospace-regular.otf", 18);
-		textComp.SetText("CTRL / Gamepad X : Start\n"  "  Z / Gamepad A : Change Mode"  );
+		textComp.SetText("  CTRL / Gamepad X : Start\n"  "Z / Gamepad A : Change Mode"  );
 		textComp.SetColor({ 200,200,200,255 });
 
 		sceneOut.Add(std::move(obj));
@@ -196,6 +194,11 @@ void SceneLoading::LoadMainMenuScene(mg::Scene& sceneOut)
 
 		sceneOut.InputSystem().AddBinding(std::move(gamepad));
 	}
+
+	// Audio
+	auto& audioSystem = mg::SoundServiceLocator::Fetch();
+	audioSystem.StopMusic();
+	audioSystem.PlaySFX({ Files::StartSFX, "Start_Jingle"});
 
 	ApplyDefault(sceneOut);
 }
@@ -274,6 +277,11 @@ void SceneLoading::LoadScoreSavingScene(mg::Scene& sceneOut)
 	sceneOut.Add(std::move(scoreDispObj));
 	sceneOut.Add(std::move(saverObj));
 
+	// Audio
+	auto& audioSystem = mg::SoundServiceLocator::Fetch();
+	audioSystem.StopMusic();
+	audioSystem.PlaySFX({ Files::WinSFX, "Win" }); // TODO: Play upon level win instead
+
 	ApplyDefault(sceneOut);
 }
 
@@ -296,11 +304,16 @@ void SceneLoading::LoadScoreboardScene(mg::Scene& sceneOut)
 
 	{
 		auto continueSceneCommand = std::make_unique<mg::InputBinding>(
-			0, static_cast<int>(mg::Keycodes::GamepadButton::X), mg::InputBinding::DeviceType::Keyboard,
+			0, static_cast<int>(mg::Keycodes::GamepadButton::X), mg::InputBinding::DeviceType::Gamepad,
 			std::make_unique<ContinueSceneCommand>(), mg::InputBinding::TriggerType::Released
 		);
 		sceneOut.InputSystem().AddBinding(std::move(continueSceneCommand));
 	}
+
+	// Audio
+	auto& audioSystem = mg::SoundServiceLocator::Fetch();
+	audioSystem.StopMusic();
+	audioSystem.PlaySFX({ Files::FailureSFX, "Failure" }); // TODO: play upon death instead
 
 	ApplyDefault(sceneOut);
 }

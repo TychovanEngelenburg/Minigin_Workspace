@@ -95,10 +95,10 @@ TankConfig TankPresets::Player(int playerId)
 
 	BarrelConfig barrel{};
 	barrel.AimWithMoveDir = false;
-	barrel.ShootInterval = 0.35f;
+	barrel.ShootInterval = 0.5f;
 	barrel.Length = 12.f;
 
-	mg::SpriteConfig barrelSprite{TankSheet};
+	mg::SpriteConfig barrelSprite{Files::EntitySpriteSheet};
 	barrelSprite.SheetPos = { 0, 2 };  
 	barrelSprite.RenderPivot = {6.f, 6.f};
 	barrel.Sprite = barrelSprite;
@@ -161,6 +161,7 @@ TankConfig TankPresets::Recogniser()
 	cfg.Stats.MoveSpeed = 90.f;
 	cfg.Stats.MaxHealth = 2;
 	cfg.Stats.CollisionDamage = 2;
+	cfg.Stats.KillScore = 250;
 
 	return cfg;
 }

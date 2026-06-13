@@ -1,6 +1,6 @@
 #include "GameGrid.h"
 
-#include "Game/Config/FileLocations.h"
+#include "Game/Config/FileConfig.h"
 
 #include <Minigin/Scene/GameObject.h>
 #include <Minigin/Rendering/ResourceManager.h>
@@ -16,8 +16,10 @@ GameGrid::GameGrid(mg::GameObject& owner, std::filesystem::path const& filePath,
 	, m_tileSize(tileSize)
 {
 	LoadFromFile(mg::ResourceManager::Instance().DataPath() / filePath);
-	m_pTileSheet = mg::ResourceManager::Instance().LoadTexture(FileLocations::GridTileSheet);
-	m_pBackgroundTexture = mg::ResourceManager::Instance().LoadTexture(FileLocations::GridBackground);
+	m_pTileSheet = mg::ResourceManager::Instance().LoadTexture(Files::GridTileSheet.filePath);
+	m_pBackgroundTexture = mg::ResourceManager::Instance().LoadTexture(Files::GridBackground);
+
+	m_tileTexSize = m_pTileSheet->Size().x / Files::GridTileSheet.cols;
 }
 
 Tile* GameGrid::GetTile(glm::ivec2 const& gridPos) 
@@ -109,12 +111,13 @@ glm::ivec2 GameGrid::IdToGrid(int idx) const
 
 void GameGrid::Render() const
 {
+	// Draw background
 	glm::vec2 gridPos{ Object()->Transform().LocalPosition() };
 	glm::vec2 gridSize{ m_tileSize * static_cast<glm::vec2>(m_gridSize) };
 	SourceRect bgDst{ gridPos.x, gridPos.y, gridSize.x, gridSize.y };
 	mg::Renderer::Instance().RenderTexture(*m_pBackgroundTexture, bgDst);
 
-
+	// Draw tiles
 	SourceRect src{ 0, 0 , m_tileTexSize, m_tileTexSize };
 	SourceRect dst{ 0, 0, m_tileSize, m_tileSize };
 
@@ -129,7 +132,7 @@ void GameGrid::Render() const
 		if (m_tiles[tileId].Walkable)
 		{
 			src.x = m_tileTexSize * static_cast<float>(m_tiles[tileId].PathConnections);
-			src.y = m_tileTexSize * m_walkableTileY;
+			src.y = 0;// m_tileTexSize * m_walkableTileY;
 		}
 		else
 		{

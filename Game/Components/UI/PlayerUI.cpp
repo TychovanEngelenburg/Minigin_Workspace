@@ -2,7 +2,6 @@
 
 #include <Minigin/Scene/GameObject.h>
 #include <Minigin/Components/TextComponent.h>
-#include <iostream>
 
 void PlayerUI::SetPlayerId(int id)
 {
@@ -27,7 +26,6 @@ void PlayerUI::OnNotify(ScoreChangedEvent const& eventData)
 	}
 
 	m_pScoreText->SetText(std::to_string(eventData.Score));
-	std::cout << "Player " << m_playerId << "'s score is now: " << eventData.Score << "\n";
 }
 
 void PlayerUI::OnNotify(LivesChangedEvent const& eventData)
@@ -43,7 +41,6 @@ void PlayerUI::OnNotify(LivesChangedEvent const& eventData)
 		return;
 	}
 	m_pLivesText->SetText(std::to_string(eventData.Lives  - 1));
-	std::cout << "Player " << m_playerId << "'s lives are now: " << eventData.Lives << "\n";
 }
 
 PlayerUI::PlayerUI(mg::GameObject& owner)

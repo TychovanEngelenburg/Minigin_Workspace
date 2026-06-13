@@ -29,6 +29,10 @@ static void load()
 	mg::SoundServiceLocator::Register(std::make_unique<mg::SDLSoundSystem>());
 #endif // _DEBUG
 
+	auto& audioSystem = mg::SoundServiceLocator::Fetch();
+	audioSystem.SetSFXVolume(.5f);
+	audioSystem.SetMusicVolume(.5f);
+
 	GameContext::Instance().Init();
 }
 

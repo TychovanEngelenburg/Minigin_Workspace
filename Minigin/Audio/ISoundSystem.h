@@ -1,12 +1,13 @@
 #ifndef I_SOUNDSYSTEM_H
 #define I_SOUNDSYSTEM_H
 #include <string>
+#include <filesystem>
 
 namespace mg
 {
 	struct AudioClip
 	{
-		std::string filePath;
+		std::filesystem::path filePath;
 		std::string name;
 		int loops;
 	};

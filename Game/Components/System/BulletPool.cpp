@@ -66,7 +66,7 @@ void BulletPool::CreateBullets(size_t count)
 		movementComp.SetPool(this);
 
 		bulletObj->AddComponent<DamageOnCollision>();
-		bulletObj->AddComponent<mg::Sprite>(BulletSpriteSheet);
+		bulletObj->AddComponent<mg::Sprite>(Files::EntitySpriteSheet);
 		bulletObj->AddComponent<mg::BoxCollider2D>();
 
 		bulletObj->SetActive(false);

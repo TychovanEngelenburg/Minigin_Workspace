@@ -1,9 +1,11 @@
 #include "TankHealth.h"
 #include "Game/Events/GameEvents.h"
-
+#include "Game/Config/FileConfig.h"
 #include <Minigin/Scene/GameObject.h>
 #include <Minigin/Events/IObserver.h>
-#include "Game/Core/GameContext.h"
+
+#include <Minigin/Audio/SoundServiceLocator.h>
+#include <Minigin/Audio/ISoundSystem.h>
 
 bool TankHealth::IsDead() const noexcept
 {
@@ -22,10 +24,13 @@ void TankHealth::Damage(int amount, std::optional<int> killerId)
 	if (IsDead())
 	{
 		OnDeath(killerId);
+		return;
 	}
 
-	// TODO: Hanlde another way?
-	DemoPlaySound();
+	// Audio
+	auto& audioSystem = mg::SoundServiceLocator::Fetch();
+	audioSystem.PlaySFX({ Files::TankDamaged, "Tank_Damage"});
+
 }
 
 void TankHealth::Kill()
@@ -68,7 +73,9 @@ void TankHealth::OnDeath(std::optional<int> killedBy)
 {
 	TankDeathEvent deathEvent{ m_playerId , killedBy, m_scoreValue };
 
-	// TODO: Play sound?
+	auto& audioSystem = mg::SoundServiceLocator::Fetch();
+	audioSystem.PlaySFX({ Files::TankDeath, "Tank_Death" });
+
 	m_onDeath.Notify(deathEvent);
 	Object()->SetActive(false);
 }

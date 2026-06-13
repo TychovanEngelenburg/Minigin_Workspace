@@ -2,7 +2,7 @@
 #define HIGHSCOREMANAGER_H
 
 #include "Game/Core/GameModes.h"
-#include "Game/Config/FileLocations.h"
+#include "Game/Config/FileConfig.h"
 
 #include <filesystem>
 #include <array>
@@ -24,8 +24,8 @@ public:
 
 	void AddScore(GameMode mode, PlayerScore&& entry);
 
-	void Load(std::filesystem::path const& file = FileLocations::ScoreFile);
-	void Save(std::filesystem::path const& file = FileLocations::ScoreFile) const;
+	void Load(std::filesystem::path const& file = Files::ScoreFile);
+	void Save(std::filesystem::path const& file = Files::ScoreFile) const;
 
 private:
 

@@ -42,6 +42,8 @@ public:
 private:
 	int m_playersAlive{ 0 };
 	int m_enemiesAlive{ 0 };
+
+	// TODO: Implement grace period, where for x seconds after win or lose SFX plays and the scene only transitions after.
 };
 
 
